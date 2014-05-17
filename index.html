@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roy Pardee</title>
+
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="dist/css/custom.css" rel="stylesheet" media="screen">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h1>Roy Pardee <small>Data Wrangler</small></h1>
+      </div>
+      <p class="lead">I am Roy Pardee, Data Wrangler, Analyst and Application Developer from the greater Seattle area. I've been doing various bits of computing in the service of research (mostly Health Services research) since 1997 or so.</p>
+      <p>In my little professional circle I am probably best known for my work designing and implementing the <a href="http://en.wikipedia.org/wiki/HMORN_Virtual_Data_Warehouse"><abbr title="Health Maintenance Organization">HMO</abbr> Research Network's Virtual Data Warehouse.</a></p>
+
+      <p>This page is intended to be something of a r&eacute;sum&eacute; and calling-card for anyone interested in my professional life.</p>
+
+      <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                Main
+              </a>
+            </h4>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse in">
+            <div class="panel-body">
+              <ul>
+                <li><a href="resume.html">My actual resum&eacute;</a></li>
+                <li><a href="things_i_am_good_at.html">Things I am good at.</a></li>
+                <li><a href="want_to_learn.html">Things I am not good at <em>right now</em>, but would like to learn.</a></li>
+                <li>Things I am not interested in learning.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseWorkSamples">
+                Samples of My Work
+              </a>
+            </h4>
+          </div>
+          <div id="collapseWorkSamples" class="panel-collapse collapse in">
+            <div class="panel-body">
+              <ul>
+                <li>Writing in Code</li>  
+                  <ul>
+                    <li><a href="https://github.com/HMORN/phi_macros/blob/master/detect_phi.sas">SAS Program that scans all datasets in a given library for Private Health Information.</a>
+                      <p>At my work we frequently do multi-site research and then transfer data from one site to another.  That poses the risk that we will send more data than we intend, with the dire <abbr title="Health Insurance Portability and Accountability Act">HIPAA</abbr> implications of having "disclosed" PHI.  This macro runs through a set of datasets looking for tell-tale signs that they include PHI.  This macro and another (which I did not write) were written up in <a href="http://www.biomedcentral.com/1472-6947/13/39/abstract">Medical Informatics &amp; Decision Making.</a></p>
+                    </li>
+                    <li><a href="psa_trigger.rb.html">Ruby script for identifying possibly-unnecessary PSA test orders from an EMR.</a>
+                      <p>This script identifies orders for PSA tests for men who probably don't need them, and sends an e-mailed list to the relevant Service Head.  This is part of the <a href="http://choosingwisely.org">Choosing Wisely</a> initative work that Group Health is doing.</p>
+                    </li>
+                    <li><a href="troll_path.rb.html">Ruby script for doing rapid cancer case ascertainment with a text classifier.</a>
+                      <p>A really interesting study of an intervention in cancer treatment needed to recruit patients <strong>immediately</strong> after they learned of their cancers.  At the time the best method of identifying possible recruits was to read pretty much every pathology report that came through our system, which we didn't have budget for.  Having recently read <a href="http://shop.oreilly.com/product/9780596529321.do">Programming Collective Intelligence</a> I was able to put together (and train!) a Fisher text classifier that filtered the stream of path reports down to something we could manage.</p>
+                    </li>
+                  </ul>
+                <li>Writing in Words</li>
+                <ul>
+                  <li><a href = "http://sdrv.ms/15QqHuy">A presentation explaining how to use the VDW.</a></li>
+                  <li><a href="http://implementing-vdw.blogspot.com/2010/05/going-to-incremental-update-strategy-on.html">An explanation of a programming strategy I was considering for a big data warehousing job.</a></li>
+                  <li><a href="demog.html">A sample data specification (developed in collaboration with HMORN collegues).</a></li>
+                </ul>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                Techie Stuff I like
+              </a>
+            </h4>
+          </div>
+          <div id="collapseTwo" class="panel-collapse collapse">
+            <div class="panel-body">
+              <ul>
+                <li>Data Science
+                  <p>I took <a href="https://class.coursera.org/datasci-001/class">a coursera course on this</a> that I absolutely loved (though it was way more time commitment than expected) and would love to get more into this sort of work&mdash;both the "big data" aspects and the high-level analytics.</p>
+                </li>
+                <li><a href="http://www.sublimetext.com">Sublime Text</a>
+                  <p>Best. Editor. <em>Evar</em>.  One of my proudest accomplishments is <a href="https://github.com/rpardee/sas.tmbundle">the sublime package I put together for SAS programmers</a>.</p>
+                </li>
+                <li><a href="http://www.sas.com">SAS</a>
+                  <p>Pretty much my bread-and-butter at the moment.</p>
+                </li>
+                <li><a href="http://rubyinstaller.org">Ruby</a>
+                  <p>Gorgeous, lovely, wonderful programming language.</p>
+                </li>
+                <li><a href="https://github.com/dahlbyk/posh-git">Posh-git</a>
+                  <p>Which is in fact two things--<a href="http://en.wikipedia.org/wiki/Windows_PowerShell">powershell</a> (which, once I got past my resentment of microsoft at making me learn <em>another</em> language is actually quite cool) and <a href="http://git-scm.com">git</a>. </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                Personal Interests
+              </a>
+            </h4>
+          </div>
+          <div id="collapseThree" class="panel-collapse collapse">
+            <div class="panel-body">
+              <ul>
+                <li>I'm an animal lover generally, but I'm very much a dog person, and have especial love for <a href="http://en.wikipedia.org/wiki/Newfoundland_(dog)">the Newfoundland breed</a>.</li>
+                <li>Internet culture (by which I mostly mean <a href="http://reddit.com">reddit</a>).</li>
+                <li>Photography (though I am terrible at it).</li>
+                <li>Technology in all its forms (favorite websites: <a href="http://theverge.com">The Verge</a>; <a href="http://arstechnica.com">Ars Technica</a>).</li>
+                <li>Science-fiction &amp; Fantasy books and movies (Favorites: Dune; Song of Ice &amp; Fire (aka "Game of Thrones") Twelve Monkeys.)</li>
+                <li>Video Games (though I very seldom actually <em>play</em> them) (Favorites: Ico; Katamari Damacy; Portal).</li>
+                <li>Music (Favorite bands: R.E.M.; Built To Spill; Neko Case)</li>
+              </ul>
+
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+                More Elsewhere
+              </a>
+            </h4>
+          </div>
+          <div id="collapseFour" class="panel-collapse collapse">
+            <div class="panel-body">
+              <ul>
+                <li>My <a href="https://github.com/rpardee">GitHub</a></li>
+                <li><a href="http://www.linkedin.com/in/rpardee/">LinkedIn</a></li>
+                <li><a href="http://implementing-vdw.blogspot.com/">My work blog</a></li>
+                <li>My current employer--the <a href="http://www.grouphealthresearch.org/">Group Health Research Institute</a></li>
+                <li><a href="http://www.hmoresearchnetwork.org/">The HMO Research Network</a></li>
+                <li><a href="http://www.ghc.org">Group Health Cooperative</a></li>
+                <li><a href="http://helloimbloggingatyounow.blogspot.com/">My personal blog</a> (sadly neglected)</li>
+                <li><a href="http://facebook.com/rpardee">My Facebook</a></li>
+                <li><a href="https://plus.google.com/111455013195840934443/posts">Google+</a></li>
+              </ul>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="dist/js/bootstrap.min.js"></script>
+</body>
+</html>

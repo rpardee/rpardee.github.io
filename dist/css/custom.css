@@ -1,0 +1,41 @@
+body, .panel-default {
+  background-color: #262626;
+  color: #bcd279;
+}
+.panel-default>.panel-heading {
+  background-color: #191919;
+  color: #f9f9b3;
+}
+a:link {
+  color: #b35e4d;
+}
+h2 {
+  color: #b35e4d;
+}
+pre {
+  background-color: #191919;
+  color:#87bbc5;
+}
+.valid-values dt {
+  float: left;
+  width: 2em;
+  overflow: hidden;
+  clear: left;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #669199;
+}
+.valid-values dd {
+  margin-left: 3em;
+}
+
+.job-listing {
+  width: 70%;
+  margin-left: 5%;
+}
+
+.row {
+  border-bottom: 1px solid #eee;
+  padding-top: 10px ;
+}

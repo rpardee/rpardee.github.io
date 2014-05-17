@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roy Pardee: Ruby code sample (psa_trigger.rb)</title>
+
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="dist/css/custom.css" rel="stylesheet" media="screen">
+    <link href="dist/css/ruby.css" rel="stylesheet" media="screen">
+</head>
+<body>
+    <div class="container">
+
+<div class="highlight"><pre><span class="cm">=begin </span>
+<span class="cm">  psa_trigger.rb</span>
+<span class="cm">  Roy Pardee</span>
+<span class="cm">  pardee.r@ghc.org</span>
+<span class="cm">  1-jun-2013</span>
+<span class="cm">  Copyright 2013 Group Health Cooperative</span>
+<span class="cm">=end</span>
+
+<span class="cm">=begin</span>
+
+<span class="cm">  PSA-indicating procedures.</span>
+<span class="cm">  PROC_ID   proc_name                                   PROC_CODE frq</span>
+<span class="cm">  15449     PSA                                         84153.002 344445</span>
+<span class="cm">  15448     FREE PSA                                    84153.001   5069</span>
+<span class="cm">  15451     FPSA BATTERY COMPLETION (PAML)              84153.004     18</span>
+<span class="cm">  10122     PSA TOTAL SCREENING                         G0103          4</span>
+<span class="cm">  15450     PSA ULTRASENSITIVE (PAML)                   84153.003      3</span>
+<span class="cm">  31641     PSA FREE (INCLUDES TOTAL) (OVL)             PSAF           3</span>
+<span class="cm">  58096     CMPA+LIPID+CBC+TSH.R+PSA+UAXM+CULIF (PAML)  PA2005C        3</span>
+<span class="cm">  6450      PROSTATE SPECIFIC ANTIGEN (PSA);COMPLEX     84152          1</span>
+
+<span class="cm">  19630     PSA, POST RADICAL PROSTATECTOMY (PAML)      84153.005      4</span>
+<span class="cm">  32816     IS A PSA TEST RIGHT FOR YOU? (DVD)          PE571          2</span>
+
+
+<span class="cm">  PSA-excusing conditions.</span>
+<span class="cm">  dx_id   dx_name                                             frq</span>
+<span class="cm">  1726    Malignant neoplasm of prostate                      171</span>
+<span class="cm">  76220   Prostate cancer                                      98</span>
+<span class="cm">  10147   Elevated prostate specific antigen (PSA)             61</span>
+<span class="cm">  93159   Elevated PSA                                         55</span>
+<span class="cm">  14563   Personal history of malignant neoplasm of prostate   53</span>
+<span class="cm">  174793  Personal history of prostate cancer                  30</span>
+<span class="cm">  234242  History of prostate cancer                           22</span>
+<span class="cm">  10147   790.93  Elevated prostate specific antigen (PSA) 12</span>
+<span class="cm">  103038  198.5   Bone metastases 6</span>
+<span class="cm">  112096  185     CA - cancer of prostate 1</span>
+<span class="cm">  121961  185     Prostate ca 3</span>
+<span class="cm">  14563   V10.46  Personal history of malignant neoplasm of prostate 1</span>
+<span class="cm">  150329  600.1   Prostate nodule 5</span>
+<span class="cm">  168484  V76.44  Prostate cancer screening 8</span>
+<span class="cm">  176121  790.93  Abnormal PSA 1</span>
+<span class="cm">  19341   600.91  Unspecified hyperplasia of prostate with urinary obstruction and other lower urinary tract symptoms (LUTS) 1</span>
+<span class="cm">  196284  599.72  Microscopic hematuria 1</span>
+<span class="cm">  196750  780.64  Chills (without fever) 1</span>
+<span class="cm">  216517  185     Prostate cancer, primary, with metastasis from prostate to other site 1</span>
+<span class="cm">  234242  V10.46  History of prostate cancer 2</span>
+<span class="cm">  237068  596.89  Bladder mass 1</span>
+<span class="cm">  238495  602.9   Prostate mass 1</span>
+<span class="cm">  261338  185     Recurrent prostate adenocarcinoma 5</span>
+<span class="cm">  272244  V10.46  Hx of prostatic malignancy 1</span>
+<span class="cm">  273113  185     Cancer of prostate w/med recur risk (T2b-c or Gleason 7 or PSA 10-20) 1</span>
+<span class="cm">  279122  790.93  PSA elevation 2</span>
+<span class="cm">  279295  602.8   Prostate asymmetry 1</span>
+<span class="cm">  299466  600     BPH with elevated PSA 1</span>
+<span class="cm">  338555  V13.89  History of elevated PSA 2</span>
+<span class="cm">  346813  V10.46  H/O prostate cancer 1</span>
+<span class="cm">  347547  198.5   Metastatic adenocarcinoma to bone 1</span>
+<span class="cm">  350828  790.93  Elevated PSA, less than 10 ng/ml 1</span>
+<span class="cm">  76220   185     Prostate cancer 5</span>
+<span class="cm">  76577   185     Adenocarcinoma of prostate 4</span>
+<span class="cm">  78461   185     Carcinoma of prostate 1</span>
+<span class="cm">  93159   790.93  Elevated PSA 10</span>
+
+
+<span class="cm">=end</span>
+<span class="nb">require</span> <span class="s2">&quot;tiny_tds&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;net/smtp&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;sqlite3&quot;</span>
+<span class="nb">require</span> <span class="s1">&#39;active_support/all&#39;</span>
+
+
+<span class="no">LOG_DB</span>      <span class="o">=</span> <span class="s2">&quot;//server/choose_wisely/programs/psa_trigger.db&quot;</span>
+<span class="no">SMTPSERVER</span>  <span class="o">=</span> <span class="s2">&quot;mailhost.mycompany.com&quot;</span>
+<span class="no">SMTPPORT</span>    <span class="o">=</span> <span class="mi">25</span>
+<span class="no">SMTPDOMAIN</span>  <span class="o">=</span> <span class="s2">&quot;server.mycompany.com&quot;</span>
+
+<span class="k">class</span> <span class="nc">BadPSA</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:consumno</span><span class="p">,</span> <span class="ss">:pat_id</span><span class="p">,</span> <span class="ss">:pat_initials</span><span class="p">,</span> <span class="ss">:order_datetime</span><span class="p">,</span> <span class="ss">:order_status</span><span class="p">,</span> <span class="ss">:doc</span><span class="p">,</span> <span class="ss">:encounter_id</span><span class="p">,</span> <span class="ss">:age</span>
+  <span class="vc">@@logdb</span> <span class="o">=</span> <span class="no">SQLite3</span><span class="o">::</span><span class="no">Database</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">LOG_DB</span><span class="p">)</span>
+
+  <span class="no">EXCUSING_PROBLEMS</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1726</span><span class="p">,</span> <span class="mi">76220</span><span class="p">,</span> <span class="mi">10147</span><span class="p">,</span> <span class="mi">93159</span><span class="p">,</span> <span class="mi">14563</span><span class="p">,</span> <span class="mi">174793</span><span class="p">,</span> <span class="mi">234242</span><span class="p">,</span>
+                        <span class="mi">10147</span><span class="p">,</span> <span class="mi">103038</span><span class="p">,</span> <span class="mi">112096</span><span class="p">,</span> <span class="mi">121961</span><span class="p">,</span> <span class="mi">14563</span><span class="p">,</span> <span class="mi">150329</span><span class="p">,</span> <span class="mi">168484</span><span class="p">,</span>
+                        <span class="mi">176121</span><span class="p">,</span> <span class="mi">19341</span><span class="p">,</span> <span class="mi">196284</span><span class="p">,</span> <span class="mi">196750</span><span class="p">,</span> <span class="mi">216517</span><span class="p">,</span> <span class="mi">234242</span><span class="p">,</span> <span class="mi">237068</span><span class="p">,</span>
+                        <span class="mi">238495</span><span class="p">,</span> <span class="mi">261338</span><span class="p">,</span> <span class="mi">272244</span><span class="p">,</span> <span class="mi">273113</span><span class="p">,</span> <span class="mi">279122</span><span class="p">,</span> <span class="mi">279295</span><span class="p">,</span>
+                        <span class="mi">299466</span><span class="p">,</span> <span class="mi">338555</span><span class="p">,</span> <span class="mi">346813</span><span class="p">,</span> <span class="mi">347547</span><span class="p">,</span> <span class="mi">350828</span><span class="p">,</span> <span class="mi">76220</span><span class="p">,</span>
+                        <span class="mi">76577</span><span class="p">,</span> <span class="mi">78461</span><span class="p">,</span> <span class="mi">93159</span><span class="p">,</span> <span class="mi">392172</span><span class="o">]</span>
+  <span class="no">PSA_PROCIDS</span>       <span class="o">=</span> <span class="o">[</span><span class="mi">15449</span><span class="p">,</span> <span class="mi">15448</span><span class="p">,</span> <span class="mi">15451</span><span class="p">,</span> <span class="mi">10122</span><span class="p">,</span> <span class="mi">15450</span><span class="p">,</span> <span class="mi">31641</span><span class="p">,</span> <span class="mi">58096</span><span class="p">,</span> <span class="mi">6450</span><span class="o">]</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">excuses</span>
+    <span class="no">EXCUSING_PROBLEMS</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">proc_ids</span>
+    <span class="no">PSA_PROCIDS</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">create_logdb</span>
+    <span class="vc">@@logdb</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;drop table already_reported&quot;</span><span class="p">)</span>
+    <span class="vc">@@logdb</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;create table already_reported (</span>
+<span class="s2">                    pat_enc_csn_id int PRIMARY KEY</span>
+<span class="s2">                    , date_reported numeric NOT NULL</span>
+<span class="s2">                   ) &quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">reset_logdb</span>
+    <span class="vc">@@logdb</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;delete from already_reported&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">format_list</span><span class="p">(</span><span class="n">psas</span><span class="p">)</span>
+
+    <span class="n">heads</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:consumno</span>       <span class="o">=&gt;</span> <span class="s2">&quot;Patient Consumer Number&quot;</span><span class="p">,</span>
+            <span class="ss">:age</span>            <span class="o">=&gt;</span> <span class="s2">&quot;Patient Age&quot;</span><span class="p">,</span>
+             <span class="ss">:pat_initials</span>   <span class="o">=&gt;</span> <span class="s2">&quot;Patient Initials&quot;</span><span class="p">,</span>
+             <span class="ss">:order_datetime</span> <span class="o">=&gt;</span> <span class="s2">&quot;Order Date&quot;</span><span class="p">,</span>
+             <span class="ss">:order_status</span>   <span class="o">=&gt;</span> <span class="s2">&quot;Order Status&quot;</span><span class="p">,</span>
+             <span class="ss">:doc</span>            <span class="o">=&gt;</span> <span class="s2">&quot;Ordering Provider&quot;</span><span class="p">}</span>
+
+    <span class="n">rowcount</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">cellstyle</span> <span class="o">=</span> <span class="s2">&quot;style=&#39;border:1px solid black;padding:5px;&#39;&quot;</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="s2">&quot;&lt;table style=&#39;border-collapse:collapse;border:1px solid black;&#39;&gt;&lt;tr&gt;&quot;</span>
+    <span class="n">heads</span><span class="o">.</span><span class="n">each_value</span> <span class="k">do</span> <span class="o">|</span><span class="n">h</span><span class="o">|</span>
+      <span class="n">ret</span> <span class="o">+=</span> <span class="s2">&quot;&lt;th </span><span class="si">#{</span><span class="n">cellstyle</span><span class="si">}</span><span class="s2">&gt;&lt;font face=Tahoma&gt;</span><span class="si">#{</span><span class="n">h</span><span class="si">}</span><span class="s2">&lt;/font&gt;&lt;/th&gt;&quot;</span>
+    <span class="k">end</span>
+    <span class="n">ret</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/tr&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">psas</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">p</span><span class="o">|</span>
+      <span class="n">rowcount</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">rowcount</span>
+      <span class="n">st</span> <span class="o">=</span> <span class="s2">&quot;style = &#39;background-color:Lavender&#39;&quot;</span> <span class="k">if</span> <span class="n">rowcount</span> <span class="o">==</span> <span class="mi">1</span>
+      <span class="n">ret</span> <span class="o">+=</span> <span class="s2">&quot;&lt;tr </span><span class="si">#{</span><span class="n">st</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+      <span class="n">heads</span><span class="o">.</span><span class="n">each_key</span> <span class="k">do</span> <span class="o">|</span><span class="n">k</span><span class="o">|</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">p</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">k</span>
+        <span class="k">when</span> <span class="ss">:doc</span>
+          <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">titleize</span>
+        <span class="k">when</span> <span class="ss">:order_datetime</span><span class="p">,</span> <span class="ss">:prior_order</span>
+          <span class="c1"># val = DateTime.parse(val).to_formatted_string(:long)</span>
+          <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">to_formatted_s</span><span class="p">(</span><span class="ss">:long</span><span class="p">)</span> <span class="k">if</span> <span class="n">val</span>
+        <span class="k">end</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="s2">&quot;&lt;td </span><span class="si">#{</span><span class="n">cellstyle</span><span class="si">}</span><span class="s2">&gt;&lt;font face=Tahoma&gt;</span><span class="si">#{</span><span class="n">val</span><span class="si">}</span><span class="s2">&lt;/font&gt;&lt;/td&gt;&quot;</span>
+      <span class="k">end</span>
+      <span class="n">ret</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/tr&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+    <span class="n">ret</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/table&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">ret</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">record_list</span><span class="p">(</span><span class="n">list</span><span class="p">)</span>
+    <span class="n">list</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">p</span><span class="o">|</span>
+      <span class="nb">p</span><span class="o">.</span><span class="n">record</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">encounter_id</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">consumno</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">pat_id</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">pat_initials</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">order_datetime</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">order_status</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="n">age</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+    <span class="vi">@consumno</span>       <span class="o">=</span> <span class="n">consumno</span>
+    <span class="vi">@pat_id</span>         <span class="o">=</span> <span class="n">pat_id</span>
+    <span class="vi">@pat_initials</span>   <span class="o">=</span> <span class="n">pat_initials</span>
+    <span class="vi">@order_datetime</span> <span class="o">=</span> <span class="n">order_datetime</span>
+    <span class="vi">@order_status</span>   <span class="o">=</span> <span class="n">order_status</span>
+    <span class="vi">@doc</span>            <span class="o">=</span> <span class="n">doc</span>
+    <span class="vi">@encounter_id</span>   <span class="o">=</span> <span class="n">encounter_id</span>
+    <span class="vi">@age</span>            <span class="o">=</span> <span class="n">age</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">excused?</span><span class="p">(</span><span class="n">clardb</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="kp">false</span>
+    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;select pl.dx_id, d.dx_name, pl.problem_cmt</span>
+<span class="s2">                      from problem_list as pl INNER JOIN</span>
+<span class="s2">                           clarity_edg as d</span>
+<span class="s2">                      on    pl.dx_id = d.dx_id</span>
+<span class="s2">                       where pat_id = &#39;</span><span class="si">#{</span><span class="vi">@pat_id</span><span class="si">}</span><span class="s2">&#39; AND</span>
+<span class="s2">                       pl.dx_id in (</span><span class="si">#{</span><span class="no">BadPSA</span><span class="o">.</span><span class="n">excuses</span><span class="si">}</span><span class="s2">) AND</span>
+<span class="s2">                       problem_status_c = 1&quot;</span>
+
+    <span class="c1"># puts(sql)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">clardb</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
+      <span class="n">ret</span> <span class="o">=</span> <span class="kp">true</span>
+      <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Found excuse: </span><span class="si">#{</span><span class="n">x</span><span class="o">[</span><span class="s1">&#39;dx_name&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">ret</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">on_testosterone?</span><span class="p">(</span><span class="n">clardb</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="kp">false</span>
+    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;select description</span>
+<span class="s2">          from ORDER_MED</span>
+<span class="s2">          where description like &#39;%testosterone%&#39; AND</span>
+<span class="s2">          START_DATE &gt; DATEADD(month, -3, getdate()) AND</span>
+<span class="s2">          coalesce(END_DATE, getdate()) &gt;= GETDATE() AND</span>
+<span class="s2">          pat_id = &#39;</span><span class="si">#{</span><span class="vi">@pat_id</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">clardb</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">o</span><span class="o">|</span>
+      <span class="c1"># puts(o)</span>
+      <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Found a current (?) order for </span><span class="si">#{</span><span class="n">o</span><span class="o">[</span><span class="s1">&#39;description&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+      <span class="n">ret</span> <span class="o">=</span> <span class="kp">true</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="n">ret</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">already_reported?</span>
+    <span class="vc">@@logdb</span><span class="o">.</span><span class="n">get_first_value</span><span class="p">(</span><span class="s2">&quot;select count(*) as num_reports</span>
+<span class="s2">                            from already_reported</span>
+<span class="s2">                            where pat_enc_csn_id = </span><span class="si">#{</span><span class="vi">@encounter_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">record</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;About to record encounter_id </span><span class="si">#{</span><span class="vi">@encounter_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="vc">@@logdb</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;insert into already_reported (pat_enc_csn_id, date_reported) values (</span><span class="si">#{</span><span class="vi">@encounter_id</span><span class="si">}</span><span class="s2">, datetime(&#39;now&#39;, &#39;localtime&#39;))&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">send_mail</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">recipients</span><span class="p">,</span> <span class="n">from</span> <span class="o">=</span> <span class="s2">&quot;pardee.r@ghc.org&quot;</span><span class="p">,</span> <span class="n">logfile</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+  <span class="c1"># puts &quot;Pretend I sent mail to &quot; + recipients.join + &quot; with subject: &quot; + subject + &quot; and body &quot; + body</span>
+<span class="n">message</span> <span class="o">=</span> <span class="o">&lt;&lt;</span><span class="no">MESSAGE_END</span>
+<span class="sh">From: Inappropriate PSA Trigger tool &lt;#{from}&gt;</span>
+<span class="sh">To: #{recipients.join(&#39;; &#39;)}</span>
+<span class="sh">MIME-Version: 1.0</span>
+<span class="sh">Content-type: text/html</span>
+<span class="sh">Subject: #{subject}</span>
+
+<span class="sh">#{body}</span>
+<span class="sh">&lt;p&gt;Produced by #{File.expand_path($0)}.&lt;/p&gt;</span>
+<span class="no">MESSAGE_END</span>
+
+  <span class="no">Net</span><span class="o">::</span><span class="no">SMTP</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="no">SMTPSERVER</span><span class="p">,</span> <span class="no">SMTPPORT</span><span class="p">,</span> <span class="no">SMTPDOMAIN</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">smtp</span><span class="o">|</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;subject: </span><span class="si">#{</span><span class="n">subject</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+          <span class="s2">&quot;to: &quot;</span> <span class="o">+</span> <span class="n">recipients</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;; &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span>
+          <span class="s2">&quot;MIME-Version: 1.0</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+          <span class="s2">&quot;Content-type: text/html</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+          <span class="n">body</span><span class="o">.</span><span class="n">to_s</span>
+    <span class="n">body</span> <span class="o">+=</span>  <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="s2">&quot;Full details in &quot;</span> <span class="o">+</span> <span class="n">logfile</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">logfile</span>
+
+    <span class="n">smtp</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">recipients</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+<span class="k">def</span> <span class="nf">age</span><span class="p">(</span><span class="n">dob</span><span class="p">,</span> <span class="n">age_on</span><span class="p">)</span>
+  <span class="n">age_on</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">dob</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="p">((</span><span class="n">age_on</span><span class="o">.</span><span class="n">month</span> <span class="o">&gt;</span> <span class="n">dob</span><span class="o">.</span><span class="n">month</span> <span class="o">||</span> <span class="p">(</span><span class="n">age_on</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="n">dob</span><span class="o">.</span><span class="n">month</span> <span class="o">&amp;&amp;</span> <span class="n">age_on</span><span class="o">.</span><span class="n">day</span> <span class="o">&gt;=</span> <span class="n">dob</span><span class="o">.</span><span class="n">day</span><span class="p">))</span> <span class="p">?</span> <span class="mi">0</span> <span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">get_bad_psas</span><span class="p">(</span><span class="n">lookback</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+  <span class="n">cands</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="n">sql</span> <span class="o">=</span> <span class="s2">&quot;select distinct p.PAT_ID, p.PAT_MRN_ID as consumno</span>
+<span class="s2">                , substring(p.PAT_first_NAME, 1, 1) + substring(p.PAT_last_NAME, 1, 1) as pat_initials</span>
+<span class="s2">                , p.BIRTH_DATE</span>
+<span class="s2">                , o.ORDER_TIME</span>
+<span class="s2">                , o.pat_enc_csn_id as encounter_id</span>
+<span class="s2">                , zs.NAME as order_status</span>
+<span class="s2">                , DATEDIFF(year, p.birth_date, o.ORDER_TIME) as approximate_age</span>
+<span class="s2">              , d.PROV_NAME as ordering_doc</span>
+<span class="s2">          from ORDER_PROC as o INNER JOIN</span>
+<span class="s2">               PATIENT as p</span>
+<span class="s2">          on  o.PAT_ID = p.PAT_ID INNER JOIN</span>
+<span class="s2">              CLARITY_SER as d</span>
+<span class="s2">          on  o.AUTHRZING_PROV_ID = d.PROV_ID INNER JOIN</span>
+<span class="s2">              ZC_ORDER_STATUS as zs</span>
+<span class="s2">          on  o.ORDER_STATUS_C = zs.ORDER_STATUS_C LEFT JOIN</span>
+<span class="s2">              ORDER_DX_PROC as dx</span>
+<span class="s2">          on  o.ORDER_PROC_ID = dx.ORDER_PROC_ID</span>
+<span class="s2">        where o.proc_id in (</span><span class="si">#{</span><span class="no">BadPSA</span><span class="o">.</span><span class="n">proc_ids</span><span class="si">}</span><span class="s2">)</span>
+<span class="s2">              and o.order_time between dateadd(d, -</span><span class="si">#{</span><span class="n">lookback</span><span class="si">}</span><span class="s2">, getdate()) and getdate() and</span>
+<span class="s2">              o.FUTURE_OR_STAND is null and</span>
+<span class="s2">              o.ORDER_STATUS_C in (1, 2, 3, 5) AND</span>
+<span class="s2">              DATEDIFF(year, p.birth_date, o.ORDER_TIME) &gt; 74 AND</span>
+<span class="s2">              coalesce(dx.DX_ID, -2) not in (</span><span class="si">#{</span><span class="no">BadPSA</span><span class="o">.</span><span class="n">excuses</span><span class="si">}</span><span class="s2">)&quot;</span>
+  <span class="n">res</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+  <span class="n">res</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">r</span><span class="o">|</span>
+    <span class="n">actual_age</span> <span class="o">=</span> <span class="n">age</span><span class="p">(</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;BIRTH_DATE&#39;</span><span class="o">]</span><span class="p">,</span> <span class="n">r</span><span class="o">[</span><span class="s1">&#39;ORDER_TIME&#39;</span><span class="o">]</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">actual_age</span> <span class="o">&gt;</span> <span class="mi">75</span> <span class="k">then</span>
+      <span class="n">cands</span> <span class="o">&lt;&lt;</span> <span class="no">BadPSA</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;encounter_id&#39;</span><span class="o">]</span><span class="p">,</span>
+                        <span class="n">r</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span>    <span class="p">,</span>
+                        <span class="n">r</span><span class="o">[</span><span class="s1">&#39;PAT_ID&#39;</span><span class="o">]</span>      <span class="p">,</span>
+                        <span class="n">r</span><span class="o">[</span><span class="s1">&#39;pat_initials&#39;</span><span class="o">]</span><span class="p">,</span>
+                        <span class="n">r</span><span class="o">[</span><span class="s1">&#39;ORDER_TIME&#39;</span><span class="o">]</span>  <span class="p">,</span>
+                        <span class="n">r</span><span class="o">[</span><span class="s1">&#39;order_status&#39;</span><span class="o">]</span><span class="p">,</span>
+                        <span class="n">r</span><span class="o">[</span><span class="s1">&#39;ordering_doc&#39;</span><span class="o">]</span><span class="p">,</span>
+                        <span class="n">actual_age</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="n">cands</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="nb">p</span><span class="o">|</span>
+    <span class="n">ret</span> <span class="o">&lt;&lt;</span> <span class="nb">p</span> <span class="k">unless</span> <span class="nb">p</span><span class="o">.</span><span class="n">already_reported?</span> <span class="ow">or</span> <span class="nb">p</span><span class="o">.</span><span class="n">excused?</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">p</span><span class="o">.</span><span class="n">on_testosterone?</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="c1"># ret &lt;&lt; p unless p.excused?(db) or p.on_testosterone?(db)</span>
+  <span class="k">end</span>
+  <span class="n">ret</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">main</span>
+  <span class="n">psas</span> <span class="o">=</span> <span class="o">[]</span>
+  <span class="n">lookback</span> <span class="o">=</span> <span class="mi">4</span>
+  <span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;Inappropriate PSA Orders in prior </span><span class="si">#{</span><span class="n">lookback</span><span class="si">}</span><span class="s2"> days: &quot;</span>
+  <span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+  <span class="n">recipients</span> <span class="o">=</span> <span class="sx">%w(pardee.r@ghc.org handley.m@ghc.org)</span>
+  <span class="c1"># recipients = %w(pardee.r@ghc.org)</span>
+  <span class="k">begin</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;beginning...&quot;</span><span class="p">)</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="no">TinyTds</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:dataserver</span> <span class="o">=&gt;</span> <span class="s1">&#39;EpClarity_RPT:1433&#39;</span><span class="p">,</span> <span class="ss">:database</span> <span class="o">=&gt;</span> <span class="s1">&#39;clarity&#39;</span><span class="p">,</span> <span class="ss">:timeout</span> <span class="o">=&gt;</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="n">psas</span> <span class="o">+=</span> <span class="n">get_bad_psas</span><span class="p">(</span><span class="n">lookback</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="k">if</span> <span class="n">db</span> <span class="k">then</span>
+      <span class="n">db</span><span class="o">.</span><span class="n">close</span> <span class="k">unless</span> <span class="n">db</span><span class="o">.</span><span class="n">closed?</span>
+    <span class="k">end</span>
+    <span class="n">subject</span> <span class="o">+=</span> <span class="s2">&quot;PUKED AND DIED!!! (</span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="n">body</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&lt;br/&gt;/n&quot;</span><span class="p">)</span>
+    <span class="n">send_mail</span><span class="p">(</span><span class="n">body</span> <span class="o">=</span> <span class="n">body</span><span class="p">,</span> <span class="n">subject</span> <span class="o">=</span> <span class="n">subject</span><span class="p">,</span> <span class="n">recipients</span> <span class="o">=</span> <span class="sx">%w(pardee.r@ghc.org)</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">e</span>
+  <span class="k">else</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;No errors!&quot;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">close</span>
+  <span class="k">end</span>
+  <span class="k">if</span> <span class="n">psas</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="n">subject</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">psas</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2"> possibles&quot;</span>
+    <span class="n">body</span> <span class="o">+=</span> <span class="no">BadPSA</span><span class="o">.</span><span class="n">format_list</span><span class="p">(</span><span class="n">psas</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="n">subject</span> <span class="o">+=</span> <span class="s2">&quot;NONE FOUND (EOM)&quot;</span> <span class="k">unless</span> <span class="n">subject</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sr">/PUKED/</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">send_mail</span><span class="p">(</span><span class="n">body</span> <span class="o">=</span> <span class="n">body</span><span class="p">,</span> <span class="n">subject</span> <span class="o">=</span> <span class="n">subject</span><span class="p">,</span> <span class="n">recipients</span> <span class="o">=</span> <span class="n">recipients</span><span class="p">)</span>
+  <span class="no">BadPSA</span><span class="o">.</span><span class="n">record_list</span><span class="p">(</span><span class="n">psas</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># BadPSA.reset_logdb</span>
+<span class="n">main</span>
+
+<span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Finished!&quot;</span><span class="p">)</span>
+</pre></div>
+<a href="index.html">Back</a>
+</div>
+</body>
+</html>

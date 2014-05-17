@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roy Pardee: Ruby code sample (psa_trigger.rb)</title>
+
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="dist/css/custom.css" rel="stylesheet" media="screen">
+    <link href="dist/css/ruby.css" rel="stylesheet" media="screen">
+</head>
+<body>
+<div class = 'container'>
+<div class="highlight"><pre><span class="cm">=begin</span>
+<span class="cm">  troll_path.rb</span>
+
+<span class="cm">  Roy Pardee</span>
+<span class="cm">  pardee.r@ghc.org</span>
+<span class="cm">  Copyright 2010 Group Health Cooperative.  All rights reserved.</span>
+
+<span class="cm">  Does path-report-based &quot;rapid ascertainment&quot; for the onconurse (aka nurse navigator) project.</span>
+
+<span class="cm">  We want anybody who appears to be diagnosed w/breast, lung or colorectal cancer, who has one of</span>
+<span class="cm">  our consenting docs as a PCP.</span>
+
+<span class="cm">=end</span>
+
+<span class="nb">require</span> <span class="s1">&#39;//server/OncologyNurse/Programming/programs/globals&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;//server/OncologyNurse/Programming/programs/pci4r/lib/filtering&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;//home/pardre1/reference/FeedHelper&#39;</span>
+
+<span class="no">STORE</span> <span class="o">=</span> <span class="s2">&quot;//server/OncologyNurse/Programming/programs/persisted_classifiers/&quot;</span>
+
+<span class="nb">String</span><span class="o">.</span><span class="n">n_gram_length</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="nb">String</span><span class="o">.</span><span class="n">remove_stop_words</span><span class="p">(</span><span class="sx">%w(cant couldnt didn didnt doesnt dont isnt no not)</span><span class="p">)</span>
+
+<span class="no">CLASSIFIER_EXTENSION</span>      <span class="o">=</span> <span class="s2">&quot;.db&quot;</span>
+<span class="no">UNWANTED_REVIEW_THRESHOLD</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">1</span>
+<span class="no">LOOKBACK_PERIOD</span>           <span class="o">=</span> <span class="mi">14</span>
+<span class="no">PROGRAM_VERSION</span>           <span class="o">=</span> <span class="s1">&#39;1.0&#39;</span>
+
+<span class="no">PathHandler</span> <span class="o">=</span> <span class="no">Struct</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:classifier</span><span class="p">,</span> <span class="ss">:ar_config</span><span class="p">,</span> <span class="ss">:detector_regex</span><span class="p">,</span> <span class="ss">:report_count</span><span class="p">,</span> <span class="ss">:wanted_count</span><span class="p">,</span> <span class="ss">:review_requested_count</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_handlers</span><span class="p">(</span><span class="n">types</span> <span class="o">=</span> <span class="sx">%w(breast lung colorectal)</span><span class="p">)</span>
+  <span class="n">handlers</span> <span class="o">=</span> <span class="no">Hash</span><span class="o">.</span><span class="n">new</span>
+  <span class="n">types</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="no">PathHandler</span><span class="o">.</span><span class="n">new</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">report_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">wanted_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">review_requested_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="no">Filtering</span><span class="o">::</span><span class="no">Fisher</span><span class="o">.</span><span class="n">new</span> <span class="p">{</span><span class="o">|</span><span class="n">doc</span><span class="o">|</span> <span class="n">doc</span><span class="o">.</span><span class="n">tokenise</span><span class="p">}</span>
+    <span class="n">dbfile</span> <span class="o">=</span> <span class="no">STORE</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="no">CLASSIFIER_EXTENSION</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">ar_config</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:adapter</span> <span class="o">=&gt;</span> <span class="s2">&quot;sqlite3&quot;</span><span class="p">,</span> <span class="ss">:database</span> <span class="o">=&gt;</span> <span class="n">dbfile</span><span class="p">}</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;=-=&quot;</span> <span class="o">*</span> <span class="mi">25</span><span class="p">)</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Loading up classifier for </span><span class="si">#{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;=-=&quot;</span> <span class="o">*</span> <span class="mi">25</span><span class="p">)</span>
+    <span class="no">STDOUT</span><span class="o">.</span><span class="n">flush</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">load_from_ar</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">ar_config</span><span class="p">,</span> <span class="s2">&quot;PRAGMA default_synchronous=OFF&quot;</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">detector_regex</span> <span class="o">=</span> <span class="k">case</span> <span class="n">c</span>
+    <span class="k">when</span> <span class="s2">&quot;breast&quot;</span>
+      <span class="sr">/(axilla|breast|brst|brest|braest|brast|bresat|lumpec|mastec|br\s|\smamm)/i</span>
+    <span class="k">when</span> <span class="s2">&quot;lung&quot;</span>
+      <span class="sr">/(lung|bronc|pleur|pluer|ebus|hilar|(upper|middle|lower)\slobe|pulmonary)/i</span>  <span class="c1"># That misspelling on &#39;pleur&#39; is mine--experimental.</span>
+    <span class="k">when</span> <span class="s2">&quot;colorectal&quot;</span>
+      <span class="c1"># This once picked up a report w/the word &#39;colonization&#39;--do we need to add a space after &#39;colon&#39;?</span>
+      <span class="c1"># Happened again--yes we do.</span>
+      <span class="sr">/(colon[^i]|ulcerative\scolitis|rectum|rectal|\srecto|sigmoid|cecal|tubulovillous|\sanal\W|colectomy|abdominoperineal|colonic|large\sbowel|gastrointestinal|transverse)/i</span>
+    <span class="k">else</span>
+      <span class="k">raise</span><span class="p">(</span><span class="no">NameError</span><span class="p">,</span> <span class="s2">&quot;Unexpected type of path handler called for!  The type was &#39;</span><span class="si">#{</span><span class="n">c</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">handlers</span><span class="o">[</span><span class="n">c</span><span class="o">]</span> <span class="o">=</span> <span class="n">h</span>
+  <span class="k">end</span>
+  <span class="n">handlers</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">get_new_likelies</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">handlers</span><span class="p">)</span>
+  <span class="n">num_reports</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">sql_get</span> <span class="o">=</span> <span class="sx">%{select message_id, chsid, colldt, surg_hisdx_diagnosis, note, hissupp_supplemental, surg_hismicro_microscopicexamination</span>
+<span class="sx">              from pathology.dbo.daily_hl7</span>
+<span class="sx">              where rptdate &gt;= ? AND</span>
+<span class="sx">              message_id not in (select message_id from path_reports)</span>
+<span class="sx">            }</span>
+  <span class="n">ins_fields</span> <span class="o">=</span> <span class="sx">%w{mrn message_id report_type colldt diagdesc p_want p_dont_want review_requested}</span>
+  <span class="n">sql_ins</span> <span class="o">=</span> <span class="sx">%{insert into path_reports ( </span><span class="si">#{</span><span class="n">ins_fields</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="si">}</span><span class="sx"> ) values (</span><span class="si">#{</span><span class="p">(</span><span class="s1">&#39;? &#39;</span> <span class="o">*</span> <span class="n">ins_fields</span><span class="o">.</span><span class="n">length</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="si">}</span><span class="sx">)}</span>
+  <span class="n">sql_log_ins</span> <span class="o">=</span> <span class="sx">%{insert into inspected_path_reports(message_id, date_evaluated, report_type, p_want, p_dont_want, report_text) values(?, ?, ?, ?, ?, ?)}</span>
+  <span class="n">crlf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span>
+
+  <span class="c1"># X path reports evaluated</span>
+  <span class="c1"># Y were for an organ we want</span>
+  <span class="c1"># Z were for people with cancers</span>
+  <span class="c1"># A had PCPs that are OncoNurse docs.</span>
+  <span class="c1"># B were for people not already enrolled in OncoNurse</span>
+
+  <span class="n">ins_cmd</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">sql_ins</span><span class="p">)</span>
+  <span class="n">ins_log_cmd</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">sql_log_ins</span><span class="p">)</span>
+
+  <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_get</span><span class="p">,</span> <span class="no">LOOKBACK_PERIOD</span><span class="o">.</span><span class="n">days</span><span class="o">.</span><span class="n">ago</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span> <span class="k">do</span> <span class="o">|</span><span class="n">r</span><span class="o">|</span>
+    <span class="c1"># Ed Wagner wants to see any colorectal report.</span>
+    <span class="n">ed_override</span> <span class="o">=</span> <span class="kp">nil</span>
+    <span class="n">num_reports</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># unmunged_diagdesc = &quot;r[&quot;note&quot;] + r[&quot;surg_hisdx_diagnosis&quot;] + r[&quot;hissupp_supplemental&quot;]&quot;</span>
+    <span class="c1"># unmunged_diagdesc = &quot;#{r[&#39;note&#39;]} #{r[&#39;surg_hisdx_diagnosis&#39;]} #{r[&#39;hissupp_supplemental&#39;]}&quot;</span>
+    <span class="n">unmunged_diagdesc</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;note&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;surg_hisdx_diagnosis&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;hissupp_supplemental&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;surg_hismicro_microscopicexamination&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+    <span class="n">diagdesc</span> <span class="o">=</span> <span class="n">unmunged_diagdesc</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/~/</span><span class="p">,</span> <span class="n">crlf</span><span class="p">)</span>
+    <span class="n">diagdesc</span><span class="o">.</span><span class="n">gsub!</span><span class="p">(</span><span class="sr">/(\r\n){2,}/</span><span class="p">,</span> <span class="n">crlf</span><span class="p">)</span>
+
+    <span class="n">log_entry</span> <span class="o">=</span> <span class="no">Hash</span><span class="o">.</span><span class="n">new</span>
+    <span class="n">log_entry</span><span class="o">[</span><span class="ss">:message_id</span><span class="o">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">[</span><span class="s2">&quot;message_id&quot;</span><span class="o">]</span>
+    <span class="n">log_entry</span><span class="o">[</span><span class="ss">:report_text</span><span class="o">]</span> <span class="o">=</span> <span class="n">diagdesc</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">7899</span><span class="o">]</span>
+    <span class="n">log_entry</span><span class="o">[</span><span class="ss">:report_type</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;Uninteresting&quot;</span>
+    <span class="n">handlers</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">handler_type</span><span class="p">,</span> <span class="n">handler</span><span class="o">|</span>
+      <span class="k">if</span> <span class="n">handler</span><span class="o">.</span><span class="n">detector_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">diagdesc</span><span class="p">)</span> <span class="k">then</span>
+        <span class="n">log_entry</span><span class="o">[</span><span class="ss">:report_type</span><span class="o">]</span> <span class="o">=</span> <span class="n">handler_type</span>
+        <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Got a </span><span class="si">#{</span><span class="n">handler_type</span><span class="si">}</span><span class="s2"> report message_id: </span><span class="si">#{</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;message_id&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">handler</span><span class="o">.</span><span class="n">report_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">classifications</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">classifications</span><span class="p">(</span><span class="n">diagdesc</span><span class="p">)</span>
+        <span class="n">log_entry</span><span class="o">[</span><span class="ss">:p_want</span><span class="o">]</span> <span class="o">=</span> <span class="n">classifications</span><span class="o">[</span><span class="ss">:wanted</span><span class="o">]</span>
+        <span class="n">log_entry</span><span class="o">[</span><span class="ss">:p_dont_want</span><span class="o">]</span> <span class="o">=</span> <span class="n">classifications</span><span class="o">[</span><span class="ss">:unwanted</span><span class="o">]</span>
+
+        <span class="c1"># Adding lung to the list of types on whom we will take all comers.</span>
+        <span class="k">if</span> <span class="sx">%w(colorectal lung)</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">handler_type</span><span class="p">)</span> <span class="k">then</span>
+          <span class="c1"># puts(&quot;Checking for the &#39;Ed Wagner Override&#39;&quot;)</span>
+          <span class="c1"># ed_override = diagdesc.match(/carcinoma/i)</span>
+          <span class="c1"># puts(&quot;OVERRIDING THE CLASSIFIER&quot;) if ed_override</span>
+          <span class="n">ed_override</span> <span class="o">=</span> <span class="kp">true</span>
+        <span class="k">end</span> <span class="k">if</span>
+        <span class="nb">puts</span><span class="p">(</span><span class="n">classifications</span><span class="o">.</span><span class="n">inspect</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">classifications</span><span class="o">[</span><span class="ss">:wanted</span><span class="o">]</span> <span class="o">&gt;</span> <span class="n">classifications</span><span class="o">[</span><span class="ss">:unwanted</span><span class="o">]</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ed_override</span> <span class="ow">or</span> <span class="n">classifications</span><span class="o">[</span><span class="ss">:wanted</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">99</span> <span class="k">then</span>
+          <span class="n">handler</span><span class="o">.</span><span class="n">wanted_count</span> <span class="o">+=</span> <span class="mi">1</span>
+          <span class="c1"># We want this guy.  Do we need to request review?</span>
+          <span class="n">request_review</span> <span class="o">=</span> <span class="n">classifications</span><span class="o">[</span><span class="ss">:unwanted</span><span class="o">]</span> <span class="o">&gt;</span> <span class="no">UNWANTED_REVIEW_THRESHOLD</span> <span class="p">?</span> <span class="s1">&#39;Y&#39;</span> <span class="p">:</span> <span class="s1">&#39;N&#39;</span>
+          <span class="n">handler</span><span class="o">.</span><span class="n">review_requested_count</span> <span class="o">+=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">request_review</span> <span class="o">==</span> <span class="s1">&#39;Y&#39;</span>
+          <span class="c1"># puts(&quot;About to insert path report w/msg id #{r[&#39;message_id&#39;]}&quot;)</span>
+            <span class="n">ins_cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">r</span><span class="o">[</span><span class="s2">&quot;chsid&quot;</span><span class="o">]</span><span class="p">,</span> <span class="n">r</span><span class="o">[</span><span class="s2">&quot;message_id&quot;</span><span class="o">]</span><span class="p">,</span> <span class="n">handler_type</span><span class="p">,</span> <span class="n">r</span><span class="o">[</span><span class="s2">&quot;colldt&quot;</span><span class="o">]</span><span class="p">,</span> <span class="n">diagdesc</span><span class="p">,</span> <span class="n">classifications</span><span class="o">[</span><span class="ss">:wanted</span><span class="o">]</span><span class="p">,</span> <span class="n">classifications</span><span class="o">[</span><span class="ss">:unwanted</span><span class="o">]</span><span class="p">,</span> <span class="n">request_review</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span> <span class="c1"># regex did not match--do nothing</span>
+    <span class="k">end</span> <span class="c1"># loop through the handlers</span>
+    <span class="c1"># at this point, we either matched a handler regex (in which case we have a non-nil classifications object) or we didn&#39;t.  Either way we want to log that we touched this report record.</span>
+    <span class="c1"># insert into inspected_path_reports(message_id, date_evaluated, report_type, p_want, p_dont_want, report_text) values</span>
+    <span class="k">begin</span>
+      <span class="n">ins_log_cmd</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">log_entry</span><span class="o">[</span><span class="ss">:message_id</span><span class="o">]</span><span class="p">,</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">,</span> <span class="n">log_entry</span><span class="o">[</span><span class="ss">:report_type</span><span class="o">]</span><span class="p">,</span> <span class="n">log_entry</span><span class="o">[</span><span class="ss">:p_want</span><span class="o">]</span><span class="p">,</span> <span class="n">log_entry</span><span class="o">[</span><span class="ss">:p_dont_want</span><span class="o">]</span><span class="p">,</span> <span class="n">log_entry</span><span class="o">[</span><span class="ss">:report_text</span><span class="o">]</span> <span class="p">)</span>
+    <span class="k">rescue</span> <span class="no">DBI</span><span class="o">::</span><span class="no">DatabaseError</span> <span class="o">=&gt;</span> <span class="n">er</span>
+      <span class="k">if</span> <span class="n">er</span><span class="o">.</span><span class="n">message</span> <span class="o">=~</span> <span class="sr">/PK_inspected_path_reports/</span> <span class="k">then</span>
+        <span class="c1"># ignore</span>
+      <span class="k">else</span>  <span class="c1"># Other kind of db exception.</span>
+        <span class="k">raise</span><span class="p">(</span><span class="n">er</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    
+  <span class="k">end</span> <span class="c1"># loop through the sql_get fetch.</span>
+  <span class="n">conn</span><span class="o">.</span><span class="n">commit</span>
+  <span class="n">num_reports</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">zero_pad</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">len</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span>
+  <span class="n">str</span> <span class="o">=</span> <span class="n">num</span><span class="o">.</span><span class="n">to_s</span>
+  <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">len</span> <span class="o">-</span> <span class="n">str</span><span class="o">.</span><span class="n">length</span><span class="p">)</span> <span class="o">+</span> <span class="n">str</span>
+<span class="k">end</span>
+
+<span class="c1"># Determines the PCP of each new person in path_reports.</span>
+<span class="k">def</span> <span class="nf">get_pcps</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">syb</span><span class="p">)</span>
+
+  <span class="n">sql</span> <span class="o">=</span> <span class="sx">%{select id, c.consumno from path_reports as p INNER JOIN CHSDW_Enrollment.dbo.chsid as c on p.mrn = c.chsid where pcp IS NULL}</span>
+
+  <span class="n">sql_upd</span> <span class="o">=</span> <span class="sx">%{update path_reports set pcp = ?, consumno = ? where id = ?}</span>
+
+  <span class="n">mssql</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span> <span class="k">do</span> <span class="o">|</span><span class="n">r</span><span class="o">|</span>
+    <span class="n">pcp</span> <span class="o">=</span> <span class="n">syb</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;select csr_pcp_nbr from csr_dem where csr_nbr = &#39;</span><span class="si">#{</span><span class="n">r</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+    <span class="c1"># puts(&quot;PCP is #{pcp}&quot;)</span>
+    <span class="n">mssql</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_upd</span><span class="p">,</span> <span class="n">zero_pad</span><span class="p">(</span><span class="n">pcp</span><span class="p">),</span> <span class="n">r</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span><span class="p">,</span> <span class="n">r</span><span class="o">[</span><span class="s2">&quot;id&quot;</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="n">mssql</span><span class="o">.</span><span class="n">commit</span>
+  <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Finished looking for pcps&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="vi">@next_studyid</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">add_recruit</span><span class="p">(</span><span class="n">sth_add_recruit</span><span class="p">,</span> <span class="n">recruit_info</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+  <span class="c1"># field list:</span>
+  <span class="c1"># mrn, sex, randy, bdate, lastname, firstname, middlename, namesuffix, recruitprogversion, cancertype, studyid, consumno, PrimryDr, condition</span>
+  <span class="n">mrn</span> <span class="o">=</span> <span class="n">path</span><span class="o">[</span><span class="s1">&#39;mrn&#39;</span><span class="o">]</span>
+  <span class="n">sex</span> <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;Sex&#39;</span><span class="o">]</span>
+  <span class="n">randy</span> <span class="o">=</span> <span class="nb">rand</span>
+  <span class="n">bdate</span> <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;DOB&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;2011-12-25&#39;</span>
+
+  <span class="n">lastname</span>    <span class="o">=</span> <span class="no">CaseManager</span><span class="o">.</span><span class="n">prettify</span><span class="p">(</span><span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;LastName&#39;</span><span class="o">]</span><span class="p">)</span>
+  <span class="n">firstname</span>   <span class="o">=</span> <span class="no">CaseManager</span><span class="o">.</span><span class="n">prettify</span><span class="p">(</span><span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;FirstName&#39;</span><span class="o">]</span><span class="p">)</span>
+  <span class="n">middlename</span>  <span class="o">=</span> <span class="no">CaseManager</span><span class="o">.</span><span class="n">prettify</span><span class="p">(</span><span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;MiddleName&#39;</span><span class="o">]</span><span class="p">)</span>
+  <span class="n">namesuffix</span>  <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;NameSuffix&#39;</span><span class="o">]</span>
+  <span class="n">recruitprogversion</span> <span class="o">=</span> <span class="no">PROGRAM_VERSION</span>
+  <span class="n">cancertype</span>  <span class="o">=</span> <span class="n">path</span><span class="o">[</span><span class="s1">&#39;report_type&#39;</span><span class="o">].</span><span class="n">capitalize</span>
+  <span class="n">studyid</span>     <span class="o">=</span> <span class="n">zero_pad</span><span class="p">(</span><span class="vi">@next_studyid</span><span class="p">)</span>
+  <span class="n">consumno</span>    <span class="o">=</span> <span class="n">path</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span>
+  <span class="n">pcp</span>         <span class="o">=</span> <span class="n">path</span><span class="o">[</span><span class="s1">&#39;pcp&#39;</span><span class="o">]</span>
+  <span class="n">condition</span>   <span class="o">=</span> <span class="n">path</span><span class="o">[</span><span class="s1">&#39;condition&#39;</span><span class="o">]</span>
+  <span class="k">begin</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Adding a recruit w/studyid </span><span class="si">#{</span><span class="n">studyid</span><span class="si">}</span><span class="s2"> in condition &#39;</span><span class="si">#{</span><span class="n">condition</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+    <span class="n">sth_add_recruit</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">mrn</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">randy</span><span class="p">,</span> <span class="n">bdate</span><span class="p">,</span> <span class="n">lastname</span><span class="p">,</span> <span class="n">firstname</span><span class="p">,</span> <span class="n">middlename</span><span class="p">,</span> <span class="n">namesuffix</span><span class="p">,</span> <span class="n">recruitprogversion</span><span class="p">,</span> <span class="n">cancertype</span><span class="p">,</span> <span class="n">studyid</span><span class="p">,</span> <span class="n">consumno</span><span class="p">,</span> <span class="n">pcp</span><span class="p">,</span> <span class="n">condition</span><span class="p">)</span>
+  <span class="k">rescue</span> <span class="no">DBI</span><span class="o">::</span><span class="no">DatabaseError</span> <span class="o">=&gt;</span> <span class="n">de</span>
+    <span class="k">if</span> <span class="n">de</span><span class="o">.</span><span class="n">message</span> <span class="o">=~</span> <span class="sr">/Cannot insert the value NULL into column &#39;BDate&#39;/</span> <span class="k">then</span>
+      <span class="c1"># Person w/the null bdate is XXXXXXX.</span>
+      <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Problem--got a null bdate for consumno </span><span class="si">#{</span><span class="n">consumno</span><span class="si">}</span><span class="s2">--skipping.&quot;</span><span class="p">)</span>
+    <span class="k">else</span>  <span class="c1"># Other kind of db exception.</span>
+      <span class="k">raise</span><span class="p">(</span><span class="n">de</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="k">raise</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+  <span class="k">else</span>
+    <span class="vi">@next_studyid</span> <span class="o">+=</span> <span class="mi">1</span>
+  <span class="k">end</span>
+  <span class="c1"># puts(&quot;Pretend I added #{firstname + &#39; &#39; + lastname}&quot;)</span>
+<span class="k">end</span>
+
+<span class="c1"># insert address(if new)</span>
+<span class="k">def</span> <span class="nf">add_address</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">sth_add_address</span><span class="p">,</span> <span class="n">recruit_info</span><span class="p">,</span> <span class="n">rid</span><span class="p">)</span>
+  <span class="c1"># recruitid, Line1, Line2, City, State, Zip</span>
+  <span class="n">line1</span> <span class="o">=</span> <span class="no">CaseManager</span><span class="o">.</span><span class="n">prettify</span><span class="p">(</span><span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;MailingAddressLine1&#39;</span><span class="o">]</span><span class="p">)</span>
+  <span class="n">line2</span> <span class="o">=</span> <span class="no">CaseManager</span><span class="o">.</span><span class="n">prettify</span><span class="p">(</span><span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;MailingAddressLine2&#39;</span><span class="o">]</span><span class="p">)</span>
+  <span class="n">city</span>  <span class="o">=</span> <span class="no">CaseManager</span><span class="o">.</span><span class="n">prettify</span><span class="p">(</span><span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;MailingCity&#39;</span><span class="o">]</span><span class="p">)</span>
+  <span class="n">state</span> <span class="o">=</span> <span class="p">(</span><span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;MailingState&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upcase</span>
+  <span class="n">zip</span>   <span class="o">=</span> <span class="no">CaseManager</span><span class="o">.</span><span class="n">prettify</span><span class="p">(</span><span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;MailingZip&#39;</span><span class="o">]</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">line1</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">length</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">line2</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">length</span> <span class="k">then</span>
+    <span class="c1"># Swap line1 &amp; line2</span>
+    <span class="n">line1</span><span class="p">,</span> <span class="n">line2</span> <span class="o">=</span> <span class="n">line2</span><span class="p">,</span> <span class="n">line1</span>
+  <span class="k">end</span>
+
+  <span class="k">if</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;select count(*) as cnt from addresses where recruitid = </span><span class="si">#{</span><span class="n">rid</span><span class="si">}</span><span class="s2"> and line1 = &#39;</span><span class="si">#{</span><span class="n">line1</span><span class="si">}</span><span class="s2">&#39; and city = &#39;</span><span class="si">#{</span><span class="n">city</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">[</span><span class="s1">&#39;cnt&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="n">sth_add_address</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">rid</span><span class="p">,</span> <span class="n">line1</span><span class="p">,</span> <span class="n">line2</span><span class="p">,</span> <span class="n">city</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">zip</span><span class="p">)</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Added an address for recruitid </span><span class="si">#{</span><span class="n">rid</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># insert phone(if new)</span>
+<span class="k">def</span> <span class="nf">add_phone</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">sth_add_phone</span><span class="p">,</span> <span class="n">recruit_info</span><span class="p">,</span> <span class="n">rid</span><span class="p">)</span>
+  <span class="n">ac</span> <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;AreaCode&#39;</span><span class="o">]</span>
+  <span class="n">phone</span> <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;PhoneNumber&#39;</span><span class="o">]</span>
+  <span class="n">phone</span> <span class="o">=</span> <span class="p">(</span><span class="n">phone</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\D/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">6</span><span class="o">]</span>
+  <span class="n">ext</span> <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;Extension&#39;</span><span class="o">]</span>
+  <span class="k">if</span> <span class="n">ac</span> <span class="ow">and</span> <span class="n">ac</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">phone</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="k">if</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;select count(*) as cnt from PhoneNumbers where recruitid = </span><span class="si">#{</span><span class="n">rid</span><span class="si">}</span><span class="s2"> and phonenumber = &#39;</span><span class="si">#{</span><span class="n">phone</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">[</span><span class="s1">&#39;cnt&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span>
+      <span class="c1"># recruitid, type, areacode, phonenumber, extension, source</span>
+      <span class="n">sth_add_phone</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">rid</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">phone</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;GHDW&#39;</span><span class="p">)</span>
+      <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Added a phone number for recruitid </span><span class="si">#{</span><span class="n">rid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">else</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Unable to add phone number (</span><span class="si">#{</span><span class="n">ac</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">phone</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="n">aac</span> <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;AltAreaCode&#39;</span><span class="o">]</span>
+  <span class="n">aphone</span> <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;AltPhoneNumber&#39;</span><span class="o">]</span>
+  <span class="n">aphone</span> <span class="o">=</span> <span class="p">(</span><span class="n">aphone</span> <span class="o">||</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/\D/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">6</span><span class="o">]</span>
+  <span class="n">aext</span> <span class="o">=</span> <span class="n">recruit_info</span><span class="o">[</span><span class="s1">&#39;AltExtension&#39;</span><span class="o">]</span>
+  <span class="k">if</span> <span class="n">aac</span> <span class="ow">and</span> <span class="n">aac</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">aphone</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Alt phone info is </span><span class="si">#{</span><span class="n">aac</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">aphone</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">aext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;select count(*) as cnt from PhoneNumbers where recruitid = </span><span class="si">#{</span><span class="n">rid</span><span class="si">}</span><span class="s2"> and phonenumber = &#39;</span><span class="si">#{</span><span class="n">aphone</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">[</span><span class="s1">&#39;cnt&#39;</span><span class="o">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">then</span>
+      <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;In if statement looking for an existing rec w/the alt phone number.&quot;</span><span class="p">)</span>
+      <span class="c1"># recruitid, type, areacode, phonenumber, extension, source</span>
+      <span class="n">sth_add_phone</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">rid</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">,</span> <span class="n">aac</span><span class="p">,</span> <span class="n">aphone</span><span class="p">,</span> <span class="n">aext</span><span class="p">,</span> <span class="s1">&#39;GHDW&#39;</span><span class="p">)</span>
+      <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Added an alternate phone number for recruitid </span><span class="si">#{</span><span class="n">rid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">else</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Unable to add alt phone number (</span><span class="si">#{</span><span class="n">aac</span><span class="si">}</span><span class="s2">) </span><span class="si">#{</span><span class="n">aphone</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+
+<span class="k">def</span> <span class="nf">vet_newbies</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">syb</span><span class="p">)</span>
+  <span class="n">num_considered</span>  <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">num_added</span>       <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">num_already_in</span>  <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">num_rehabbed</span>    <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">num_nonos</span>       <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="n">ditched_status</span>  <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">accepted_status</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">rehab_status</span>    <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="n">sql_syb</span> <span class="o">=</span> <span class="sx">%{SELECT CSR_LST_NME as LastName</span>
+<span class="sx">           , CSR_FST_NME         as FirstName</span>
+<span class="sx">           , CSR_MID_NME         as MiddleName</span>
+<span class="sx">           , CSR_SFX_NME         as NameSuffix</span>
+<span class="sx">           , CSR_ALT_ADR_LN1     as MailingAddressLine1</span>
+<span class="sx">           , CSR_ALT_ADR_LN2     as MailingAddressLine2</span>
+<span class="sx">           , CSR_ALT_ADR_CTY_NME as MailingCity</span>
+<span class="sx">           , CSR_ALT_ADR_ST_CDE  as MailingState</span>
+<span class="sx">           , CSR_ALT_ADR_ZIP     as MailingZip</span>
+<span class="sx">           , CSR_PHN_AC          as AreaCode</span>
+<span class="sx">           , CSR_PHN_NBR         as PhoneNumber</span>
+<span class="sx">           , CSR_PHN_EXT         as Extension</span>
+<span class="sx">           , CSR_ALT_PHN_AC      as AltAreaCode</span>
+<span class="sx">           , CSR_ALT_PHN_NBR     as AltPhoneNumber</span>
+<span class="sx">           , CSR_ALT_PHN_EXT     as AltExtension</span>
+<span class="sx">           , csr_sex_cde         as Sex</span>
+<span class="sx">           , csr_brt_dte         as DOB</span>
+<span class="sx">           from csr_id i INNER JOIN</span>
+<span class="sx">                  csr_dem d</span>
+<span class="sx">          on   i.csr_nbr = d.csr_nbr</span>
+<span class="sx">          where i.csr_nbr = ?}</span>
+
+  <span class="n">get</span> <span class="o">=</span> <span class="n">syb</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">sql_syb</span><span class="p">)</span>
+
+  <span class="n">sql_add_recruit</span> <span class="o">=</span> <span class="sx">%{insert into recruits(mrn, sex, randy, bdate, lastname, firstname, middlename, namesuffix, recruitprogversion, cancertype, studyid, consumno, PrimryDr, condition)</span>
+<span class="sx">                      values              (?,   ?,    ?,    ?,      ?,        ?,        ?,          ?,          ?,                  ?,          ?,      ?,        ?,          ?)}</span>
+  <span class="n">sql_get_recruitid</span> <span class="o">=</span> <span class="sx">%{select recruitid from recruits where consumno = ?}</span>
+  <span class="n">sql_add_address</span>   <span class="o">=</span> <span class="sx">%{insert into addresses (recruitid, PreferenceRank, Line1, Line2, City, State, Zip)</span>
+<span class="sx">                        values                (?,         ?,              ?,      ?,    ?,    ?,      ?)}</span>
+  <span class="n">sql_add_address</span>   <span class="o">=</span> <span class="sx">%{exec InsertAddress @RecruitID = ?, @Line1 = ?, @Line2 = ?, @City = ?, @State = ?, @Zip = ?}</span>
+  <span class="n">sql_add_phone</span>     <span class="o">=</span> <span class="sx">%{insert into phonenumbers (recruitid, type, areacode, phonenumber, extension, source)</span>
+<span class="sx">                        values                  (?,           ?,    ?,        ?,          ?,          ?)}</span>
+  <span class="c1"># FIXME: This is not updating reports from too far ago, when a new doc comes in.</span>
+  <span class="c1"># sql_upd_path      = %{update path_reports set recruitid = r.recruitid, vetted = 1</span>
+  <span class="c1">#                     from path_reports as pr INNER JOIN recruits as r</span>
+  <span class="c1">#                     on  pr.consumno = r.consumno</span>
+  <span class="c1">#                     where pr.recruitid IS NULL AND</span>
+  <span class="c1">#                     pr.colldt &gt;= &#39;#{LOOKBACK_PERIOD.days.ago.to_date.to_s}&#39;</span>
+  <span class="c1">#                   }</span>
+
+  <span class="n">sql_upd_path</span>      <span class="o">=</span> <span class="sx">%{update path_reports set recruitid = r.recruitid, vetted = 1</span>
+<span class="sx">                      from path_reports as pr INNER JOIN recruits as r</span>
+<span class="sx">                      on  pr.consumno = r.consumno</span>
+<span class="sx">                      where pr.recruitid IS NULL </span>
+<span class="sx">                    }</span>
+
+  <span class="n">our_newbies</span> <span class="o">=</span> <span class="sx">%{select distinct consumno, mrn, report_type, p.pcp, d.condition from path_reports as p INNER JOIN docs as d on p.pcp = d.pracnum where vetted = 0 and colldt &gt;= ? and d.treat_as_deleted = 0}</span>
+
+  <span class="n">noobs</span> <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_all</span><span class="p">(</span><span class="n">our_newbies</span><span class="p">,</span> <span class="no">LOOKBACK_PERIOD</span><span class="o">.</span><span class="n">days</span><span class="o">.</span><span class="n">ago</span><span class="p">)</span>
+
+  <span class="n">rev_req</span>         <span class="o">=</span> <span class="s1">&#39;Path review required&#39;</span>
+  <span class="n">rejected</span>        <span class="o">=</span> <span class="s1">&#39;Path report REJECTED&#39;</span>
+  <span class="n">accepted</span>        <span class="o">=</span> <span class="s1">&#39;Path report ACCEPTED&#39;</span>
+  <span class="n">prior_rejected</span>  <span class="o">=</span> <span class="s1">&#39;Prior path report rejected&#39;</span>
+
+  <span class="n">interesting_statuses</span> <span class="o">=</span> <span class="o">[</span><span class="n">rev_req</span><span class="p">,</span> <span class="n">rejected</span><span class="p">,</span> <span class="n">accepted</span><span class="p">,</span> <span class="n">prior_rejected</span><span class="o">]</span>
+  <span class="n">statuses</span> <span class="o">=</span> <span class="no">Hash</span><span class="o">.</span><span class="n">new</span>
+  <span class="n">mssql</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select status, statusdescription from statuses where statusdescription in (&#39;</span><span class="si">#{</span><span class="n">interesting_statuses</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&#39;, &#39;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span> <span class="k">do</span> <span class="o">|</span><span class="n">stat</span><span class="o">|</span>
+    <span class="n">statuses</span><span class="o">[</span><span class="n">stat</span><span class="o">[</span><span class="s2">&quot;statusdescription&quot;</span><span class="o">]]</span> <span class="o">=</span> <span class="n">stat</span><span class="o">[</span><span class="s2">&quot;status&quot;</span><span class="o">]</span>
+  <span class="k">end</span>
+
+  <span class="c1"># Supplying a value for statusdate b/c we are having a problem w/a single run inserting the same row multiple times.</span>
+  <span class="c1"># This should cause the job to bomb if it tries to do that, since the PK will be violated.</span>
+  <span class="c1"># Elaborating this so that a person w/2 reports, one accepted &amp; one review-required won&#39;t show up twice</span>
+  <span class="c1"># in the currentstatuses_vw, b/c they have 2 status records w/statudates = max(statusdate).</span>
+  <span class="n">now</span> <span class="o">=</span> <span class="no">DateTime</span><span class="o">.</span><span class="n">now</span>
+  <span class="n">now_val_accept</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d %H:%M&#39;</span><span class="p">)</span>
+  <span class="n">now_val_review</span> <span class="o">=</span> <span class="p">(</span><span class="n">now</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">1440</span><span class="o">.</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-%d %H:%M&#39;</span><span class="p">)</span>
+
+  <span class="n">sql_insert_statuses_review_required</span> <span class="o">=</span> <span class="sx">%{insert into RecruitStatuses(recruitid, status, statusdate)</span>
+<span class="sx">  select distinct r.recruitid, </span><span class="si">#{</span><span class="n">statuses</span><span class="o">[</span><span class="n">rev_req</span><span class="o">]</span><span class="si">}</span><span class="sx"> as status, &#39;</span><span class="si">#{</span><span class="n">now_val_review</span><span class="si">}</span><span class="sx">&#39; as statusdate</span>
+<span class="sx">  from path_reports as pr INNER JOIN recruits as r</span>
+<span class="sx">  on    pr.consumno = r.consumno</span>
+<span class="sx">  where vetted = 0 AND</span>
+<span class="sx">        review_requested = &#39;Y&#39;}</span>
+
+  <span class="n">sql_insert_statuses_review_not_required</span> <span class="o">=</span> <span class="sx">%{insert into RecruitStatuses(recruitid, status, statusdate)</span>
+<span class="sx">  select distinct r.recruitid, </span><span class="si">#{</span><span class="n">statuses</span><span class="o">[</span><span class="n">accepted</span><span class="o">]</span><span class="si">}</span><span class="sx"> as status, &#39;</span><span class="si">#{</span><span class="n">now_val_accept</span><span class="si">}</span><span class="sx">&#39; as statusdate</span>
+<span class="sx">  from path_reports as pr INNER JOIN recruits as r</span>
+<span class="sx">  on    pr.consumno = r.consumno</span>
+<span class="sx">  where vetted = 0 AND</span>
+<span class="sx">        review_requested = &#39;N&#39;}</span>
+
+  <span class="c1"># Altering this to screen out the short studyids of the phony data inserted in the create-database script.</span>
+  <span class="vi">@next_studyid</span> <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;select coalesce(max(studyid), 0) + 1 as nxt from recruits where len(studyid) &gt; 3&quot;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+  <span class="k">raise</span><span class="p">(</span><span class="s2">&quot;Missing a status!&quot;</span><span class="p">)</span> <span class="k">unless</span> <span class="n">interesting_statuses</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="n">statuses</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">length</span>
+
+  <span class="n">sth_add_recruit</span>   <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">sql_add_recruit</span><span class="p">)</span>
+  <span class="n">sth_add_address</span>   <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">sql_add_address</span><span class="p">)</span>
+  <span class="n">sth_add_phone</span>     <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">sql_add_phone</span><span class="p">)</span>
+  <span class="n">sth_upd_path</span>      <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">sql_upd_path</span><span class="p">)</span>
+  <span class="n">noobs</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">path</span><span class="o">|</span>
+    <span class="n">num_considered</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Working on person </span><span class="si">#{</span><span class="n">path</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">get</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">path</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span><span class="p">)</span>
+    <span class="n">get</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">recruit_info</span><span class="o">|</span>
+      <span class="c1"># Is this person truly new?</span>
+      <span class="k">if</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;select count(*) as num from recruits where consumno = &#39;</span><span class="si">#{</span><span class="n">path</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span><span class="o">[</span><span class="s2">&quot;num&quot;</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+        <span class="c1"># Nope--not new.  Have we had a bite at them already?</span>
+        <span class="k">if</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s2">&quot;select count(*) as num from recruits as r INNER JOIN recruitstatuses as rs on r.recruitid = rs.recruitid where r.consumno = &#39;</span><span class="si">#{</span><span class="n">path</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39; AND rs.status = </span><span class="si">#{</span><span class="n">statuses</span><span class="o">[</span><span class="n">accepted</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">[</span><span class="s2">&quot;num&quot;</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+          <span class="c1"># yes--they have already been through this part of the study--leave them alone.</span>
+          <span class="n">num_already_in</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span>
+          <span class="c1"># Have not progressed beyond the path-report-identified stage.  Rehab if necessary.</span>
+          <span class="n">mssql</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="s2">&quot;update recruitstatuses set status = </span><span class="si">#{</span><span class="n">statuses</span><span class="o">[</span><span class="n">prior_rejected</span><span class="o">]</span><span class="si">}</span><span class="s2"> where status = </span><span class="si">#{</span><span class="n">statuses</span><span class="o">[</span><span class="n">rejected</span><span class="o">]</span><span class="si">}</span><span class="s2"> and recruitid in (select recruitid from recruits where consumno = &#39;</span><span class="si">#{</span><span class="n">path</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+          <span class="n">num_rehabbed</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">end</span>
+      <span class="k">else</span>
+        <span class="n">add_recruit</span><span class="p">(</span><span class="n">sth_add_recruit</span><span class="p">,</span> <span class="n">recruit_info</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">num_added</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="k">end</span> <span class="c1"># if person already in recruits</span>
+      <span class="c1"># get recruitid back out</span>
+      <span class="n">rid</span> <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="n">sql_get_recruitid</span><span class="p">,</span> <span class="n">path</span><span class="o">[</span><span class="s1">&#39;consumno&#39;</span><span class="o">]</span><span class="p">)</span>
+      <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;RecruitID is </span><span class="si">#{</span><span class="n">rid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+      <span class="c1"># insert address(if new)</span>
+      <span class="n">add_address</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">sth_add_address</span><span class="p">,</span> <span class="n">recruit_info</span><span class="p">,</span> <span class="n">rid</span><span class="p">)</span>
+      <span class="c1"># insert phone(if new)</span>
+      <span class="n">add_phone</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">sth_add_phone</span><span class="p">,</span> <span class="n">recruit_info</span><span class="p">,</span> <span class="n">rid</span><span class="p">)</span>
+    <span class="k">end</span> <span class="c1"># recruit info loop</span>
+  <span class="k">end</span> <span class="c1"># noobs loop</span>
+
+  <span class="c1"># insert appropriate statuses for the new path reports</span>
+  <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;About to insert statuses for the new path reports&quot;</span><span class="p">)</span>
+  <span class="n">mssql</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">sql_insert_statuses_review_required</span><span class="p">)</span>
+  <span class="nb">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">mssql</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">sql_insert_statuses_review_not_required</span><span class="p">)</span>
+  <span class="c1"># update path report record w/recruitid &amp; set vetted to 1.</span>
+  <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;About to update path reports w/recruitid &amp; set vetted to 1.&quot;</span><span class="p">)</span>
+  <span class="n">mssql</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">sql_upd_path</span><span class="p">)</span>
+
+  <span class="n">mssql</span><span class="o">.</span><span class="n">commit</span>
+  <span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Changes committed to the db.&quot;</span><span class="p">)</span>
+
+  <span class="n">ret</span> <span class="o">=</span> <span class="sx">%{There were </span><span class="si">#{</span><span class="n">num_considered</span><span class="si">}</span><span class="sx"> people attached to one of our docs.}</span>
+  <span class="k">if</span> <span class="n">num_considered</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="n">ret</span> <span class="o">+=</span> <span class="sx">%{</span><span class="se">\n</span><span class="sx">Of these, </span><span class="si">#{</span><span class="n">num_already_in</span><span class="si">}</span><span class="sx"> have had a prior path report accepted--so are either already in the study, or have already refused, etc.</span>
+<span class="sx">    </span><span class="si">#{</span><span class="n">num_rehabbed</span><span class="si">}</span><span class="sx"> were in the tracking db, but have not yet had a path report accepted--so they are either pending review, or have had a path report rejected &amp; are now back for reconsideration.</span>
+<span class="sx">    </span><span class="si">#{</span><span class="n">num_added</span><span class="si">}</span><span class="sx"> entirely new people were added to the tracking database.}</span>
+  <span class="k">end</span>
+  <span class="n">ret</span>
+<span class="k">end</span>
+
+
+<span class="cm">=begin</span>
+<span class="cm">  So--we have the path reports of interest stored in path_reports, along with their PCPs.</span>
+<span class="cm">  We need:</span>
+<span class="cm">    - Check if the person is already in Recruits</span>
+<span class="cm">      - if yes--were they rejected on the basis of a prior path report?</span>
+<span class="cm">        - if yes</span>
+<span class="cm">            - Replace their earlier &#39;Path Report REJECTED&#39; status with a &#39;Prior Path Report REJECTED&#39; status.</span>
+<span class="cm">            - Add a &#39;Path report ACCEPTED&#39; or &#39;Path review Required&#39; status as necessary.</span>
+<span class="cm">        - if not, copy their recruitid to the path report</span>
+
+<span class="cm">    New info to gather:</span>
+<span class="cm">    - consumno (b/c Survey wants it) (csr_dem)</span>
+<span class="cm">    - StudyID (just copy recruitid?)</span>
+<span class="cm">    - Full name (csr_id)</span>
+<span class="cm">    - Residential address (csr_id.CSR_ADR_LN1 et seq.)</span>
+<span class="cm">    - DOB (csr_dem)</span>
+<span class="cm">    - Sex (csr_dem)</span>
+
+<span class="cm">=end</span>
+<span class="k">def</span> <span class="nf">ditch_nonos</span><span class="p">(</span><span class="n">mssql</span><span class="p">)</span>
+  <span class="n">num_nonos</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="n">join_condition</span> <span class="o">=</span> <span class="sx">%{from path_reports as p INNER JOIN</span>
+<span class="sx">          CHSDwNoContact.dbo.nono as n</span>
+<span class="sx">          on p.mrn = n.chsid}</span>
+  <span class="n">sql_count</span> <span class="o">=</span> <span class="sx">%{select count(*) as num </span><span class="si">#{</span><span class="n">join_condition</span><span class="si">}</span><span class="sx">}</span>
+  <span class="n">sql_ditch</span> <span class="o">=</span> <span class="sx">%{delete from path_reports where id in (select id </span><span class="si">#{</span><span class="n">join_condition</span><span class="si">}</span><span class="sx">) }</span>
+  <span class="n">num_nonos</span> <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="n">sql_count</span><span class="p">)</span><span class="o">[</span><span class="s1">&#39;num&#39;</span><span class="o">]</span>
+  <span class="k">if</span> <span class="n">num_nonos</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="n">mssql</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">sql_ditch</span><span class="p">)</span>
+    <span class="s2">&quot;Removed </span><span class="si">#{</span><span class="n">num_nonos</span><span class="si">}</span><span class="s2"> reports for people on the NONO list.</span><span class="se">\n</span><span class="s2">&quot;</span>
+  <span class="k">else</span>
+    <span class="s2">&quot;None of the new path reports were for people who have opted out of GHRI research.</span><span class="se">\n</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">ditch_prior_sufferers</span><span class="p">(</span><span class="n">mssql</span><span class="p">)</span>
+
+  <span class="n">basic_sql</span> <span class="o">=</span> <span class="sx">%{from path_reports as p INNER JOIN</span>
+<span class="sx">     prior_cancer_sufferers as c</span>
+<span class="sx">on   p.mrn = c.mrn AND</span>
+<span class="sx">     p.report_type = c.cancer_type}</span>
+
+  <span class="n">sql_count</span> <span class="o">=</span> <span class="sx">%{select count(*) as num </span><span class="si">#{</span><span class="n">basic_sql</span><span class="si">}</span><span class="sx"> }</span>
+
+  <span class="n">sql_ditch</span> <span class="o">=</span> <span class="sx">%{delete from path_reports where id in (select p.id </span><span class="si">#{</span><span class="n">basic_sql</span><span class="si">}</span><span class="sx">) }</span>
+
+  <span class="n">num_with_priors</span> <span class="o">=</span> <span class="n">mssql</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="n">sql_count</span><span class="p">)</span><span class="o">[</span><span class="s1">&#39;num&#39;</span><span class="o">]</span>
+
+  <span class="k">if</span> <span class="n">num_with_priors</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span>
+    <span class="n">mssql</span><span class="o">.</span><span class="n">do</span><span class="p">(</span><span class="n">sql_ditch</span><span class="p">)</span>
+    <span class="s2">&quot;Removed </span><span class="si">#{</span><span class="n">num_with_priors</span><span class="si">}</span><span class="s2"> reports for people with records of prior breast/lung/colorectal tumors in SEER.</span><span class="se">\n</span><span class="s2">&quot;</span>
+  <span class="k">else</span>
+    <span class="s2">&quot;None of the new path reports were for people with records of prior breast/lung/colorectal tumors in SEER.</span><span class="se">\n</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">main</span>
+  <span class="n">rep</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+  <span class="n">hands</span> <span class="o">=</span> <span class="n">get_handlers</span>
+
+  <span class="n">mssql</span> <span class="o">=</span> <span class="no">DBI</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="no">MSSQL_CONSTRING</span><span class="p">)</span>
+
+  <span class="k">begin</span>
+    <span class="n">num_reports</span> <span class="o">=</span> <span class="n">get_new_likelies</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">hands</span><span class="p">)</span>
+  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">num_reports</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;Troll Path PUKED AND DIED with a </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> exception at the get_new_likelies() stage.  Details follow:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;There were a total of </span><span class="si">#{</span><span class="n">num_reports</span><span class="si">}</span><span class="s2"> new reports in the last </span><span class="si">#{</span><span class="no">LOOKBACK_PERIOD</span><span class="si">}</span><span class="s2"> days.</span><span class="se">\n</span><span class="s2">&quot;</span>
+  <span class="n">hands</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">type</span><span class="p">,</span> <span class="n">handler</span><span class="o">|</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">type</span><span class="o">.</span><span class="n">upcase</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;  Reports inspected: </span><span class="si">#{</span><span class="n">handler</span><span class="o">.</span><span class="n">report_count</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;  Number for people we would want in the study: </span><span class="si">#{</span><span class="n">handler</span><span class="o">.</span><span class="n">wanted_count</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;  Number that should be human-reviewed: </span><span class="si">#{</span><span class="n">handler</span><span class="o">.</span><span class="n">review_requested_count</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+  <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;------------------------------</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+  <span class="k">begin</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">ditch_prior_sufferers</span><span class="p">(</span><span class="n">mssql</span><span class="p">)</span>
+  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;Troll Path PUKED AND DIED with a </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> exception at the ditch_prior_sufferers() stage.  Details follow:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;------------------------------</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+  <span class="k">begin</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">ditch_nonos</span><span class="p">(</span><span class="n">mssql</span><span class="p">)</span>
+  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;Troll Path PUKED AND DIED with a </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> exception at the ditch_nonos() stage.  Details follow:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;------------------------------</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+
+  <span class="n">syb</span> <span class="o">=</span> <span class="no">DBI</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="no">SYBASE_CONSTRING</span><span class="p">)</span>
+  <span class="k">begin</span>
+    <span class="n">get_pcps</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">syb</span><span class="p">)</span>
+  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;Troll Path PUKED AND DIED with a </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> exception at the get_pcps() stage.  Details follow:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">begin</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">vet_newbies</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">syb</span><span class="p">)</span>
+  <span class="k">rescue</span> <span class="no">Exception</span> <span class="o">=&gt;</span> <span class="n">e</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;Troll Path PUKED AND DIED with a </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> exception at the vet_newbies() stage.  Details follow:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">to_s</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="n">rep</span> <span class="o">+=</span> <span class="n">e</span><span class="o">.</span><span class="n">backtrace</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">mssql</span><span class="o">.</span><span class="n">disconnect</span>
+  <span class="n">syb</span><span class="o">.</span><span class="n">disconnect</span>
+
+  <span class="nb">puts</span><span class="p">(</span><span class="n">rep</span><span class="p">)</span>
+
+  <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2"> Need to see what needs doing?  Check the to-do list:</span><span class="se">\n</span><span class="s2">http://ctrhs-devnet2/pardre1/OncoNurse/&quot;</span>
+
+  <span class="no">FeedHelper</span><span class="o">.</span><span class="n">send_mail</span><span class="p">(</span><span class="n">rep</span><span class="p">,</span> <span class="s2">&quot;OncoNurse: Path Troll Report&quot;</span><span class="p">,</span> <span class="sx">%w(pardee.r@ghc.org kirlin.b@ghc.org miyoshi.j@ghc.org)</span><span class="p">)</span>
+  <span class="c1"># FeedHelper.send_mail(rep, &quot;OncoNurse: Path Troll Report&quot;, %w(pardee.r@ghc.org))</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">just_vet_newbies</span>
+  <span class="n">mssql</span> <span class="o">=</span> <span class="no">DBI</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="no">MSSQL_CONSTRING</span><span class="p">)</span>
+  <span class="n">syb</span> <span class="o">=</span> <span class="no">DBI</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="no">SYBASE_CONSTRING</span><span class="p">)</span>
+  <span class="nb">puts</span><span class="p">(</span><span class="n">vet_newbies</span><span class="p">(</span><span class="n">mssql</span><span class="p">,</span> <span class="n">syb</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="n">strt</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
+<span class="no">STDOUT</span><span class="o">.</span><span class="n">sync</span> <span class="o">=</span> <span class="kp">true</span>
+<span class="n">main</span>
+<span class="c1"># just_vet_newbies</span>
+<span class="n">elapsed_seconds</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="n">strt</span>
+<span class="nb">puts</span><span class="p">(</span><span class="s2">&quot;Finished! (in </span><span class="si">#{</span><span class="n">elapsed_seconds</span><span class="si">}</span><span class="s2"> seconds)&quot;</span><span class="p">)</span>
+</pre></div>
+<a href="index.html">Back</a>
+</div>
+</body>
+</html>

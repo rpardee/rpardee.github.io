@@ -1,0 +1,536 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+  <head>
+    <title>
+      VDW Data Dictionary: Demographics Table
+    </title>
+    <link rel="stylesheet" type="text/css" href="http://ctrhs-devnet2/pardre1/vdw_specs/shill.css">
+  </head>
+  <body>
+    <h3>
+      1. Overview
+    </h3>
+    <p>
+      The demographics table contains basic person-descriptives for the people found in VDW tables.&nbsp; It should also serve as a lookup dataset for MRNs—<strong>every MRN appearing in any other VDW file should appear in Demographics (even if nothing substantive is known about the person)</strong>.
+    </p>
+    <h3>
+      2. Data Dictionary
+    </h3>
+    <table class="vertical listing">
+      <thead>
+        <tr>
+          <th>
+            <strong>Variable name</strong>
+          </th>
+          <th>
+            <strong>Type(Length)</strong>
+          </th>
+          <th>
+            <strong>Preferred Format</strong>
+          </th>
+          <th>
+            <strong>Description</strong>
+          </th>
+          <th>
+            <strong>Valid Values</strong>
+          </th>
+          <th>
+            <strong>Comments</strong>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            MRN
+          </td>
+          <td>
+            char(varies)
+          </td>
+          <td>
+            n/a
+          </td>
+          <td>
+            <p>
+              An arbitrary identifier unique to an individual within a site.
+            </p>
+          </td>
+          <td>
+            Any, so long as they uniquely identify individual people.
+          </td>
+          <td>
+            <p>
+              Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., "medical record number").
+            </p>
+            <p>
+              <strong>Regardless of whether it contains the official local identifier, this variable should never leave the site.</strong> Projects needing to move individual-level data should create a study-specific person identifier and substitute it for MRN on any data that is to move (See, e.g., the %DeIDDset() standard macro.)
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            birth_date
+          </td>
+          <td>
+            numeric(4)
+          </td>
+          <td>
+            mmddyy10
+          </td>
+          <td>
+            Date of Birth
+          </td>
+          <td>
+            SAS Date
+          </td>
+          <td>
+            &nbsp;
+          </td>
+        </tr>
+        <tr>
+          <td>
+            gender
+          </td>
+          <td>
+            char(1)
+          </td>
+          <td>
+            n/a
+          </td>
+          <td>
+            Gender or sex of the person.
+          </td>
+          <td>
+            <dl>
+              <dt>
+                M
+              </dt>
+              <dd>
+                Male
+              </dd>
+              <dt>
+                F
+              </dt>
+              <dd>
+                Female
+              </dd>
+              <dt>
+                U
+              </dt>
+              <dd>
+                Unknown
+              </dd>
+              <dt>
+                O
+              </dt>
+              <dd>
+                Other: Transsexual, Transgendered, or anything else that does not fit into one of the prior categories.
+              </dd>
+            </dl>
+          </td>
+          <td>
+            This variable is whatever the health plan collects as GENDER (role) or SEX (biology), in that order of preference. Information on transgendered and transsexual individuals should be coded as “Other”. Sites able to provide reliable data on transgendered and transsexual persons should document the availability of this information on their site dataset implementation page on the portal.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>
+              Race1
+            </p>
+            <p>
+              Race2
+            </p>
+            <p>
+              Race3
+            </p>
+            <p>
+              Race4
+            </p>
+            <p>
+              Race5
+            </p>
+          </td>
+          <td>
+            char(2)
+          </td>
+          <td>
+            n/a
+          </td>
+          <td>
+            Race(s) of the person.
+          </td>
+          <td>
+            <dl>
+              <dt>
+                HP
+              </dt>
+              <dd>
+                Native Hawaiian or Other Pacific Islander
+              </dd>
+              <dt>
+                IN
+              </dt>
+              <dd>
+                American Indian/Alaska Native
+              </dd>
+              <dt>
+                AS
+              </dt>
+              <dd>
+                Asian
+              </dd>
+              <dt>
+                BA
+              </dt>
+              <dd>
+                Black or African American
+              </dd>
+              <dt>
+                WH
+              </dt>
+              <dd>
+                White
+              </dd>
+              <dt>
+                MU
+              </dt>
+              <dd>
+                More than one race, particular races unknown or not reported
+              </dd>
+              <dt>
+                UN
+              </dt>
+              <dd>
+                Unknown or Not Reported
+              </dd>
+            </dl>
+          </td>
+          <td>
+            See <a href="#race_note">Note 1</a> below.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            hispanic
+          </td>
+          <td>
+            char(1)
+          </td>
+          <td>
+            n/a
+          </td>
+          <td>
+            Hispanic origin (ethnicity)
+          </td>
+          <td>
+            <dl>
+              <dt>
+                Y
+              </dt>
+              <dd>
+                Yes
+              </dd>
+              <dt>
+                N
+              </dt>
+              <dd>
+                No
+              </dd>
+              <dt>
+                U
+              </dt>
+              <dd>
+                Unknown
+              </dd>
+            </dl>
+          </td>
+          <td>
+            Nulls are no longer allowed.
+          </td>
+        </tr>
+        <tr>
+          <td>
+            primary_language
+          </td>
+          <td>
+            char(3)
+          </td>
+          <td>
+            n/a
+          </td>
+          <td>
+            Primary language spoken at last contact
+          </td>
+          <td>
+            <p>
+              <a href="http://www.loc.gov/standards/iso639-2/langhome.html">As defined in the ISO-639-2 specification</a>, or 'unk', for unknown.
+            </p>
+            <p>
+              Partial list:
+            </p>
+            <dl>
+              <dt>
+                eng
+              </dt>
+              <dd>
+                English
+              </dd>
+              <dt>
+                spa
+              </dt>
+              <dd>
+                Spanish
+              </dd>
+            </dl>
+          </td>
+          <td>
+            <ul>
+              <li>This is capable of changing over time—we are only concerned with the most recent information.
+              </li>
+              <li>People whose languages are not known should have the value 'und', (undetermined) or ‘unk’ (unknown). (The former is part of the official ISO-639-2 spec, and the latter is our own devising. The two codes should be interpreted as equivalent.)
+              </li>
+              <li>People whose languages are listed as 'other' in source data should be mapped to 'und'.
+              </li>
+              <li>Clarity sites may find this information in patient.language_c
+              </li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            needs_interpreter
+          </td>
+          <td>
+            char(1)
+          </td>
+          <td>
+            n/a
+          </td>
+          <td>
+            Needs interpreter to communicate w/an English-only speaker?
+          </td>
+          <td>
+            <dl>
+              <dt>
+                Y
+              </dt>
+              <dd>
+                Yes
+              </dd>
+              <dt>
+                N
+              </dt>
+              <dd>
+                No
+              </dd>
+              <dt>
+                U
+              </dt>
+              <dd>
+                Unknown
+              </dd>
+            </dl>
+          </td>
+          <td>
+            <ul>
+              <li>This is capable of changing over time—we are only concerned with the most recent information.
+              </li>
+              <li>Clarity sites may find this information in pat_enc.interpreter_need_yn
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>
+      3. Notes
+    </h3>
+    <h4 id="race_note">
+      Note 1: Race
+    </h4>
+    <p>
+      Our goal is to have the most complete, reliable, and detailed race and ethnicity information in the demographics file. SDMs should gather race information from all sources permitted at your site—for example, tumor registry data; state birth &amp; death data; and regular large-scale social surveys. If there is more than one source of race information for a set of individuals, SDMs should give preference to self-reported sources.
+    </p>
+    <p>
+      Where multiple sources (or multiple measures from a single source) conflict as to the race of a given person, and the SDM does not have a reason to prefer one source to another (e.g., no one source is known to be most trustworthy, etc.) code all races indicated by any source.
+    </p>
+    <p>
+      For data sources that treat Hispanic ethnicity as a value of race (so e.g., you know the person is Hispanic, but you don’t know their race) code the person’s race as "Unknown".
+    </p>
+    <h5>
+      Format
+    </h5>
+    <p>
+      Race is now coded in accordance with the <a href="http://grants.nih.gov/grants/guide/notice-files/NOT-OD-02-001.html">NIH Policy And Guidelines On The Inclusion Of Women And Minorities As Subjects In Clinical Research</a>.
+    </p>
+    <ul type="disc">
+      <li>Code up to 5 races in race variables 1 through 5.
+      </li>
+      <li>Where more than one category applies to a given person, assign values to the race&lt;x&gt; variables in the order in which they are listed above. So, the highest-listed value should go in Race1, the second-highest-listed in Race2, and so forth (see example table below).
+      </li>
+      <li>Fill in any unused variables with the value for “Unknown or not reported”. None of these variables should be null.
+      </li>
+    </ul>
+    <p>
+      &nbsp;
+    </p>
+    <table class="vertical listing">
+      <thead>
+        <tr>
+          <th>
+            Example Race Coding
+          </th>
+          <th>
+            <strong>Race1</strong>
+          </th>
+          <th>
+            <strong>Race2</strong>
+          </th>
+          <th>
+            <strong>Race3</strong>
+          </th>
+          <th>
+            <strong>Race4</strong>
+          </th>
+          <th>
+            <strong>Race5</strong>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            White only
+          </td>
+          <td>
+            WH
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+        </tr>
+        <tr>
+          <td>
+            White and Pacific-Islander
+          </td>
+          <td>
+            HP
+          </td>
+          <td>
+            WH
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+        </tr>
+        <tr>
+          <td>
+            No Race Known
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+        </tr>
+        <tr>
+          <td>
+            African-American and Native-American
+          </td>
+          <td>
+            IN
+          </td>
+          <td>
+            BA
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Multi-racial, particular races not reported.
+          </td>
+          <td>
+            MU
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+          <td>
+            UN
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h5>
+      Recoding From The Prior Scheme
+    </h5>
+    <p>
+      The below format can be used to translate the values of the prior race coding scheme into those of the new scheme.
+    </p>
+    <pre>
+      value $Race
+         '01' = 'WH'
+         '02' = 'BA'
+         '03' = 'IN'
+         '04', '05', '06', '08', '09',
+         '10', '11', '12', '13', '14',
+         '96' = 'AS'
+         '07', '20', '21', '22', '25',
+         '26', '27', '28', '30', '31',
+         '32', '97' = 'HP'
+         Other = 'UN'
+      ;
+    </pre>
+    <h3>
+      4. Future Plans
+    </h3>
+    <p>
+      We plan to revisit coding of sex (biology), gender (role), race, and ethnicity as our health plans increase their sophistication of collecting this information from their members.
+    </p>
+    <h3>
+      5. Contact Information
+    </h3>
+    <p>
+      Please contact the VDW Enrollment and Demographics working group for questions and suggestions. Working group contact information can be found on the <a title="VDW Working Groups" class="internal-link" href="resolveuid/27385ab5c207b3b951dd2d8068c270f8">VDW Operations section of the CRN Portal.</a>
+    </p>
+  </body>
+</html>
