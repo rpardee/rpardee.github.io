@@ -1,0 +1,215 @@
+/* Default CSS Stylesheet for a new Web Application project */
+
+BODY
+{
+   font-weight: normal;
+   word-spacing: normal;
+   text-transform: none;
+	color:	#8080ff;
+   font-family: Tahoma, Verdana, Helvetica, sans-serif;
+   letter-spacing: normal;
+   background-color: #000000 ;
+}
+
+ACRONYM
+{
+	color:skyblue
+}
+H1, H2, H3, H4, H5, TH, THEAD, TFOOT, .category
+{
+    COLOR: #FFFFFF;
+}
+
+EM {
+   color: red ;
+   }
+H3	{
+	font-variant: small-caps ;
+	font-size:	1.58em;
+	font-weight:	500;
+   /*
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-style:	normal;
+	text-decoration:	none;
+	word-spacing:	normal;
+	letter-spacing:	normal;
+	text-transform:	none;
+	*/
+	}
+
+H5, DT	{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size:	1em;
+	font-weight:	700;
+	font-style:	normal;
+	text-decoration:	none;
+	word-spacing:	normal;
+	letter-spacing:	normal;
+	text-transform:	none;
+	}
+
+TABLE
+{
+   border: gray thin solid ;
+   border-collapse: collapse ;
+   padding-top: .2em ;
+   padding-bottom: .2em ;
+}
+CAPTION {
+      color: white ;
+      font-size: 1.25em ;
+      text-align: left ;
+}
+TFOOT, THEAD	{
+	font-size:	1em;
+	word-spacing:	normal;
+	letter-spacing:	normal;
+	text-transform:	none;
+	font-family: Arial, Helvetica, sans-serif;
+   border: thin solid ;
+   text-align: center ;
+	}
+
+TH	{
+	vertical-align:	baseline;
+	font-size:	1em;
+	font-weight:	bold;
+	word-spacing:	normal;
+	letter-spacing:	normal;
+	text-transform:	none;
+	font-family: Arial, Helvetica, sans-serif;
+	}
+TD {
+   padding-left: .5em ;
+   padding-right: .5em ;
+   border: thin solid ;
+   }
+
+A:link	{
+	text-decoration:	none;
+   color: #ABDFE4;
+	}
+
+A:visited	{
+	text-decoration:	none;
+   color: #3AA9B6;
+	}
+
+A:active	{
+	text-decoration:	none;
+	color:	#333399;
+	}
+
+A:hover	{
+	text-decoration:	underline;
+	color:	#ffffff;
+	}
+
+/*
+SMALL	{
+	font-size:	.7em;
+	}
+
+BIG	{
+	font-size:	1.17em;
+	}
+*/
+
+BLOCKQUOTE, PRE	{
+	font-family:	Courier New, monospace;
+	color: #F5DEB3 ;
+	}
+
+UL LI	{
+	list-style-type:	square ;
+	}
+
+UL LI LI	{
+	list-style-type:	disc;
+	}
+
+UL LI LI LI	{
+	list-style-type:	circle;
+	}
+
+OL LI	{
+	list-style-type:	decimal;
+	}
+
+OL OL LI	{
+	list-style-type:	lower-alpha;
+	}
+
+OL OL OL LI	{
+	list-style-type:	lower-roman;
+	}
+
+IMG 	{
+	margin-top: 5px;
+	margin-left: 10px;
+	margin-right: 10px;
+	}
+
+.SiteHeaderCell, .DatasetListHeader
+{
+   font-size: 1.5em ;
+   color:  Yellow;
+   text-align: center;
+  
+}
+.DatasetHeader 
+{
+   font-size: 1.5em ;
+   text-align: right;
+}
+
+.DatasetHeader A:link	{
+	text-decoration:	none;
+   color:  Yellow;
+    font-variant: small-caps;
+	}
+
+.SiteHeaderCell A:link	{
+	text-decoration:	none;
+   color:  Yellow;
+    font-variant: small-caps;
+	}
+
+.NotImplemented A:link	{
+	text-decoration:	none;
+   color:   Gray;
+   font-size: .7em ;
+	}
+
+.DatasetHeader A:hover	{
+	text-decoration:	underline;
+	color:	#ffffff;
+	}
+
+
+/*
+TEXTAREA
+{
+   font-weight: normal;
+   word-spacing: normal;
+   text-transform: none;
+   color: #ffff66;
+   font-family: Tahoma, Verdana, Helvetica, sans-serif;
+   letter-spacing: normal;
+   background-color: darkslategray;
+}
+INPUT, SELECT
+{
+   font-weight: normal;
+   word-spacing: normal;
+   text-transform: none;
+   color: #ffff66;
+   font-family: Tahoma, Verdana, Helvetica, sans-serif;
+   letter-spacing: normal;
+   background-color: darkslategray;
+}
+.validator_warning
+{
+   color: #ffff66;
+}
+*/
