@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <title>Pardee Family Secret Santa Assignments</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet"> 
     <style type="text/css">
         body {
@@ -27,22 +27,35 @@
             border: 3px solid #f6cc75 ;
             padding: 8px ;
         }
-
+        li:hover {
+            cursor: pointer ;
+            background-color: #06302a ;
+            width: 10% ;
+        }
     </style>
 </head>
 <body>
-    <h1>Not-So-Secret Santa Assignments For Christmas <span id="this_year"></span></h1>
-    <div id = "heretable"></div>
+    <h1>Not-So-Secret Santa Assignments For Christmas <span id="for_year"></span></h1>
+    <div id = "heretable">(table goes here)</div>
+    <p>See assignments for:</p>
+    <ul>
+        <li id = "lastyear">Last Year</li>
+        <li id = "thisyear">This Year</li>
+        <li id = "nextyear">Next Year</li>
+    </ul>
     <script type="text/javascript">
-        function make_table(this_year) {
-            $("#this_year").append(this_year) ;
+        function make_table(year_offset = 0) {
+            var d = new Date() ;
+            var for_year = d.getFullYear() ;
+            for_year += year_offset ;
+            $("#for_year").text(for_year) ;
             var family_lookup = {
               "T&J": "Tim & Jen",
               "T&L": "Ted & Laurel",
               "R&A": "Mom Pardee",
               "M&M": "Mike & Mary"
             } ;
-            var year_mod = this_year % 3 ;
+            var year_mod = for_year % 3 ;
             var assignment_key =  { 0: [
                                             {fam_1: "T&J", fam_2: "M&M"},
                                             {fam_1: "T&L", fam_2: "T&J"},
@@ -62,24 +75,39 @@
                                           {fam_1: "M&M", fam_2: "T&J"}
                                         ]
                                   } ;
-            var this_years_assignments = assignment_key[year_mod] ;
-            var tbl = $('<table>').addClass('darkTable') ;
+            var assignments = assignment_key[year_mod] ;
+            var tbl = $('<table>') ;
             var thead = $('<thead>') ;
             thead.append($('<th>').text("This family:")) ;
             thead.append($('<th>').text("Buys for:")) ;
             tbl.append(thead) ;
-            for (var i = Object.keys(this_years_assignments).length - 1; i >= 0; i--) {
+            for (var i = Object.keys(assignments).length - 1; i >= 0; i--) {
                 var row = $('<tr>') ;
-                row.append($('<td>').text(family_lookup[this_years_assignments[i].fam_1])) ;
-                row.append($('<td>').text(family_lookup[this_years_assignments[i].fam_2])) ;
+                row.append($('<td>').text(family_lookup[assignments[i].fam_1])) ;
+                row.append($('<td>').text(family_lookup[assignments[i].fam_2])) ;
                 tbl.append(row) ;
             }
-            return tbl ;
+            $("#heretable").empty() ;
+            $("#heretable").append(tbl) ;
+
         }
         $(document).ready(function(){
-            var d = new Date() ;
-            $("#heretable").append(make_table(d.getFullYear())) ;
-            // $("#heretable").append(make_table(2019)) ;
+            make_table() ;
+            $("#lastyear").click(function() {
+                            $("#heretable").slideToggle() ;
+                            make_table(-1) ;
+                            $("#heretable").slideToggle() ;
+                        })
+            $("#thisyear").click(function() {
+                            $("#heretable").slideToggle() ;
+                            make_table() ;
+                            $("#heretable").slideToggle() ;
+                        })
+            $("#nextyear").click(function() {
+                            $("#heretable").slideToggle() ;
+                            make_table(1) ;
+                            $("#heretable").slideToggle() ;
+                        })
         })
     </script>
 </body>
