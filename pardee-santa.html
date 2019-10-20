@@ -78,8 +78,17 @@
             var assignments = assignment_key[year_mod] ;
             var tbl = $('<table>') ;
             var thead = $('<thead>') ;
+            var verb = "Buys for:" ;
+            switch (year_offset) {
+                case -1:
+                verb = "Bought for:" ;
+                break ;
+                case 1:
+                verb = "Will buy for:" ;
+                break ;
+            }
             thead.append($('<th>').text("This family:")) ;
-            thead.append($('<th>').text("Buys for:")) ;
+            thead.append($('<th>').text(verb)) ;
             tbl.append(thead) ;
             for (var i = Object.keys(assignments).length - 1; i >= 0; i--) {
                 var row = $('<tr>') ;
