@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Virtual Data Warehouse Implementations</title>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="./draw_table.js"></script>
+  <link rel="stylesheet" href="./styles.css"></link>
+</head>
+<body>
+  <H1>Implementation Overview</H1>
+  <table id="overview"></table>
+
+  <div id="imp-tooltip" class="tooltip">
+    <div class="tooltip-site">
+      Site: <span id="site"></span>
+    </div>
+    <div class="tooltip-data_area">
+      Data Area: <span id="area"></span>
+    </div>
+    <div class="tooltip-update">
+      Updated: <span id="freq"></span>
+    </div>
+    <div class="tooltip-lag">
+      Lag: <span id="lag"></span>
+    </div>
+    <div class="tooltip-notes">
+      Notes: <span id="notes"></span>
+    </div>
+  </div>
+
+  <div id="site-tooltip" class="tooltip">
+    <div class="tooltip-site">
+      Location: <span id="location"></span>
+    </div>
+    <div class="tooltip-data_area">
+      Data Manager: <span id="manager"></span>
+    </div>
+  </div>
+
+</body>
+</html>
