@@ -29,6 +29,9 @@ thead th {
     background: #34495e;
     padding: 1em 0.8rem;
 }
+th:not(:last-child), td:not(:last-child) { 
+    border-right: 1px solid #34495e; 
+}
 
 .row-header {
     color: #f8f9fa;
@@ -46,7 +49,17 @@ td span {
   color:#d1ceba;
 }
 
-/*tbody tr:nth-child(odd) {
+span.update-frequency {
+  color:black;
+  text-align: right;
+  vertical-align: bottom;
+  text-transform: uppercase;
+  border-top: 1px black ;
+
+
+}
+
+tbody tr:nth-child(odd) {
     background: #f0f0f3;
 }
 
@@ -54,23 +67,11 @@ tbody tr:hover {
     background: #d7ecec;
 }
 
-*/
+
 td {
     padding: 0.8em 0.8rem;
     text-transform: capitalize;
     word-wrap: break-word;
-}
-
-td.semi-annually {
-  background: #fce9f8 ;
-}
-
-td.Monthly {
-  background: #feffc5 ;
-}
-
-td.Daily {
-  background: #dcefc4 ;
 }
 
 tbody .text {

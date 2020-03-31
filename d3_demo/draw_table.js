@@ -64,13 +64,33 @@ async function draw_overview() {
     const xpos = d3.event.pageX ;
     const ypos = d3.event.pageY ;
     site_tooltip.style("transform", `translate(${xpos}px, ${ypos}px)`) ;
-
-    // console.log(table._groups[0][0].clientHeight) ;
-
   } 
 
   function fadeSiteTooltip(datum) {
     site_tooltip.style("opacity", 0) ;
+    // console.log('yo') ;
+  }
+
+  dset_tooltip = d3.select("#dset-tooltip") ;
+  function showDsetTooltip(datum) {
+    if (datum.abbr != 'nil') {
+      dset_tooltip.style("opacity", 0.85) ;
+      sitespan = dset_tooltip.select("#stdvar") 
+        .text(datum.stdvar || 'zah?')
+      ;
+      sitespan = dset_tooltip.select("#last-qa") 
+        .text(datum.last_qa || 'Unknown')
+      ;
+    } 
+    // console.log(datum) ;
+    // Move the tooltip over to where the mouse pointer is
+    const xpos = d3.event.pageX ;
+    const ypos = d3.event.pageY ;
+    dset_tooltip.style("transform", `translate(${xpos}px, ${ypos}px)`) ;
+  } 
+
+  function fadeDsetTooltip(datum) {
+    dset_tooltip.style("opacity", 0) ;
     // console.log('yo') ;
   }
 
@@ -101,6 +121,17 @@ async function draw_overview() {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
+  const freq_abbrevs = {"Daily": "D"
+      , "Semi-Annually": "SA"
+      , "Monthly":"M"
+      , "Quarterly": "Q"
+      , "Quarterly+": "Q+"
+      , "Annually": "A"
+      , "Annually+": "A+"
+      , "Weekly": "W"
+      , "Tri-Annually": "T"
+    } ;
+
   fake_implementations = [] ;
   data.sites.forEach((site) => {
     data["data areas"].forEach((dset) => {
@@ -112,7 +143,7 @@ async function draw_overview() {
           uf = "Daily" ;
           break ;
         case 1:
-          uf = "semi-annually" ;
+          uf = "Semi-Annually" ;
           break ;
         case 2:
           uf = "Monthly" ;
@@ -130,23 +161,28 @@ async function draw_overview() {
   }) ;
 
   // Fill in the substantive implementation info in the appropriate cells
-  // data.implementations.forEach(imp => {
-  fake_implementations.forEach(imp => {
+  data.implementations.forEach(imp => {
+  // fake_implementations.forEach(imp => {
     id = imp.site.concat('-', imp["data area"])
     d3.select(`#${id}`)
       .data([imp]) //WTF? https://stackoverflow.com/questions/10086167/d3-how-to-deal-with-json-data-structures
       .text(`${imp.start_year} - ${imp.end_year}`)
-      .attr("class", imp["update frequency"])
       .on("mouseenter", showImpTooltip)
       .on("mouseleave", fadeImpTooltip)
+      .append("span")
+        .attr("class", "update-frequency")
+        .text(freq_abbrevs[imp["update frequency"]])
   }) ;
 
   // Fill in the row header text (leftmost column)
   data["data areas"].forEach(d => {
     id = 'nil'.concat('-', d.abbr)
     d3.select(`#${id}`)
+      .data([d])
       .text(d.name)
       .attr("class", "row-header")
+      .on("mouseenter", showDsetTooltip)
+      .on("mouseleave", fadeDsetTooltip)
       .append("span")
         .text(d.descr)
   }) ;
