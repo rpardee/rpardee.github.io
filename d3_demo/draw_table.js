@@ -16,7 +16,6 @@ async function draw_overview() {
 
   // Set the various bits of the tooltip as appropriate.
   function showImpTooltip(datum) {
-    imp_tooltip.style("opacity", 0.85) ;
     sitespan = imp_tooltip.select("#site") 
       .text(site_lookup[datum.site].name || 'zah?')
     ;
@@ -36,7 +35,10 @@ async function draw_overview() {
     // Move the tooltip over to where the mouse pointer is
     const xpos = d3.event.pageX ;
     const ypos = d3.event.pageY ;
-    imp_tooltip.style("transform", `translate(${xpos}px, ${ypos}px)`) ;
+    imp_tooltip
+      .style("transform", `translate(${xpos}px, ${ypos}px)`)
+      .style("opacity", 0.85) 
+    ;
 
     // console.log(table._groups[0][0].clientHeight) ;
 
@@ -44,26 +46,26 @@ async function draw_overview() {
 
   function fadeImpTooltip(datum) {
     imp_tooltip.style("opacity", 0) ;
-    // console.log('yo') ;
   }
 
   // the tooltip when the user hovers over a site name (col header)
   site_tooltip = d3.select("#site-tooltip") ;
   function showSiteTooltip(datum) {
     if (datum.abbr != 'nil') {
-      site_tooltip.style("opacity", 0.85) ;
       sitespan = site_tooltip.select("#location") 
         .text(datum.location || 'zah?')
       ;
       sitespan = site_tooltip.select("#manager") 
         .text(datum.manager || 'zah?')
       ;
+      // Move the tooltip over to where the mouse pointer is
+      const xpos = d3.event.pageX ;
+      const ypos = d3.event.pageY ;
+      site_tooltip
+        .style("transform", `translate(${xpos}px, ${ypos}px)`) 
+        .style("opacity", 0.85)
+      ;
     } 
-
-    // Move the tooltip over to where the mouse pointer is
-    const xpos = d3.event.pageX ;
-    const ypos = d3.event.pageY ;
-    site_tooltip.style("transform", `translate(${xpos}px, ${ypos}px)`) ;
   } 
 
   function fadeSiteTooltip(datum) {
@@ -74,19 +76,21 @@ async function draw_overview() {
   dset_tooltip = d3.select("#dset-tooltip") ;
   function showDsetTooltip(datum) {
     if (datum.abbr != 'nil') {
-      dset_tooltip.style("opacity", 0.85) ;
       sitespan = dset_tooltip.select("#stdvar") 
         .text(datum.stdvar || 'zah?')
       ;
       sitespan = dset_tooltip.select("#last-qa") 
         .text(datum.last_qa || 'Unknown')
       ;
+      // console.log(datum) ;
+      // Move the tooltip over to where the mouse pointer is
+      const xpos = d3.event.pageX ;
+      const ypos = d3.event.pageY ;
+      dset_tooltip
+        .style("transform", `translate(${xpos}px, ${ypos}px)`) 
+        .style("opacity", 0.85)
+      ;
     } 
-    // console.log(datum) ;
-    // Move the tooltip over to where the mouse pointer is
-    const xpos = d3.event.pageX ;
-    const ypos = d3.event.pageY ;
-    dset_tooltip.style("transform", `translate(${xpos}px, ${ypos}px)`) ;
   } 
 
   function fadeDsetTooltip(datum) {

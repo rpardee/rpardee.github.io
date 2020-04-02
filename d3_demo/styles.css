@@ -3,7 +3,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5em 2em;
+    /*padding: 8em 2em;*/
     letter-spacing: -0.011em;
     font-family: 'Inter var', sans-serif;
     font-size: .9em;
@@ -13,10 +13,12 @@ body {
 
 table {
     border-collapse: collapse;
+    /*table-layout: fixed;*/
+    width: 100%;
 }
 
 thead {
-    font-size: 1.1em;
+    font-size: 1em;
     letter-spacing: 0;
     /*font-weight: 50;*/
     text-align: left;
@@ -38,13 +40,11 @@ th:not(:last-child), td:not(:last-child) {
     background: #34495e;
     padding: 1em 0.8rem;
     font-weight: 700;
-
 }
 
 td span {
   display: block;
   font-size: 0.75em;
-  padding: 3px ;
   font-weight: normal;
   color:#d1ceba;
 }
@@ -55,8 +55,6 @@ span.update-frequency {
   vertical-align: bottom;
   text-transform: uppercase;
   border-top: 1px black ;
-
-
 }
 
 tbody tr:nth-child(odd) {
@@ -69,17 +67,16 @@ tbody tr:hover {
 
 
 td {
-    padding: 0.8em 0.8rem;
     text-transform: capitalize;
     word-wrap: break-word;
 }
 
-tbody .text {
+/*tbody .text {
     font-size: 1em;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-}
+}*/
 
 
 .tooltip {
@@ -95,19 +92,3 @@ tbody .text {
     transition: all 0.2s ease-out;
     pointer-events: none;
 }
-
-/*.tooltip:before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 12px;
-    height: 12px;
-    background: white;
-    border: 1px solid #ddd;
-    border-top-color: transparent;
-    border-left-color: transparent;
-    transform: translate(-50%, 50%) rotate(45deg);
-    transform-origin: center center;
-    z-index: 10;
-}*/
