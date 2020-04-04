@@ -117,8 +117,10 @@ async function draw_overview() {
       .selectAll("td")
       .data(cols)
       .enter().append("td")
-        .text("?")
         .attr("id", (site) => site.abbr.concat('-', d.abbr))
+        .append("span")
+          .attr("class", "update-frequency")
+          .text("Not Implemented")
   }) ;
 
   function getRandomInt(max) {
@@ -128,12 +130,14 @@ async function draw_overview() {
   const freq_abbrevs = {"Daily": "D"
       , "Semi-Annually": "SA"
       , "Monthly":"M"
+      , "Monthly+":"M+"
       , "Quarterly": "Q"
       , "Quarterly+": "Q+"
       , "Annually": "A"
       , "Annually+": "A+"
       , "Weekly": "W"
       , "Tri-Annually": "T"
+      , "On request": "O"
     } ;
 
   fake_implementations = [] ;

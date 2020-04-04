@@ -6,7 +6,7 @@ body {
     /*padding: 8em 2em;*/
     letter-spacing: -0.011em;
     font-family: 'Inter var', sans-serif;
-    font-size: .9em;
+    font-size: .8em;
     color: #34495e;
     background: #f8f9fa;
 }
@@ -50,7 +50,7 @@ td span {
 }
 
 span.update-frequency {
-  color:black;
+  color:grey;
   text-align: right;
   vertical-align: bottom;
   text-transform: uppercase;
