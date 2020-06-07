@@ -140,37 +140,8 @@ async function draw_overview() {
       , "On request": "O"
     } ;
 
-  fake_implementations = [] ;
-  data.sites.forEach((site) => {
-    data["data areas"].forEach((dset) => {
-      sy = 1970 + getRandomInt(30) ;
-      ey = 2020 - getRandomInt(8) ;
-      uf = getRandomInt(4) ;
-      switch(uf) {
-        case 0:
-          uf = "Daily" ;
-          break ;
-        case 1:
-          uf = "Semi-Annually" ;
-          break ;
-        case 2:
-          uf = "Monthly" ;
-          break ;
-        case 3:
-          uf = "Weekly" ;
-          break ;
-      }
-
-      if (ey == 2020) {ey = "present"} ;
-      if (site.abbr != 'nil') {
-        fake_implementations.push({"site": site.abbr, "data area": dset.abbr, "start_year": sy, "end_year": ey, "update frequency": uf, "lag": "unknown", "notes": "This is made-up information"}) ;
-      }
-    }) ;
-  }) ;
-
   // Fill in the substantive implementation info in the appropriate cells
   data.implementations.forEach(imp => {
-  // fake_implementations.forEach(imp => {
     id = imp.site.concat('-', imp["data area"])
     d3.select(`#${id}`)
       .data([imp]) //WTF? https://stackoverflow.com/questions/10086167/d3-how-to-deal-with-json-data-structures
@@ -191,8 +162,9 @@ async function draw_overview() {
       .attr("class", "row-header")
       .on("mouseenter", showDsetTooltip)
       .on("mouseleave", fadeDsetTooltip)
-      .append("span")
+      .append("span").append("a")
         .text(d.descr)
+        .attr("href", `${d.name}.html`)
   }) ;
 
 }

@@ -1,4 +1,4 @@
-@import url('https://rsms.me/inter/inter.css');
+/*@import url('https://rsms.me/inter/inter.css');*/
 body {
     display: flex;
     flex-direction: column;
@@ -42,7 +42,7 @@ th:not(:last-child), td:not(:last-child) {
     font-weight: 700;
 }
 
-td span {
+td span a {
   display: block;
   font-size: 0.75em;
   font-weight: normal;
