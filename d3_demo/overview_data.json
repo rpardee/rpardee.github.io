@@ -38,7 +38,6 @@
     {"name": "Lab Results"      , "abbr": "lab"       , "stdvar": "_vdw_lab", "descr": "Lab test results"}
   ],
   "implementations":[
-    {"site": "HPHS", "data area": "ute-enc" , "start_year": 2000, "end_year": "present", "update frequency": "Monthly", "lag": "unknown", "notes": "This is a note."},
     {"site": "MCRF", "data area": "demog"   , "start_year": 1999, "end_year": 2018, "update frequency": "Semi-Annually"},
     {"site": "MCRF", "data area": "enrl"    , "start_year": 1999, "end_year": 2018, "update frequency": "Semi-Annually"},
     {"site": "MCRF", "data area": "rx"     , "start_year": 1999, "end_year": 2018, "update frequency": "Semi-Annually"},
@@ -135,8 +134,8 @@
     {"site": "MCPI", "data area": "tumor"     , "start_year": 1974, "end_year": 2016, "update frequency": "Annually", "lag": "", "notes": ""},
     {"site": "MCPI", "data area": "rx"        , "start_year": 1999, "end_year": 2018, "update frequency": "Semi-Annually", "lag": "", "notes": ""},
     {"site": "MCPI", "data area": "ndc"       , "start_year": 1999, "end_year": 2018, "update frequency": "Semi-Annually", "lag": "", "notes": ""},
-    {"site": "MCPI", "data area": "census-loc", "start_year": 2003, "end_year": 203, "update frequency": "?", "lag": "", "notes": ""},
-    {"site": "MCPI", "data area": "census-dem", "start_year": 2003, "end_year": 203, "update frequency": "?", "lag": "", "notes": ""},
+    {"site": "MCPI", "data area": "census-loc", "start_year": 2003, "end_year": 2003, "update frequency": "?", "lag": "", "notes": ""},
+    {"site": "MCPI", "data area": "census-dem", "start_year": 2003, "end_year": 2003, "update frequency": "?", "lag": "", "notes": ""},
     {"site": "MCPI", "data area": "ute-prov"  , "start_year": "?", "end_year": "Present", "update frequency": "Semi-Annually", "lag": "", "notes": "Current, but not complete."},
     {"site": "MCPI", "data area": "vitals"    , "start_year": 2007, "end_year": 2018, "update frequency": "On Request", "lag": "", "notes": ""},
     {"site": "MCPI", "data area": "soc"       , "start_year": 1999, "end_year": 2018, "update frequency": "Semi-Annually", "lag": "", "notes": ""},
@@ -291,7 +290,7 @@
     {"site": "KPGA", "data area": "death"     , "start_year": 1985, "end_year": "Present", "update frequency": "Weekly", "lag": "", "notes": ""},
     {"site": "KPGA", "data area": "cod"       , "start_year": 1985, "end_year": "Present", "update frequency": "Weekly", "lag": "", "notes": ""},
     {"site": "KPGA", "data area": "lab"       , "start_year": 1997, "end_year": "Present", "update frequency": "Weekly", "lag": "", "notes": ""},
-    {"site": "KPGA", "data area": "lang"      , "start_year": "?", "end_year": "Present?", "update frequency": "Monthly", "lag": "", "notes": ""},
+    {"site": "KPGA", "data area": "lang"      , "start_year": "?", "end_year": "Present", "update frequency": "Monthly", "lag": "", "notes": ""},
     {"site": "KPWA", "data area": "demog"   , "start_year": 1974, "end_year": "Present", "update frequency": "Daily"},
     {"site": "KPWA", "data area": "lang"    , "start_year": 2005, "end_year": "Present", "update frequency": "Daily"},
     {"site": "KPWA", "data area": "enrl"    , "start_year": 1989, "end_year": "Present", "update frequency": "Monthly"},

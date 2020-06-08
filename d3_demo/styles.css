@@ -6,7 +6,7 @@ body {
     /*padding: 8em 2em;*/
     letter-spacing: -0.011em;
     font-family: 'Inter var', sans-serif;
-    font-size: .8em;
+    font-size: .7em;
     color: #34495e;
     background: #f8f9fa;
 }
@@ -42,7 +42,7 @@ th:not(:last-child), td:not(:last-child) {
     font-weight: 700;
 }
 
-td span a {
+td span {
   display: block;
   font-size: 0.75em;
   font-weight: normal;
@@ -78,7 +78,6 @@ td {
     overflow: hidden;
 }*/
 
-
 .tooltip {
     opacity: 0;
     position: absolute;
@@ -91,4 +90,9 @@ td {
     z-index: 10;
     transition: all 0.2s ease-out;
     pointer-events: none;
+}
+
+rect {
+    fill: #34495e ;
+    opacity: 0.4 ;
 }
