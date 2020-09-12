@@ -65,6 +65,9 @@ tbody tr:hover {
     background: #d7ecec;
 }
 
+td a {
+    color:pink;
+}
 
 td {
     text-transform: capitalize;
@@ -95,4 +98,9 @@ td {
 rect {
     fill: #34495e ;
     opacity: 0.4 ;
+}
+
+.col-tab, td {
+    text-transform: none ;
+    padding: .5em;
 }

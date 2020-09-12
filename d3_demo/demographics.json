@@ -1,0 +1,73 @@
+{
+  "name":"Demographics",
+  "stdvar": "_vdw_demographic",
+  "description": "Contains patient/enrollee level descriptives for the people found in VDW tables.  It serves as a lookup dataset for MRNs.  Every MRN appearing in any other VDW file should appear in the Demographics table, even if demographics information on the person is unknown.",
+  "columns": [
+    {"name": "MRN"
+      , "definition": "Medical record number is the unique patient identifier within a site and should never leave the site"
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Unique to each patient at each site"
+    },
+    {
+      "name": "birth_date"
+      , "definition": "The person's date of birth"
+      , "type": "date"
+      , "length": 4
+      , "valid_values": "Any SAS Date"
+    },
+    {
+      "name": "sex_admin"
+      , "definition": "The person's 'administrative sex'–the value stored in official/legacy sources at last ascertainment"
+      , "type": "char"
+      , "length": 1
+      , "valid_values": [
+          {"value": "F", "meaning": "Female"}
+          , {"value": "M", "meaning": "Male"}
+          , {"value": "X", "meaning": "Neither Male nor Female"}
+          , {"value": "O", "meaning": "Other"}
+          , {"value": "U", "meaning": "Unknown, Uncertain, or Missing"}
+        ],
+      "implementation_guidelines": "Legacy sources may designate the information we mean here as either 'sex' or 'gender' without regard for the distinction between these concepts. In the absence of specific knowledge that a given legacy source codes gender identity, implementers should default to placing legacy data in this variable. <br/>In general, any data collected before your organization began collecting detailed SOGI data should go in this field. <br/>The workgroup expects that sex_admin will be most similar to the existing gender field in terms of having informative values on >99% of records and will be the best single-field substitute for it. <br/>This is not compatible with <a href='https://phinvads.cdc.gov/vads/ViewValueSet.action?id=06D34BBC-617F-DD11-B38D-00188B398520'>PHVS_AdministrativeSex_HL7_2x</a> but should better accomodate the data we expect to be available at the sites."
+    },
+    {
+      "name":"sex_at_birth" 
+    , "definition": "The person's sex as assigned at birth." 
+    , "type": "char"
+    , "length": 1 
+    , "valid_values": [
+        {"value":"F", "meaning": "Female"}
+        , {"value":"M", "meaning": "Male"}
+        , {"value":"I", "meaning": "Intersex"}
+        , {"value":"O", "meaning": "Other"}
+        , {"value":"U", "meaning": "Uncertain, Unknown or Not recorded on birth certificate"}
+        , {"value":"C", "meaning": "Choose not to disclose" }
+        ],
+    "implementation_guidelines": "The existence of the ‘Intersex’ and ‘Other’ options renders this incompatible with LOINC LL3324-2. Those values appear in our data and are foreseeably useful enough to research that we are comfortable departing from LOINC compatibility.<br/>It is expected that sex_admin may change over time as a person changes their legal and/or physical sex–this variable should not change. <br/>Missing values should be coded as Unknown."
+    },
+    {
+      "name": "Race1-Race5"
+      , "definition": "The person's race. Preference is for self-reported; please see comment 1 for recording multiple race values"
+      , "type": "char"
+      , "length": 2
+      , "valid_values": [
+          {"value": "HP", "meaning":"Native Hawaiian / Pacific Islander"}
+          , {"value": "IN", "meaning":"American Indian / Alaskan Native"}
+          , {"value": "AS", "meaning":"Asian"}
+          , {"value": "BA", "meaning":"Black or African American"}
+          , {"value": "WH", "meaning":"White"}
+          , {"value": "MU", "meaning":"Multiple races with particular unknown"}
+          , {"value": "OT", "meaning":"Other, values that do not fit well in any other value"}
+          , {"value": "UN", "meaning":"Unknown or Not Reported"}
+        ]
+    }
+  ]
+  , "primary_key": "MRN"
+  , "comments": [
+    {"title": "Hispanic ethnicity reported as race", "comment": "If source data indicates the person's race as 'Hispanic' and there is no other known race recorded for the person, code the person's race as unknown. "}
+    ,{"title": "Recommended Mappings", "comment": "Please see appendix A for guidelines on mapping local race values to the permissible value set listed above. "}
+    ,{"title": "Multiple Race Values", "comment": "When more than one race is known for a given person, assign values to the race variables in the order listed above RACE values and fill in any unused race variables with the value UN for unknown / not reported. Examples of coding RACE1 through RACE5 are illustrated here:<table><thead><tr><th>Example Race Coding</th><th>Race1</th><th>Race2</th><th>Race3</th><th>Race4</th><th>Race5</th></tr></thead><tbody><tr><td>White only</td><td>WH</td><td>UN</td><td>UN</td><td>UN</td><td>UN</td><tr><td>White and Pacific Islander</td><td>HP</td><td>WH</td><td>UN</td><td>UN</td><td>UN</td></tr><tr><td>No race known</td><td>UN</td><td>UN</td><td>UN</td><td>UN</td><td>UN</td></tr><tr><td>African-American and Native-American</td><td>IN</td><td>BA</td><td>UN</td><td>UN</td><td>UN</td></tr><tr><td>Multi-racial, particular races not reported</td><td>MU</td><td>UN</td><td>UN</td><td>UN</td><td>UN</td></tr></tr></tbody></table>"}
+  ]
+}
+
+
