@@ -2,7 +2,7 @@
 body {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /*align-items: center;*/
     /*padding: 8em 2em;*/
     letter-spacing: -0.011em;
     font-family: 'Inter var', sans-serif;
@@ -65,13 +65,13 @@ tbody tr:hover {
     background: #d7ecec;
 }
 
-td a {
-    color:pink;
-}
-
 td {
     text-transform: capitalize;
     word-wrap: break-word;
+}
+
+.row-header a {
+    color:#d1ceba;
 }
 
 /*tbody .text {
@@ -100,7 +100,19 @@ rect {
     opacity: 0.4 ;
 }
 
-.col-tab, td {
+#col-tab {
+    width: 70% ;
+}
+#col-tab, td {
     text-transform: none ;
     padding: .5em;
+}
+
+#race-examples {
+    width: 40%;
+    align-self: start ;
+}
+
+.hidden {
+    display: none;
 }

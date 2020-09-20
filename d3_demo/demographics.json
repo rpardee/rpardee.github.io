@@ -28,7 +28,12 @@
           , {"value": "O", "meaning": "Other"}
           , {"value": "U", "meaning": "Unknown, Uncertain, or Missing"}
         ],
-      "implementation_guidelines": "Legacy sources may designate the information we mean here as either 'sex' or 'gender' without regard for the distinction between these concepts. In the absence of specific knowledge that a given legacy source codes gender identity, implementers should default to placing legacy data in this variable. <br/>In general, any data collected before your organization began collecting detailed SOGI data should go in this field. <br/>The workgroup expects that sex_admin will be most similar to the existing gender field in terms of having informative values on >99% of records and will be the best single-field substitute for it. <br/>This is not compatible with <a href='https://phinvads.cdc.gov/vads/ViewValueSet.action?id=06D34BBC-617F-DD11-B38D-00188B398520'>PHVS_AdministrativeSex_HL7_2x</a> but should better accomodate the data we expect to be available at the sites."
+      "implementation_guidelines": [
+        "Legacy sources may designate the information we mean here as either 'sex' or 'gender' without regard for the distinction between these concepts. In the absence of specific knowledge that a given legacy source codes gender identity, implementers should default to placing legacy data in this variable."
+        , "In general, any data collected before your organization began collecting detailed SOGI data should go in this field."
+        , "The workgroup expects that sex_admin will be most similar to the existing gender field in terms of having informative values on >99% of records and will be the best single-field substitute for it."
+        , "This is <strong>not</strong> compatible with <a href='https://phinvads.cdc.gov/vads/ViewValueSet.action?id=06D34BBC-617F-DD11-B38D-00188B398520'>PHVS_AdministrativeSex_HL7_2x</a> but should better accomodate the data we expect to be available at the sites."
+      ]
     },
     {
       "name":"sex_at_birth" 
@@ -43,7 +48,31 @@
         , {"value":"U", "meaning": "Uncertain, Unknown or Not recorded on birth certificate"}
         , {"value":"C", "meaning": "Choose not to disclose" }
         ],
-    "implementation_guidelines": "The existence of the ‘Intersex’ and ‘Other’ options renders this incompatible with LOINC LL3324-2. Those values appear in our data and are foreseeably useful enough to research that we are comfortable departing from LOINC compatibility.<br/>It is expected that sex_admin may change over time as a person changes their legal and/or physical sex–this variable should not change. <br/>Missing values should be coded as Unknown."
+    "implementation_guidelines": [ 
+      "The existence of the ‘Intersex’ and ‘Other’ options renders this incompatible with <a href='https://loinc.org/LL3324-2/'>LOINC LL3324-2</a>. Those values appear in our data and are foreseeably useful enough to research that we are comfortable departing from LOINC compatibility."
+      , "It is expected that sex_admin may change over time as a person changes their legal and/or physical sex–this variable should not change."
+      ,"Missing values should be coded as Unknown."
+        ]
+    },
+    {
+      "name": "gender_identity"
+      , "definition": "The person’s gender identity as subjectively experienced, on last ascertainment."
+      , "type": "char"
+      , "length": 2
+      , "valid_values": [
+        {"value": "FF", "meaning":"Female"}
+        , {"value": "MM", "meaning": "Male"}
+        , {"value": "FM", "meaning": "Female to Male transgender"}
+        , {"value": "MF", "meaning": "Male to Female transgender"}
+        , {"value": "GQ", "meaning": "Genderqueer or non-conforming or non-binary or genderfluid"}
+        , {"value": "OT", "meaning": "Other"}
+        , {"value": "ND", "meaning": "Choose not to disclose"}
+        , {"value": "UN", "meaning": "Unknown"}
+      ],
+      "implementation_guidelines": ["Compatible with <a href='https://phinvads.cdc.gov/vads/ViewValueSet.action?id=660779DA-64E9-E611-A856-0017A477041A'>PHVS_GenderIdentity_CDC</a> and <a href = 'https://loinc.org/LL3322-6/'>LOINC LL3322-6</a>."
+        , "Values of ‘unsure/questioning’ should be coded as Other."
+        , "Missing values should be coded as Unknown."
+        ]
     },
     {
       "name": "Race1-Race5"
@@ -60,13 +89,38 @@
           , {"value": "OT", "meaning":"Other, values that do not fit well in any other value"}
           , {"value": "UN", "meaning":"Unknown or Not Reported"}
         ]
+      , "implementation_guidelines": "See comments below."
+    },
+    {
+      "name": "Hispanic" 
+      , "definition": "Whether the person is of Hispanic origin / ethnicity"
+      , "type": "char"
+      , "length": 1 
+      , "valid_values": [
+        {"value": "Y", "meaning": "Yes"}
+        , {"value": "N", "meaning":"No"}
+        , {"value": "U", "meaning":"Unknown"}
+      ]
+    },
+    {
+
+      "name": "needs_interpreter" 
+      , "definition": "Whether the person needs an interpreter to communicate with an English-only speaker" 
+      , "type": "char"
+      , "length": 1 
+      , "valid_values": [
+          {"value": "Y", "meaning":"Yes"}
+          , {"value": "N", "meaning":"No"}
+          , {"value": "U", "meaning":"Unknown"}
+        ]
+      , "implementation_guidelines": "This variable is capable of changing over time. Populate with only the most recently known interpreter status."
     }
   ]
   , "primary_key": "MRN"
   , "comments": [
     {"title": "Hispanic ethnicity reported as race", "comment": "If source data indicates the person's race as 'Hispanic' and there is no other known race recorded for the person, code the person's race as unknown. "}
     ,{"title": "Recommended Mappings", "comment": "Please see appendix A for guidelines on mapping local race values to the permissible value set listed above. "}
-    ,{"title": "Multiple Race Values", "comment": "When more than one race is known for a given person, assign values to the race variables in the order listed above RACE values and fill in any unused race variables with the value UN for unknown / not reported. Examples of coding RACE1 through RACE5 are illustrated here:<table><thead><tr><th>Example Race Coding</th><th>Race1</th><th>Race2</th><th>Race3</th><th>Race4</th><th>Race5</th></tr></thead><tbody><tr><td>White only</td><td>WH</td><td>UN</td><td>UN</td><td>UN</td><td>UN</td><tr><td>White and Pacific Islander</td><td>HP</td><td>WH</td><td>UN</td><td>UN</td><td>UN</td></tr><tr><td>No race known</td><td>UN</td><td>UN</td><td>UN</td><td>UN</td><td>UN</td></tr><tr><td>African-American and Native-American</td><td>IN</td><td>BA</td><td>UN</td><td>UN</td><td>UN</td></tr><tr><td>Multi-racial, particular races not reported</td><td>MU</td><td>UN</td><td>UN</td><td>UN</td><td>UN</td></tr></tr></tbody></table>"}
+    ,{"title": "Multiple Race Values", "comment": "When more than one race is known for a given person, assign values to the race variables in the order listed above RACE values and fill in any unused race variables with the value UN for unknown / not reported. Examples of coding RACE1 through RACE5 are illustrated here:"}
   ]
 }
 
