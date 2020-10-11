@@ -126,7 +126,11 @@
   },
 "Enrollments":
   {
-    
+    "name":"Enrollments",
+    "stdvar": "_vdw_enroll",
+    "description": "blahblahblah",
+    "columns": []
+
   }
 
 }
