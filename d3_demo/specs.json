@@ -1,4 +1,4 @@
-{"Demographics": 
+{"Demographics":
   {
     "name":"Demographics",
     "stdvar": "_vdw_demographic",
@@ -37,10 +37,10 @@
         ]
       },
       {
-        "name":"sex_at_birth" 
-      , "definition": "The person's sex as assigned at birth." 
+        "name":"sex_at_birth"
+      , "definition": "The person's sex as assigned at birth."
       , "type": "char"
-      , "length": 1 
+      , "length": 1
       , "valid_values": [
           {"value":"F", "meaning": "Female"}
           , {"value":"M", "meaning": "Male"}
@@ -49,7 +49,7 @@
           , {"value":"U", "meaning": "Uncertain, Unknown or Not recorded on birth certificate"}
           , {"value":"C", "meaning": "Choose not to disclose" }
           ],
-      "implementation_guidelines": [ 
+      "implementation_guidelines": [
         "The existence of the ‘Intersex’ and ‘Other’ options renders this incompatible with <a href='https://loinc.org/LL3324-2/'>LOINC LL3324-2</a>. Those values appear in our data and are foreseeably useful enough to research that we are comfortable departing from LOINC compatibility."
         , "It is expected that sex_admin may change over time as a person changes their legal and/or physical sex–this variable should not change."
         ,"Missing values should be coded as Unknown."
@@ -93,10 +93,10 @@
         , "implementation_guidelines": "See comments below."
       },
       {
-        "name": "Hispanic" 
+        "name": "Hispanic"
         , "definition": "Whether the person is of Hispanic origin / ethnicity"
         , "type": "char"
-        , "length": 1 
+        , "length": 1
         , "valid_values": [
           {"value": "Y", "meaning": "Yes"}
           , {"value": "N", "meaning":"No"}
@@ -105,10 +105,10 @@
       },
       {
 
-        "name": "needs_interpreter" 
-        , "definition": "Whether the person needs an interpreter to communicate with an English-only speaker" 
+        "name": "needs_interpreter"
+        , "definition": "Whether the person needs an interpreter to communicate with an English-only speaker"
         , "type": "char"
-        , "length": 1 
+        , "length": 1
         , "valid_values": [
             {"value": "Y", "meaning":"Yes"}
             , {"value": "N", "meaning":"No"}
@@ -128,11 +128,323 @@
   {
     "name":"Enrollments",
     "stdvar": "_vdw_enroll",
-    "description": "blahblahblah",
-    "columns": []
-
+    "description": "The ENROLLMENT table contains periods of time during which we believe to have at least the partial capture of medical care information, either because of enrollment in a health plan or as a patient of a care delivery system that the implementing site owns or interacts with. Insurance coverage is <em>not</em> the only basis of data capture (see ENROLLMENT_BASIS) nor do all records necessarily indicate completeness of data capture (see the capture warning variables, which all begin with 'incomplete_'). Each record represents a period of time during which the information on the included variables was true.  As many records as are necessary should be added to represent changes over time. There may be many contiguous records for a single period of enrollment, in order to account for these changes.",
+    "columns": [
+      {"name": "MRN"
+        , "definition": "Medical record number is the unique patient identifier within a site and should never leave the site"
+        , "type": "char"
+        , "length": "*"
+        , "valid_values": "Unique to each patient at each site"
+      },
+      {"name": "enr_start"
+        , "definition": "Beginning of the period at risk for medical care capture"
+        , "type": "num"
+        , "length": 4
+        , "valid_values": "SAS Date"
+        , "implementation_guidelines": "Sites with exact date information on starts/stops should use them; those that do not should use the first and last days of the month. Periods that are ongoing at the time the file is created should bear the last day of known, actual enrollment at the time of the update. E.g. if source data if realtime, enr_end would be set to &sysdate but is source data is updated weekly, enr_end would be the last day of the week prior to the update."
+      },
+      {"name":"enr_end"
+        , "definition":"End of the period at risk for medical care capture"
+        , "type": "num"
+        , "length":4
+        , "valid_values": "SAS Date"
+      },
+      {
+        "name":"PCC"
+        , "definition": "The primary care <strong>clinic</strong> to which the patient is paneled in the administrative record."
+        , "type": "char"
+        , "length": "*"
+        , "valid_values": "Values link as a foreign key to <a href='facility.html'>Facility.facility_code</a>."
+      },
+      {
+        "name":"PCP"
+        , "definition": "The primary care <strong>physician</strong> to which the patient is paneled in the administrative record."
+        , "type": "char"
+        , "length": "*"
+        , "valid_values": "Values link as a foreign key to <a href='provider.html'>Provider.provider</a>."
+      },
+      {
+        "name": "enrollment_basis"
+        , "definition": "The basis for the claim that we have at least partial capture of the medical care information during the period."
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "I", "meaning": "Insurance"}
+            , {"value": "P", "meaning": "Non-enrolled patient"}
+            , {"value": "G", "meaning": "Geography"}
+            , {"value": "B", "meaning": "Both geography & insurance"}
+            ]
+        , "implementation_guidelines": "Historically <strong>I</strong>nsurance was the only permissible basis. This was expanded as <abbr title='Health Care Systems Research Network'>HCSRN</abbr> took on new member organizations which were pure providers of health care and had no insurance function."
+      },
+      {
+        "name": "incomplete_outpt_rx"
+        , "definition": "Is <strong>outpatient pharmacy fill</strong> data suspected to be incomplete for this person/period?"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "K", "meaning":"There are known reasons to suspect incomplete capture"}
+            , {"value": "N", "meaning":"No, there is no known reason to suspect incomplete capture"}
+            , {"value": "X", "meaning":"This variable not implemented at this site"}
+        ]
+      },
+      {
+        "name": "incomplete_outpt_enc"
+        , "definition": "Is <strong>outpatient encounter</strong> data suspected to be incomplete for this person/period?"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "K", "meaning":"There are known reasons to suspect incomplete capture"}
+            , {"value": "N", "meaning":"No, there is no known reason to suspect incomplete capture"}
+            , {"value": "X", "meaning":"This variable not implemented at this site"}
+        ]
+      },
+      {
+        "name": "incomplete_inpt_enc"
+        , "definition": "Is <strong>inpatient encounter</strong> data suspected to be incomplete for this person/period?"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "K", "meaning":"There are known reasons to suspect incomplete capture"}
+            , {"value": "N", "meaning":"No, there is no known reason to suspect incomplete capture"}
+            , {"value": "X", "meaning":"This variable not implemented at this site"}
+        ]
+      },
+      {
+        "name": "incomplete_emr"
+        , "definition": "Is <strong>electronic medical record</strong> (e.g., social history, vital signs) data suspected to be incomplete for this person/period?"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "K", "meaning":"There are known reasons to suspect incomplete capture"}
+            , {"value": "N", "meaning":"No, there is no known reason to suspect incomplete capture"}
+            , {"value": "X", "meaning":"This variable not implemented at this site"}
+        ]
+      },
+      {
+        "name": "incomplete_tumor"
+        , "definition": "Is <strong>tumor</strong> data suspected to be incomplete for this person/period?"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "K", "meaning":"There are known reasons to suspect incomplete capture"}
+            , {"value": "N", "meaning":"No, there is no known reason to suspect incomplete capture"}
+            , {"value": "X", "meaning":"This variable not implemented at this site"}
+        ]
+      },
+      {
+        "name": "incomplete_lab"
+        , "definition": "Is <strong>lab results</strong> data suspected to be incomplete for this person/period?"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "K", "meaning":"There are known reasons to suspect incomplete capture"}
+            , {"value": "N", "meaning":"No, there is no known reason to suspect incomplete capture"}
+            , {"value": "X", "meaning":"This variable not implemented at this site"}
+        ]
+      },
+      {"name":"ins_medicaid"
+        , "definition": "Whether the person had any Medicaid insurance coverage during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_commercial"
+        , "definition": "Whether the person had any commercial insurance coverage during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_privatepay"
+        , "definition": "Whether the person had any insurance coverage in a private pay plan during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>Broadly defined as the individual bearing nearly all of the cost of the premium.</p> <p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_statesubsidized"
+        , "definition": "Whether the person had any state subsidized insurance coverage during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>Typically covers lower income individuals who do not qualify for Medicaid.</p><p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_selffunded"
+        , "definition": "Whether the person had any insurance coverage through an employer group that insures itself during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>Typically commercial employers who bear employee's medical risk. The HMO serves as a claims administrator.</p> <p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_highdeductible"
+        , "definition": "Whether the person had any insurance coverage in a high deductible plan during the period as defined by the <a href='https://www.irs.gov/publications/p969'>U.S. IRS (Pub 969)</a> qualifying for a Health Savings Account"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_medicare"
+        , "definition": "Whether the person had any Medicare insurance coverage, including Medicare working aged, during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>See Appendix B for detailed descriptions of each insurance coverage.</p> <p>If any ins_medicare_X variables are set to 'Y', this variable should also equal 'Y'.</p>"
+      },
+      {"name":"ins_medicare_a"
+        , "definition": "Whether the person had any Medicare Part A insurance coverage, including Medicare working aged, during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>Part A generally covers <strong>inpatient</strong> care.</p> <p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_medicare_b"
+        , "definition": "Whether the person had any Medicare Part B insurance coverage, including Medicare working aged, during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>Part B generally covers <strong>outpatient</strong> care.</p> <p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_medicare_c"
+        , "definition": "Whether the person had any Medicare Part C insurance coverage, including Medicare working aged, during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>Part C generally covers inpatient and outpatient but with <strong>capitated payment</strong> to the insurance provider.</p> <p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_medicare_d"
+        , "definition": "Whether the person had any Medicare Part D insurance coverage, including Medicare working aged, during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>Part D generally covers prescription drugs.</p> <p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {"name":"ins_other"
+        , "definition": "Whether the person had insurance coverage during the period that is not otherwise included in the INS_* variables during the period"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+            {"value": "Y", "meaning": "Yes"}
+          , {"value": "E", "meaning": "Yes, but from an External organization"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      , "implementation_guidelines": "<p>Any other insurance type not adequetely categorized by one of the other INS_* variables.</p> <p>See Appendix B for detailed descriptions of each insurance coverage.</p>"
+      },
+      {
+        "name": "plan_hmo"
+        , "definition": "Whether the person had insurance coverage under an HMO plan during the period"
+        , "type":"char"
+        , "length": 1
+        , "valid_values":[
+          {"value":"Y", "meaning": "Yes"}
+          , {"value":"E", "meaning": "Yes, but from an External organization"}
+          , {"value":"N", "meaning": "No"}
+          , {"value":"U", "meaning": "Unknown"}
+        ]
+        , "implementation_guidelines": "See Appendix B for detailed descriptions of each plan type."
+      },
+      {
+        "name": "plan_pos"
+        , "definition": "Whether the person had insurance coverage under a point-of-service plan during the period"
+        , "type":"char"
+        , "length": 1
+        , "valid_values":[
+          {"value":"Y", "meaning": "Yes"}
+          , {"value":"E", "meaning": "Yes, but from an External organization"}
+          , {"value":"N", "meaning": "No"}
+          , {"value":"U", "meaning": "Unknown"}
+        ]
+        , "implementation_guidelines": "See Appendix B for detailed descriptions of each plan type."
+      },
+      {
+        "name": "plan_ppo"
+        , "definition": "Whether the person had insurance coverage under a Preferred Provider Organization plan during the period"
+        , "type":"char"
+        , "length": 1
+        , "valid_values":[
+          {"value":"Y", "meaning": "Yes"}
+          , {"value":"E", "meaning": "Yes, but from an External organization"}
+          , {"value":"N", "meaning": "No"}
+          , {"value":"U", "meaning": "Unknown"}
+        ]
+        , "implementation_guidelines": "See Appendix B for detailed descriptions of each plan type."
+      },
+      {
+        "name": "plan_indemnity"
+        , "definition": "Whether the person had insurance coverage under a traditional indemnity plan during the period"
+        , "type":"char"
+        , "length": 1
+        , "valid_values":[
+          {"value":"Y", "meaning": "Yes"}
+          , {"value":"E", "meaning": "Yes, but from an External organization"}
+          , {"value":"N", "meaning": "No"}
+          , {"value":"U", "meaning": "Unknown"}
+        ]
+        , "implementation_guidelines": "See Appendix B for detailed descriptions of each plan type."
+      }
+    ],
+    "primary_key": "MRN + ENR_START (no overlapping time periods are permitted)",
+    "comments": [
+      {"title": "Capture Warning (INCOMPLETE_XXX) Variables", "comment": "For the INCOMPLETE_XXX variables, users are advised to treat N and X values as essentially identical in information content.  For applications that require, for example, complete Tumor data over time, we recommend using a condition like:  WHERE incomplete_tumor ne 'K'.  Users may also want to avail themselves of the enrollment_basis variable for applications that require complete pharmacy or encounter data.  When in doubt please check with your sites."}
+      , {"title": "No Overlapping Periods", "comment": "There may be many contiguous records for a single period of enrollment, in order to account for changes in the substantive variables. However, periods <strong>must not overlap one another</strong>; there should be only one record covering any given day + medical record number.  Discussion and code on how to implement non-overlapping periods is available on the HCSRN website. The following graphic depicts how data should be split out into multiple records."}
+      ]
   }
-
 }
-  
+
 

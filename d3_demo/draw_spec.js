@@ -45,8 +45,9 @@ async function draw_spec(spec_name, with_igs = true) {
   if (!with_igs) {our_cols.pop()} ;
 
   wrapper = d3.select("#wrapper") ;
+  wrapper.attr("class", "vdw-spec") ;
   wrapper.append("h1").text(spec.name) ;
-  wrapper.append("p").text(spec.description) ;
+  wrapper.append("p").html(spec.description) ;
   wrapper.append("h2").text("Standard Variable: " + spec.stdvar) ;
   wrapper.append("h2").text("Columns") ;
   wrapper.append("table")
@@ -58,7 +59,7 @@ async function draw_spec(spec_name, with_igs = true) {
     .data(spec_cols)
     .enter().append("th")
       .text(d => d.label)
-      .on("click", headerClick) 
+      .on("click", headerClick)
       .attr("class", d => d.class)
   ;
   ;

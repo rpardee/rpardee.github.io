@@ -31,8 +31,8 @@ thead th {
     background: #34495e;
     padding: 1em 0.8rem;
 }
-th:not(:last-child), td:not(:last-child) { 
-    border-right: 1px solid #34495e; 
+th:not(:last-child), td:not(:last-child) {
+    border-right: 1px solid #34495e;
 }
 
 .row-header {
@@ -96,13 +96,17 @@ td {
     pointer-events: none;
 }
 
+.vdw-spec {
+    width: 60% ;
+}
+
 rect {
     fill: #34495e ;
     opacity: 0.4 ;
 }
 
 #col-tab {
-    width: 70% ;
+    width: 100% ;
 }
 #col-tab, td {
     text-transform: none ;
