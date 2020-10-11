@@ -72,6 +72,7 @@ td {
 
 .row-header a {
     color:#d1ceba;
+    text-transform: capitalize;
 }
 
 /*tbody .text {

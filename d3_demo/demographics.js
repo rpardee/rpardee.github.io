@@ -38,8 +38,9 @@ function format_vallists(inarr) {
   } else {retval = inarr}
   return retval ;
 }
-async function draw_spec(specdata_json, with_igs = true) {
-  spec = await d3.json(specdata_json) ;
+async function draw_spec(spec_name, with_igs = true) {
+  all_specs = await d3.json('./specs.json') ;
+  spec = all_specs[spec_name] ;
   our_cols = spec_cols ;
   if (!with_igs) {our_cols.pop()} ;
 
@@ -81,4 +82,4 @@ async function draw_spec(specdata_json, with_igs = true) {
 
 }
 
-draw_spec('./demographics.json', true) ; 
+draw_spec('Demographics', true) ; 
