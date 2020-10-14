@@ -121,3 +121,17 @@ rect {
 .hidden {
     display: none;
 }
+
+dt {
+    float: left;
+    font-weight: bold;
+}
+
+dt::after {
+    content: ":";
+}
+
+dd {
+    margin-left: 2em;
+    margin-bottom: 5px;
+}
