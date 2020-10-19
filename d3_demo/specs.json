@@ -1,4 +1,5 @@
-{"Demographics":
+{
+  "Demographics":
   {
     "name":"Demographics",
     "stdvar": "_vdw_demographic",
@@ -9,6 +10,7 @@
         , "type": "char"
         , "length": "*"
         , "valid_values": "Unique to each patient at each site"
+        , "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
       },
       {
         "name": "birth_date"
@@ -119,12 +121,13 @@
     ]
     , "primary_key": "MRN"
     , "comments": [
-      {"title": "Hispanic ethnicity reported as race", "comment": "If source data indicates the person's race as 'Hispanic' and there is no other known race recorded for the person, code the person's race as unknown. "}
+      {"title": "MRNs should be People", "comment": "Sites should do their best to maintain a 1:1 correspondence between people and MRNs. Fictitious/test numbers should be removed from the VDW. People with > 1 assigned MRN should be merged into a single number (in all files)."}
+      , {"title": "Hispanic ethnicity reported as race", "comment": "If source data indicates the person's race as 'Hispanic' and there is no other known race recorded for the person, code the person's race as unknown. "}
       ,{"title": "Recommended Mappings", "comment": "Please see appendix A for guidelines on mapping local race values to the permissible value set listed above. "}
       ,{"title": "Multiple Race Values", "comment": "When more than one race is known for a given person, assign values to the race variables in the order listed above RACE values and fill in any unused race variables with the value UN for unknown / not reported. Examples of coding RACE1 through RACE5 are illustrated here:"}
     ]
   },
-"Enrollments":
+  "Enrollments":
   {
     "name":"Enrollments",
     "stdvar": "_vdw_enroll",
@@ -135,6 +138,7 @@
         , "type": "char"
         , "length": "*"
         , "valid_values": "Unique to each patient at each site"
+        , "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
       },
       {"name": "enr_start"
         , "definition": "Beginning of the period at risk for medical care capture"
@@ -444,7 +448,174 @@
       {"title": "Capture Warning (INCOMPLETE_XXX) Variables", "comment": "For the INCOMPLETE_XXX variables, users are advised to treat N and X values as essentially identical in information content.  For applications that require, for example, complete Tumor data over time, we recommend using a condition like:  WHERE incomplete_tumor ne 'K'.  Users may also want to avail themselves of the enrollment_basis variable for applications that require complete pharmacy or encounter data.  When in doubt please check with your sites."}
       , {"title": "No Overlapping Periods", "comment": "There may be many contiguous records for a single period of enrollment, in order to account for changes in the substantive variables. However, periods <strong>must not overlap one another</strong>; there should be only one record covering any given day + medical record number.  Discussion and code on how to implement non-overlapping periods is available on the HCSRN website. The following graphic depicts how data should be split out into multiple records."}
       ]
+  },
+  "Languages":
+  {
+    "name":"Patient Languages",
+    "stdvar": "_vdw_language",
+    "description": "The LANGUAGE table contains information on the languages that patients speak and write. There is one record per person per known language. People on whom you have no language information should not be included in the table.",
+    "columns": [
+      {"name": "MRN"
+        , "definition": "Medical record number is the unique patient identifier within a site and should never leave the site"
+        , "type": "char"
+        , "length": "*"
+        , "valid_values": "Unique to each patient at each site"
+        , "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+      },
+      {
+        "name": "lang_iso"
+        , "definition": "A code signifying the language."
+        , "type": "char"
+        , "length": 3
+        , "valid_values": "As defined by <a href='http://www.loc.gov/standards/iso639-2/langhome.html'>ISO-639-2</a> or 'unk' for unknown."
+        , "implementation_guidelines": "Note that value set is lowercase."
+      },
+      {
+        "name": "lang_usage"
+        , "definition": "How the person uses this language."
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+          {"value": "S", "meaning": "Spoken/signed"}
+          , {"value": "W", "meaning": "Written"}
+          , {"value": "B", "meaning": "Both spoken and written"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      },
+      {
+        "name": "lang_primary"
+        , "definition": "For spoken languages, whether this is the person's primary spoken language."
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+          {"value": "Y", "meaning": "Yes"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "U", "meaning": "Unknown"}
+        ]
+      }
+    ]
+      , "primary_key": "MRN + lang_iso"
+      , "comments": [
+        {"title": "Only Known Languages", "comment": "People for which you have no language information should not be included in this table."}
+      ]
+  },
+  "Facility":
+  {
+    "name":"Facility Lookup",
+    "stdvar": "_vdw_facility",
+    "description": "Contains the most recent information about each health care facility found in the implementing site's VDW tables.",
+    "columns": [
+      {"name":"facility_code"
+        , "definition":"An implementing-site-unique identifier of a health care facility"
+        , "type": "char"
+        , "length": "*"
+        , "valid_values": "Any non-null value"
+        , "implementation_guidelines": "<p>Must be unique and never missing.</p><p>Length and contents should match all other instances of this field.</p>"
+      },
+      {
+        "name":"relationship"
+        , "definition": "Relationship between the facility and the implementing site."
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+          {"value": "O", "meaning": "Owned and/or operated by your health care organization."}
+          , {"value": "E", "meaning": "External facility.  A facility NOT owned nor operated by your health care organization.  Includes contract facilities."}
+          , {"value": "U", "meaning": "Unknown "}
+        ]
+        , "implementation_guidelines": "See comment 1 below."
+      },
+      {
+        "name":"relationship_history"
+        , "definition": "Describes the relationhship history between the facility and your health care organization."
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+          {"value": "O", "meaning": "Always owned and/or operated by your health care organization."}
+          , {"value": "E", "meaning": "Always an external facility (includes contract facilities)."}
+          , {"value": "1", "meaning": "Was an owned facility, most recently an external facility"}
+          , {"value": "2", "meaning": "Was an external facility, most recently an owned facility"}
+          , {"value": "U", "meaning": "Unknown "}
+        ]
+        , "implementation_guidelines": "See comment 1 below."
+      },
+      {"name": "address_facility_type"
+        , "definition": "Specify whether the address information is for a clinical or billing location"
+        , "type": "char"
+        , "length": 1
+        , "valid_values": [
+
+            {"value": "C", "meaning": "Clinical Facility"}
+            , {"value": "B", "meaning": "Billing Facility"}
+            , {"value": "U", "meaning": "Unknown"}
+        ]
+        , "implementation_guidelines": "If both types of locations are known, include only the Clinical location. Populate only if at least Zip code is known."
+      },
+      {
+        "name": "full_address"
+        , "definition": "Full address of the facility"
+        , "type": "char"
+        , "length": "*"
+        , "valid_values": "Street address, city, state, zip combined in to one variable, or null."
+        , "implementation_guidelines": "A concatenation of the address component variables that follow, for sites that don't have them parsed out in indigenous data."
+      },
+      {
+        "name": "street_address"
+        , "definition": "Street address of the facility."
+        , "type": "char"
+        , "length": "*"
+        , "valid_values": "Any, including null."
+        , "implementation_guidelines": "Use the street address for the clinical location if possible.  If not, then use the billing facility address. This field is populated if the information is readily available in indigenous data."
+      },
+      {
+        "name": "city"
+        , "definition": "City where the facility is located "
+        , "type": "char"
+        , "length": "*"
+        , "valid_values": "Any city name, or null."
+        , "implementation_guidelines": "This field is populated if the information is readily available in the source system. "
+      },
+      {
+        "name": "state"
+        , "definition": "State where the facility is located"
+        , "type": "char"
+        , "length": 2
+        , "valid_values": "Any valid State or Province abbreviation, or null"
+        , "implementation_guidelines": "This field is populated if the information is easily available in the source system. "}
+      , {
+          "name": "zip"
+        , "definition": "Zip code of the facility (5 or 9 digits) or null."
+        , "type": "char"
+        , "length": 9
+        , "valid_values": "5 or 9 digit zip code, with leading zeroes, and no dashes, or null.<p>For example:<br/>01234<br/>12345<br/>123456789</p>"
+        , "implementation_guidelines": "Retain leading zeroes, but do not pad out 5 digit source values with additional leading or trailing zeroes. For example:<ul><li>source value of '01234' remains '01234'</li><li>source value of '12345' remains '12345' not '123450000' or '000012345'</li></ul>"
+      },
+      {
+        "name": "latitude"
+        , "definition": "latitude of the location in degrees"
+        , "type": "num"
+        , "length": 8
+        , "valid_values": "Real numbers between -90 and 90, or missing."
+        , "implementation_guidelines": "Generally obtained by geocoding the address indicated in the foregoing fields."
+      },
+      {
+        "name": "longitude"
+        , "definition": "longitude of the location in degrees"
+        , "type": "num"
+        , "length": 8
+        , "valid_values": "Real numbers between -90 and 90, or missing."
+        , "implementation_guidelines": "Generally obtained by geocoding the address indicated in the foregoing fields."
+      }
+    ],
+    "comments": [
+      {"title":"Relationship of Facility to Implementing Site", "comment": "Implementers at <abbr title='Health Maintenance Organization'>HMO</abbr>s typically have data on care ocurring both internal to their health system, and outside of it (from submitted claims). There are two major implications of this internal/external distinction. <p>First, health plans typically have more control on the type, volume, quality, and cost of care at the facilities that they own and/or operate.  There is a stronger incentive to provide efficient care and providers at these facilities probably have access to more complete patient information. Health plans typically have less control over external facilities.  These external facilities often have different incentives and thus, care patterns may be different.   For instance, the mom delivery C-section rate may be different at owned hospitals as compared to external hospitals.  Despite the disadvantages, it's also possible that patients may receive better care at an external facility (the specialty group with the best reputation in the service area may be at an external facility).</p><p>Second, facility locations indicated on incoming claims may only include the billing location--where payment should be submited.</p>"}
+
+      , {"title":"Prefer Clinical Locations", "comment": "A common application for this table is estimating the distance patients must travel in order to obtain care. For that reason we always prefer to have the locations where care takes place (clinical locations) rather than the locations to which payments should be submitted (billing locations)."}
+
+    ],
+    "primary_key": "facility_code"
+
   }
 }
+
 
 

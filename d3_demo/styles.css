@@ -6,9 +6,9 @@ body {
     /*padding: 8em 2em;*/
     letter-spacing: -0.011em;
     font-family: 'Inter var', sans-serif;
-    font-size: .7em;
     color: #34495e;
     background: #f8f9fa;
+    margin-top: 0px;
 }
 
 table {
@@ -97,7 +97,7 @@ td {
 }
 
 .vdw-spec {
-    width: 60% ;
+    width: 70% ;
 }
 
 rect {
