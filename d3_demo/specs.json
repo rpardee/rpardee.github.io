@@ -1102,18 +1102,18 @@
         }]
       },
       {
-        "name": "provider_race"
-        , "definition": "The provider's race"
-        , "type": "char"
-        , "length": 2
-        , "valid_values": "As defined in <a href='demographics.html'>race1 in the Demographics specification.</a>"
+        "name": "provider_race",
+        "definition": "The provider's race",
+        "type": "char",
+        "length": 2,
+        "valid_values": "As defined in <a href='demographics.html'>race1 in the Demographics specification.</a>"
       },
       {
-        "name": "provider_hispanic"
-        , "definition": "The provider's ethnicity"
-        , "type": "char"
-        , "length": 1
-        , "valid_values": "As defined in <a href='demographics.html'>hispanic in the Demographics specification.</a>"
+        "name": "provider_hispanic",
+        "definition": "The provider's ethnicity",
+        "type": "char",
+        "length": 1,
+        "valid_values": "As defined in <a href='demographics.html'>hispanic in the Demographics specification.</a>"
       }
     ],
     "primary_key": "provider",
@@ -1125,7 +1125,239 @@
     {
       "title": "Only a single specialty variable is guaranteed to exist",
       "comment": "In defiance of God and VDW convention, the numbered-suffix specialty vars may not exist at all at a given implementing site."
+    }]
+  },
+  "Utilization":
+  {
+    "name": "Utilization: Encounters",
+    "stdvar": "_vdw_utilization",
+    "description": "The ENCOUNTER table contains one record for each significant medical-related interaction between a patient and a medical provider, regardless of care setting or type of encounter. All known encounters should be included whether known through claims, through clinical systems, or a third source type. Inclusion, exclusions, classification, and uniqueness of an encounter is dependent on the type of service and care setting. For a precise description, please refer to the Utilization Implementation Guidelines on the private HCSRN website.",
+    "columns": [
+    {
+      "name": "MRN",
+      "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+      "type": "char",
+      "length": "*",
+      "valid_values": "Unique to each patient at each site",
+      "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+    },
+    {
+      "name": "adate"
+      , "definition": "Encounter or admit date for inpatient or institutional stay."
+      , "type": "num"
+      , "length": 4
+      , "valid_values": "Any SAS date"
+      , "implementation_guidelines": "If encounter/admit date is unknown, then use the first date of a claim."
+    },
+    {
+      "name": "atime"
+      , "definition": "Start time of the encounter."
+      , "type": "num"
+      , "length": 4
+      , "valid_values": "Any SAS time value, or null if unknown"
+      , "implementation_guidelines": "<p>Use admission time for inpatient, emergency or institutional encounters. </p> <p>For other encounters (such as ambulatory visits), use check-in time if this field is populated, otherwise use appointment time.</p>"
+    },
+    {
+      "name": "ddate"
+      , "definition": "Discharge date for inpatient and overnight encounters, or encounter end date if otherwise available in source data"
+      , "type": "num"
+      , "length": 4
+      , "valid_values": "Any SAS date value, or null if unknown/not applicable"
+      , "implementation_guidelines": "Expected to be populated for inpatient and institutional stays.<p>If precise discharge date is unknown, use the date of the last claim for the encounter."
+    },
+    {
+      "name": "dtime"
+      , "definition": "Discharge or end time of the encounter."
+      , "type": "num"
+      , "length": 4
+      , "valid_values": "Any SAS time value, or null if unknown"
+      , "implementation_guidelines": "<p>Use discharge time for inpatient, emergency or institutional encounters. </p> <p>For other encounters (such as ambulatory visits), use check-out time if this field is populated.</p>"
+    },
+    {
+      "name": "provider"
+      , "definition": "Identifies the provider most responsible for the encounter."
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Values link as a foreign key to <a href='provider.html'>Provider.provider</a>."
+      , "implementation_guidelines": "Usually a physician, nurse practitioner, physician assistant, optometrist, etc."
+    },
+    {
+      "name": "enc_id"
+      , "definition": "An arbitrary, static, unique encounter identifier."
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Any non-null value, so long as they uniquely identify an encounter."
+      , "implementation_guidelines": "This is a surrogate key.  The natural key is  mrn, provider, facility_code, adate, atime, enctype, and encounter_subtype."
+    },
+    {
+      "name": "enctype"
+      , "definition": "The type of encounter"
+      , "type": "char"
+      , "length": 2
+      , "valid_values": [
+          {"value": "IP", "meaning": "Acute inpatient hospital stay including inpatient stays, same-day hospital discharges, hospital transfers when patient was admitted into hospital, acute inpatient pysch, and detox stays. [SUB = AI]"}
+          , {"value": "ED", "meaning": "Emergency department excluding urgent care [SUB = HA, OC]"}
+          , {"value": "AV", "meaning": "Ambulatory visit including outpatient clinics, same-day surgeries, observation beds, urgent care visits, and same-day ambulatory hospital encounters. Excludes emergency department. [SUB = OC, OB, SD, HA, UC, RH, DI, OT]"}
+          , {"value": "TE", "meaning": "Telephone encounter [SUB = OT, HH]"}
+          , {"value": "EM", "meaning": "E-mail including secure messaging [SUB = OT, HH]"}
+          , {"value": "IS", "meaning": "Non-acute institutional stays including hospice, SNF, rehab, nursing home, residential, overnight non-hospital dialysis and other non-hospital stays [SUB = HS, SN, NH, RH, DI, OT]"}
+          , {"value": "OE", "meaning": "Other Encounters:  Non-overnight hospice visits, home health visits, SNF visits, or other visits that do not occur in a typical ambulatory clinic or hospital setting.  This encounter type can include individual professional services or provider rounding visits for inpatient or institutional stays where no facility claim could be identified in which to merge these visits.    [Encounter_subtype=HS, HH, SN, RH, DI, OT, AI, NH]"}
+          , {"value": "LO", "meaning": "A lab only encounter that cannot be matched to another encounter [SUB = OC, OT]"}
+          , {"value": "RO", "meaning": "A radiology only encounter that cannot be matched to another encounter [SUB = OC, OT]"}
+      ]
+      ,"implementation_guidelines": "Only certain combinations of enctype and encounter_subtype values are permitted--see the bracketed lists of subtypes permitted with each enctype (and vice-versa).<p>Implementers should include as many of these types of encounters as are available in indigenous data. Users should not assume that all encounter types are available at all implementing sites.</p>"
+    },
+    {
+      "name": "encounter_subtype"
+      , "definition": "Further specification of the type of encounter. Valid associated ENCTYPE values are in brackets."
+      , "type": "char"
+      , "length": 2
+      , "valid_values": [
+          {"value": "AI", "meaning": "Acute inpatient stay excluding observation bed [TYPE=IP, OE]"}
+          , {"value": "OB", "meaning": "Observation bed [TYPE = AV]"}
+          , {"value": "OC", "meaning": "Outpatient clinic visit [TYPE = AV, LO, RO, ED]"}
+          , {"value": "SD", "meaning": "Same-day surgery [TYPE = AV]"}
+          , {"value": "UC", "meaning": "Urgent care [TYPE = AV]"}
+          , {"value": "HA", "meaning": "Hospital ambulatory; outpatient care at hospital excluding same-day surgery and observation beds [TYPE = AV, ED]"}
+          , {"value": "HS", "meaning": "Hospice [TYPE = IS, OE]"}
+          , {"value": "HH", "meaning": "Home health [TYPE = OE, TE, EM]"}
+          , {"value": "SN", "meaning": "Skilled nursing facility [TYPE = IS, OE]"}
+          , {"value": "NH", "meaning": "Nursing home including intermediate care facilities [TYPE = IS, OE]"}
+          , {"value": "RH", "meaning": "Rehab [TYPE = IS, AV, OE]"}
+          , {"value": "DI", "meaning": "Dialysis [TYPE = IS, AV, OE]"}
+          , {"value": "OT", "meaning": "Other non-hospital [TYPE = IS, OE, TE, EM AV, LO, RO]"}
+          ]
+      , "implementation_guidelines": "Only certain combinations of enctype and encounter_subtype values are permitted--see the bracketed lists of types permitted with each subtype (and vice-versa)."
+    },
+    {
+      "name": "drg_value"
+      , "definition": "The Diagnostic Related Group value. Used for hospital encounters."
+      , "type": "char"
+      , "length": 3
+      , "valid_values": "Numeric codes as defined by <abbr title='Centers for Medicare and Medicaid'>CMS</abbr> or other relevant authority (determined by drg_version)."
+      , "implementation_guidelines": "<p>Expected to be populated on inpatient [IP] and institutional stay [IS] encounters, but populate for all encounters when known.</p> <p>Use leading zeros for codes less than 100.</p>"
+    },
+    {
+      "name": "drg_version"
+      , "definition": "Version of the value in drg_value."
+      , "type": "char"
+      , "length": 1
+      , "valid_values": [
+        {"value": "A", "meaning":"CMS-DRG"}
+        , {"value": "B", "meaning":"MS-DRG"}
+        , {"value": "C", "meaning":"APR-DRG"}
+      ]
+      , "implementation_guidelines": "The admit-date border between the earlier CMS-DRG scheme and the subsequent MS-DRG scheme is 01-oct-2007."
+    },
+    {
+      "name": "admitting_source"
+      , "definition": "The location from which the patient was admitted for events with admit."
+      , "type": "char"
+      , "length": 2
+      , "valid_values": [
+          {"value": "AV", "meaning": "Ambulatory Visit"}
+          , {"value": "ED", "meaning": "Emergency Department"}
+          , {"value": "AF", "meaning": "Adult Foster Home"}
+          , {"value": "AL", "meaning": "Assisted Living Facility"}
+          , {"value": "HH", "meaning": "Home Health"}
+          , {"value": "HS", "meaning": "Hospice"}
+          , {"value": "HO", "meaning": "Home / Self Care"}
+          , {"value": "IP", "meaning": "Other Acute Inpatient Hospital"}
+          , {"value": "NH", "meaning": "Nursing Home (Includes ICF)"}
+          , {"value": "OT", "meaning": "Other"}
+          , {"value": "RS", "meaning": "Residential Facility"}
+          , {"value": "RH", "meaning": "Rehabilitation Facility"}
+          , {"value": "SN", "meaning": "Skilled Nursing Facility"}
+          , {"value": "UN", "meaning": "Unknown"}
+      ]
+    },
+    {
+      "name": "discharge_status"
+      , "definition": "The status of the patient at discharge for events with discharge."
+      , "type": "char"
+      , "length": 2
+      , "valid_values": [
+            {"value": "AF", "meaning": "Adult Foster Home"}
+            , {"value": "AL", "meaning": "Assisted Living Facility"}
+            , {"value": "AM", "meaning": "Against Medical Advice"}
+            , {"value": "AW", "meaning": "Absent without leave"}
+            , {"value": "EX", "meaning": "Expired"}
+            , {"value": "HH", "meaning": "Home Health"}
+            , {"value": "HS", "meaning": "Hospice"}
+            , {"value": "HO", "meaning": "Home / Self Care"}
+            , {"value": "IP", "meaning": "Other Acute Inpatient Hospital"}
+            , {"value": "NH", "meaning": "Nursing Home (Includes ICF)"}
+            , {"value": "OT", "meaning": "Other"}
+            , {"value": "RS", "meaning": "Residential Facility"}
+            , {"value": "RH", "meaning": "Rehabilitation Facility"}
+            , {"value": "SH", "meaning": "Still In Hospital"}
+            , {"value": "SN", "meaning": "Skilled Nursing Facility"}
+            , {"value": "UN", "meaning": "Unknown"}
+      ]
+    },
+    {
+      "name": "discharge_disposition"
+      , "definition": "The disposition of the patient at discharge for events with discharge."
+      , "type": "char"
+      , "length": 1
+      , "valid_values": [
+            {"value": "A", "meaning": "Alive"}
+            , {"value": "E", "meaning": "Expired"}
+            , {"value": "U", "meaning": "Unknown"}
+      ]
+    },
+    {
+      "name": "facility_code",
+      "definition": "A code indiciating the facility, hospital, or clinic in which the encounter occurred.",
+      "type": "char",
+      "length": "*",
+      "valid_values": "Values link as a foreign key to <a href='facility.html'>Facility.facility_code</a>."
+    },
+    {
+      "name": "dept"
+      , "definition": "The department where the encounter took place"
+      , "type": "char"
+      , "length": 6
+      , "valid_values": "As given in <a href='appendix_a2_depts.html'>Appendix A2: Dept Values</a>"
+      , "implementation_guidelines": "This is not necessarily the specialty of the clinician providing services.<p>If department information is unavailable in the source data (as may happen in claims data), specify as 'UNKNWN'.</p><p>See New 6 Character DEPARTMENT values, Appendix A2</p>"
+    },
+    {
+      "name": "source_data"
+      , "definition": "Classification of the database that was used to create this record."
+      , "type": "char"
+      , "length": 1
+      , "valid_values": [
+           {"value": "E", "meaning": "Your site's EHR (Electronic Health Record) operated by your health care organization. Excludes claims and billing data. "}
+          , {"value": "B", "meaning": "Billing data--for services performed by your organization and captured in your org's EHR, but formatted for billing an outside insurer. These are sometimes referred to as 'internal' or 'outgoing' claims, or transaction data. "}
+          , {"value": "C", "meaning": "Claims data--for services performed outside of your health care organization, presented to your organization for payment as the patient's insurer."}
+          , {"value": "L", "meaning": "Local data source but unrelated to your site's EHR . Often Includes pre-EHR systems prior to EHR implementation such as appointment management systems."}
+          , {"value": "M", "meaning": "Multiple sources--the encounter is an amalgam of data from different sources (e.g., inpatient encounters with data from claims and EHR rounding)"}
+          , {"value": "O", "meaning": "Other. Not from the sources listed above."}
+          , {"value": "U", "meaning": "Unknown"}
+      ]
+      , "implementation_guidelines": "Category 'E' includes:<ul><li>Direct extract from your site's EHR (or associated reporting database).</li><li>A secondary database that houses your site's EHR data (no code changes for billing)</li><li>Data for services captured in other local systems (such as a separate lab or radiology system) and interfaced into your site's EHR.</li></ul>"
+    },
+    {
+
+      "name": "electronic_chart_review"
+      , "definition": "Can this encounter be chart reviewed electronically?"
+      , "type": "char"
+      , "length": 1
+      , "valid_values": [
+          {"value": "Y", "meaning": "Yes"}
+          , {"value": "N", "meaning": "No"}
+          , {"value": "P", "meaning": "Partially (part of the record can be reviewed electronically).  A couple of examples:<ul><li>If only a discharge summary is available for inpatient stays</li><li>if only rounding data is available for inpatient stays</li></ul>"}
+          , {"value": "U", "meaning": "Unknown"}
+      ]
     }
-  ]
+  ],
+    "comments":[
+        {"title": "What is an encounter?", "comment": "In general, the intention of the encounter file is to describe all significant interactions between patients and medical providers. It should include such things as inpatient stays, emergency department visits,  other outpatient hospital services (e.g. same day surgeries), ambulatory visits, home health encounters, and non-hospital residential stays including skilled nursing facility, rehab, nursing home, overnight hospice facility, and overnight dialysis facility."}
+        , {"title": "Uniquely Identifying an Encounter", "comment": "A single inpatient stay, non-acute institutional stay (such as SNF, Rehab, Nursing Home, overnight Hospice or Dialysis stay) or emergency visit has 1 record in the encounter file.  For ambulatory visit, telephone, e-mail, lab only, radiology only and 'other' encounters, a unique encounter record is defined as each patient and provider medical contact documented in the source data (exclude scheduling appointments and other administrative tasks). A unique combination of the following variables is an encounter:  MRN, adate, enctype, encounter_subtype, provider, facility_code, and appointment time (if available)."}
+        , {"title": "What types of encounters should be included?", "comment": "See the definition of the variables EncType and Encounter_Subtype for the full list of the types of encounters that should be included.  Questions about whether a particular type of encounter should be included and how it should be characterized should be directed to the VDW Utilization Workgroup."}
+        , {"title": "Members only?", "comment": "Data on all services provided by the health plan, whether or not they were provided to a member (enrollee) of the plan should be included.  (This means that this file will frequently need to be checked against Enrollment in order to identify study populations-users should not assume that people found in the Utilization tables are members of the health plan, or that anything in particular is known about them.)"}
+        , {"title": "Internally provided services only?", "comment": "All available encounters should be included, even those taking place at external providers (in other words, claims data should be included if that is the only source you have for a given encounter).  Sites with known data 'blind spots' (e.g., hospice care is subcontracted out on a capitated basis, and no claims are submitted) should document them on their Utilization implementation page on the CRN Portal."}
+    ]
+
   }
 }

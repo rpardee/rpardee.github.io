@@ -1,0 +1,8 @@
+provider.provider_gender should be changed to match new demog vars.
+get consistent on whether table names are plural or singular (e.g., facility vs facilities)
+distinguish between implementation guidelines & user notes
+encounter.provider specifies a value of 'UNK' if the responsible provider is unknown
+  - is that really what ppl are doing?
+  - do we need to include an 'unk' provider in provider?
+encoutner.admitting source could maybe use an N/A type value or other affirmative expression that nulls are allowed.
+time to ditch the old DEPARTMENT var in encounters.
