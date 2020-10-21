@@ -2060,5 +2060,130 @@
       "title": "Compound Drugs",
       "comment": "Compound drugs may be represented differently across sites. If a drug of interest is a compound drug, users may want to check with individual sites on their handling of these dispensings."
     }]
+  },
+  "EverNDC":
+  {
+    "name": "EverNDC",
+    "description": "The EVERNDC table is a lookup table containing all National Drug Codes (NDC) found in the <a href='outpatient_fills.html'>PHARMACY</a> table at the implementing site. That is, pharmacy dispensings occurring at <em>site A</em> will have at least one corresponding record in <em>site A</em>'s EVERNDC table but not necessarily any records in <em>site B</em>'s EVERNDC table.",
+    "stdvar": "_vdw_everndc",
+    "columns": [
+    {
+      "name": "ndc",
+      "definition": "The identifier of a drug (or pharmacy product). ",
+      "type": "char",
+      "length": 11,
+      "valid_values": "Any value that may be found in the <a href='outpatient_fills.html'>outpatient fills</a> file at the implementing site."
+    },
+    {
+      "name": "ndc_fda",
+      "definition": "The original FDA National Drug Code in 4-4-2, 5-3-2, or 5-4-1 format including dashes",
+      "type": "char",
+      "length": 12,
+      "valid_values": "Any value consisting of numbers and dashes.",
+      "implementation_guidelines": "Populate only if available in source data; generally this value cannot be derived from the char(11) NDC format."
+    },
+    {
+      "name": "generic",
+      "definition": "The generic name of the drug",
+      "type": "char",
+      "length": 105,
+      "valid_values": "Any",
+      "implementation_guidelines": "Convert to all upper case. Remove form, strength, and all other labels."
+    },
+    {
+      "name": "brand",
+      "definition": "The brand name of the drug",
+      "type": "char",
+      "length": 105,
+      "valid_values": "Any",
+      "implementation_guidelines": "Convert to all upper case. Remove form, strength, and all other labels."
+    },
+    {
+      "name": "AHFS1 - AHFS7",
+      "definition": "The American Society of Health-System Pharmacists drug classification code. Store up to seven different AHFS codes across these variables",
+      "type": "char",
+      "length": 8,
+      "valid_values": "As determined by the AHFS, or null",
+      "implementation_guidelines": "<p>This is <a href='https://www.ahfsdruginformation.com'>a proprietary classification scheme</a>, which not every implementing site has licensed. Users should not assume these columns will be populated at every site or for every row.</p><p>If code is in the 6 digit format, pad with two zeros at the end of the code.</p><p>The seven AHFS fields do not imply a hierarchy, include all available AHFS codes assigned to each NDC in the sequence you prefer.</p>"
+    },
+    {
+      "name": "GPI",
+      "definition": "The Generic Product Identifier drug classification code",
+      "type": "char",
+      "length": 14,
+      "valid_values": "As determined by Medi-Span",
+      "implementation_guidelines": "<p>This is <a href='https://www.wolterskluwer.com'>a proprietary classification scheme</a>, which not every implementing site has licensed. Users should not assume this column will be populated at every site or for every row.</p><p>Not to be confused with the <em>generic price indicator</em> variable available from vendor <abbr title='First Data Bank'>FDB</abbr></p>"
+    },
+    {
+      "name": "unit_of_measure",
+      "definition": "The unit of measure as reported in source data without standardization or cleaning except for storing values in all upper case",
+      "type": "char",
+      "length": "*",
+      "valid_values": "Any",
+      "implementation_guidelines": "Example values are 2000, U/4ML, GM/15ML, %/5GM, -400 UNIT"
+    },
+    {
+      "name": "strength",
+      "definition": "The strength of the drug as reported in source data without standardization or cleaning except for storing values in all upper case",
+      "type": "char",
+      "length": "*",
+      "valid_values": "Any",
+      "implementation_guidelines": "Example values are 99.99%, 9G, 9MCG/0.3ML, 9000 UNIT"
+    },
+    {
+      "name": "dosage_form",
+      "definition": "The form of the drug as reported in source data without standardization or cleaning except for storing values in all upper case",
+      "type": "char",
+      "length": "*",
+      "valid_values": "Any",
+      "implementation_guidelines": "Example values are VIAL, VIAL PORT, WAFER, WAF, SOLUTION, SOLN SEQ, SPIRIT"
+    },
+    {
+      "name": "obsolete_dt",
+      "definition": "The date this combination of NDC + generic was made obsolete",
+      "type": "num",
+      "length": 4,
+      "valid_values": "Any SAS date, or null",
+      "implementation_guidelines": "Populate only if the NDC is later reused for a drug with a different generic name."
+    },
+    {
+      "name": "reinstated_dt",
+      "definition": "The date this NDC was re-issued/recycled, after being obsoleted",
+      "type": "num",
+      "length": 4,
+      "valid_values": "Any SAS date, or null",
+      "implementation_guidelines": "Populate only if the NDC is later reused for a drug with a different generic name."
+    },
+    {
+      "name": "ndc_site_specific_flag",
+      "definition": "Indicates whether an NDC is a site-specific, non-standard item.",
+      "type": "char",
+      "length": 1,
+      "valid_values": [
+      {
+        "value": "Y",
+        "meaning": "Yes"
+      },
+      {
+        "value": "N",
+        "meaning": "No"
+      },
+      {
+        "value": "U",
+        "meaning": "Unknown"
+      }],
+      "implementation_guidelines": "site-specific NDCs include but are not limited to compound drugs, stock items, repackaged drugs and study medications.  Some site specific NDCs are identifiable via a starting set of characters, such as 11111 or 99999, or a term."
+    }],
+    "primary_key": "ndc + generic",
+    "comments": [
+      {
+        "title": "Creating NDC lists for multi-site projects",
+        "comment": "<p>Creating lists of NDCs for multi-site projects is a <em>known hard problem</em>.</p><p>Because this file is explicitly defined as idiosyncratic to each implementing site (only NDCs to be found at that site are included) and because the various commercial sources of NDC catalogues are necessarily ignorant of custom NDCs in use at implementing sites (e.g. for compound drugs and custom repackages) there is no single site that should consider itself capable of developing a valid list for use at multiple sites.</p>For this reason, we recommend a two-step approach for compiling NDC lists.<p><ol><li>The lead analyst of a project can first write a distributed program to query the EverNDC tables across sites. They may use generic names, brand names, AHFS codes (if available), or GPI codes (if available) to identify the NDCs in use at other sites.</li><li>They can then collate the NDCs identified from all participating sites to compile a final list of NDCs for the study.</li></ol>"
+      },
+      {
+        "title": "Compound Drugs",
+        "comment": "Compound drugs are represented differently in the data across sites. If the drug you are looking for may be a compound drug, please check with individual sites to understand how they are handling these data."
+      }
+    ]
   }
 }

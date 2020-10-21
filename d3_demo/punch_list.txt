@@ -8,3 +8,5 @@ encoutner.admitting source could maybe use an N/A type value or other affirmativ
 time to ditch the old DEPARTMENT var in encounters.
 
 px comment "Lab, radiology, immunization and other procedure codes may exist without a linked record in the encounter file." WTF?
+
+everndc obsolete_dt & reinstated_dt fields are confusing.
