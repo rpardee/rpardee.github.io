@@ -3,13 +3,13 @@ async function drawTimeline(data_area, draw_div) {
   implementations = data["implementations"].filter((d) => d["data area"] == data_area).map((d) => {
     if (d.end_year == 'Present') {d.end_year = new Date().getFullYear()} ;
     if (Number.isInteger(d.end_year)) {
-      ey = d.end_year 
+      ey = d.end_year
     } else {
       ey = Number(d.end_year.match('\\d{4}')) ;
     }
     ;
     if (Number.isInteger(d.start_year)) {
-      sy = d.start_year 
+      sy = d.start_year
     } else {
       sy = Number(d.start_year.match('\\d{4}')) ;
     }
@@ -19,7 +19,7 @@ async function drawTimeline(data_area, draw_div) {
     d.end_year = ey ;
     d.start_year = sy ;
     return d ;
-  }) 
+  })
   ;
 
   // console.table(implementations) ;
@@ -55,7 +55,7 @@ async function drawTimeline(data_area, draw_div) {
 
   draw_div.selectAll("svg").remove() ;
 
-  const svg = draw_div.append("svg") 
+  const svg = draw_div.append("svg")
       .attr("width", dimensions.width)
       .attr("height", dimensions.height)
   ;
@@ -76,7 +76,7 @@ async function drawTimeline(data_area, draw_div) {
     // .domain(implementations.map((d) => d.site))
     .domain(implementations.map((d) => yAccessor(d)))
     .rangeRound([0, dimensions.boundedHeight])
-    .padding(0.1)  
+    .padding(0.1)
     ;
 
   const rects = bounds.selectAll("rect")
@@ -114,10 +114,10 @@ async function drawTimeline(data_area, draw_div) {
 }
 
 async function draw_overview() {
-  
+
   data = await d3.json('./overview_data.json') ;
 
-  // one column per site, plus we add an extra for the row labels (data area names)  
+  // one column per site, plus we add an extra for the row labels (data area names)
   cols = data["sites"] ;
   site_lookup = {} ;
   cols.map((d) => site_lookup[d.abbr] = d) ;
@@ -131,19 +131,19 @@ async function draw_overview() {
 
   // Set the various bits of the tooltip as appropriate.
   function showImpTooltip(datum) {
-    sitespan = imp_tooltip.select("#site") 
+    sitespan = imp_tooltip.select("#site")
       .text(site_lookup[datum.site].name || 'zah?')
     ;
-    sitespan = imp_tooltip.select("#area") 
+    sitespan = imp_tooltip.select("#area")
       .text(da_lookup[datum["data area"]].name)
     ;
-    sitespan = imp_tooltip.select("#freq") 
+    sitespan = imp_tooltip.select("#freq")
       .text(datum["update frequency"])
     ;
-    sitespan = imp_tooltip.select("#lag") 
+    sitespan = imp_tooltip.select("#lag")
       .text(datum.lag)
     ;
-    sitespan = imp_tooltip.select("#notes") 
+    sitespan = imp_tooltip.select("#notes")
       .text(datum.notes)
     ;
 
@@ -152,12 +152,12 @@ async function draw_overview() {
     const ypos = d3.event.pageY ;
     imp_tooltip
       .style("transform", `translate(${xpos}px, ${ypos}px)`)
-      .style("opacity", 0.85) 
+      .style("opacity", 0.85)
     ;
 
     // console.log(table._groups[0][0].clientHeight) ;
 
-  } 
+  }
 
   function fadeImpTooltip(datum) {
     imp_tooltip.style("opacity", 0) ;
@@ -167,21 +167,21 @@ async function draw_overview() {
   site_tooltip = d3.select("#site-tooltip") ;
   function showSiteTooltip(datum) {
     if (datum.abbr != 'nil') {
-      sitespan = site_tooltip.select("#location") 
+      sitespan = site_tooltip.select("#location")
         .text(datum.location || 'zah?')
       ;
-      sitespan = site_tooltip.select("#manager") 
+      sitespan = site_tooltip.select("#manager")
         .text(datum.manager || 'zah?')
       ;
       // Move the tooltip over to where the mouse pointer is
       const xpos = d3.event.pageX ;
       const ypos = d3.event.pageY ;
       site_tooltip
-        .style("transform", `translate(${xpos}px, ${ypos}px)`) 
+        .style("transform", `translate(${xpos}px, ${ypos}px)`)
         .style("opacity", 0.85)
       ;
-    } 
-  } 
+    }
+  }
 
   function fadeSiteTooltip(datum) {
     site_tooltip.style("opacity", 0) ;
@@ -193,10 +193,10 @@ async function draw_overview() {
   it_timeline = d3.select("#timeline") ;
   function showDsetTooltip(datum) {
     if (datum.abbr != 'nil') {
-      sitespan = dset_tooltip.select("#stdvar") 
+      sitespan = dset_tooltip.select("#stdvar")
         .text(datum.stdvar || 'zah?')
       ;
-      sitespan = dset_tooltip.select("#last-qa") 
+      sitespan = dset_tooltip.select("#last-qa")
         .text(datum.last_qa || 'Unknown')
       ;
       drawTimeline(datum.abbr, it_timeline) ;
@@ -204,12 +204,12 @@ async function draw_overview() {
       const xpos = d3.event.pageX ;
       const ypos = d3.event.pageY * 0.4 ;
       dset_tooltip
-        .style("transform", `translate(${xpos}px, ${ypos}px)`) 
-        // .style("transform", `translate(${xpos}px, 10px)`) 
+        .style("transform", `translate(${xpos}px, ${ypos}px)`)
+        // .style("transform", `translate(${xpos}px, 10px)`)
         .style("opacity", 0.85)
       ;
-    } 
-  } 
+    }
+  }
 
   function fadeDsetTooltip(datum) {
     dset_tooltip.style("opacity", 0) ;
@@ -276,7 +276,7 @@ async function draw_overview() {
     id = 'nil'.concat('-', d.abbr)
     d3.select(`#${id}`)
       .data([d])
-      .html("<a href='" + d.name + ".html'>" + d.name + "</a>")
+      .html("<a href='" + d.name.replace(/[ :]+/g, "_") + ".html'>" + d.name + "</a>")
       .attr("class", "row-header")
       .on("mouseenter", showDsetTooltip)
       .on("mouseleave", fadeDsetTooltip)
