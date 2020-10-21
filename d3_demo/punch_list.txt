@@ -6,3 +6,5 @@ encounter.provider specifies a value of 'UNK' if the responsible provider is unk
   - do we need to include an 'unk' provider in provider?
 encoutner.admitting source could maybe use an N/A type value or other affirmative expression that nulls are allowed.
 time to ditch the old DEPARTMENT var in encounters.
+
+px comment "Lab, radiology, immunization and other procedure codes may exist without a linked record in the encounter file." WTF?
