@@ -1150,30 +1150,6 @@
       , "implementation_guidelines": "If encounter/admit date is unknown, then use the first date of a claim."
     },
     {
-      "name": "atime"
-      , "definition": "Start time of the encounter."
-      , "type": "num"
-      , "length": 4
-      , "valid_values": "Any SAS time value, or null if unknown"
-      , "implementation_guidelines": "<p>Use admission time for inpatient, emergency or institutional encounters. </p> <p>For other encounters (such as ambulatory visits), use check-in time if this field is populated, otherwise use appointment time.</p>"
-    },
-    {
-      "name": "ddate"
-      , "definition": "Discharge date for inpatient and overnight encounters, or encounter end date if otherwise available in source data"
-      , "type": "num"
-      , "length": 4
-      , "valid_values": "Any SAS date value, or null if unknown/not applicable"
-      , "implementation_guidelines": "Expected to be populated for inpatient and institutional stays.<p>If precise discharge date is unknown, use the date of the last claim for the encounter."
-    },
-    {
-      "name": "dtime"
-      , "definition": "Discharge or end time of the encounter."
-      , "type": "num"
-      , "length": 4
-      , "valid_values": "Any SAS time value, or null if unknown"
-      , "implementation_guidelines": "<p>Use discharge time for inpatient, emergency or institutional encounters. </p> <p>For other encounters (such as ambulatory visits), use check-out time if this field is populated.</p>"
-    },
-    {
       "name": "provider"
       , "definition": "Identifies the provider most responsible for the encounter."
       , "type": "char"
@@ -1182,12 +1158,11 @@
       , "implementation_guidelines": "Usually a physician, nurse practitioner, physician assistant, optometrist, etc."
     },
     {
-      "name": "enc_id"
-      , "definition": "An arbitrary, static, unique encounter identifier."
-      , "type": "char"
-      , "length": "*"
-      , "valid_values": "Any non-null value, so long as they uniquely identify an encounter."
-      , "implementation_guidelines": "This is a surrogate key.  The natural key is  mrn, provider, facility_code, adate, atime, enctype, and encounter_subtype."
+      "name": "facility_code",
+      "definition": "A code indiciating the facility, hospital, or clinic in which the encounter occurred.",
+      "type": "char",
+      "length": "*",
+      "valid_values": "Values link as a foreign key to <a href='facility.html'>Facility.facility_code</a>."
     },
     {
       "name": "enctype"
@@ -1228,6 +1203,38 @@
           , {"value": "OT", "meaning": "Other non-hospital [TYPE = IS, OE, TE, EM AV, LO, RO]"}
           ]
       , "implementation_guidelines": "Only certain combinations of enctype and encounter_subtype values are permitted--see the bracketed lists of types permitted with each subtype (and vice-versa)."
+    },
+    {
+      "name": "enc_id"
+      , "definition": "An arbitrary, static, unique encounter identifier."
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Any non-null value, so long as they uniquely identify an encounter."
+      , "implementation_guidelines": "<p>Should not be changed across updates.</p><p>This is a surrogate key. The natural key is  mrn, provider, facility_code, adate, atime, enctype, and encounter_subtype.</p>"
+    },
+    {
+      "name": "atime"
+      , "definition": "Start time of the encounter."
+      , "type": "num"
+      , "length": 4
+      , "valid_values": "Any SAS time value, or null if unknown"
+      , "implementation_guidelines": "<p>Use admission time for inpatient, emergency or institutional encounters. </p> <p>For other encounters (such as ambulatory visits), use check-in time if this field is populated, otherwise use appointment time.</p>"
+    },
+    {
+      "name": "ddate"
+      , "definition": "Discharge date for inpatient and overnight encounters, or encounter end date if otherwise available in source data"
+      , "type": "num"
+      , "length": 4
+      , "valid_values": "Any SAS date value, or null if unknown/not applicable"
+      , "implementation_guidelines": "Expected to be populated for inpatient and institutional stays.<p>If precise discharge date is unknown, use the date of the last claim for the encounter."
+    },
+    {
+      "name": "dtime"
+      , "definition": "Discharge or end time of the encounter."
+      , "type": "num"
+      , "length": 4
+      , "valid_values": "Any SAS time value, or null if unknown"
+      , "implementation_guidelines": "<p>Use discharge time for inpatient, emergency or institutional encounters. </p> <p>For other encounters (such as ambulatory visits), use check-out time if this field is populated.</p>"
     },
     {
       "name": "drg_value"
@@ -1307,13 +1314,6 @@
       ]
     },
     {
-      "name": "facility_code",
-      "definition": "A code indiciating the facility, hospital, or clinic in which the encounter occurred.",
-      "type": "char",
-      "length": "*",
-      "valid_values": "Values link as a foreign key to <a href='facility.html'>Facility.facility_code</a>."
-    },
-    {
       "name": "dept"
       , "definition": "The department where the encounter took place"
       , "type": "char"
@@ -1351,13 +1351,143 @@
       ]
     }
   ],
-    "comments":[
+  "primary_key": "enc_id"
+  , "comments":[
         {"title": "What is an encounter?", "comment": "In general, the intention of the encounter file is to describe all significant interactions between patients and medical providers. It should include such things as inpatient stays, emergency department visits,  other outpatient hospital services (e.g. same day surgeries), ambulatory visits, home health encounters, and non-hospital residential stays including skilled nursing facility, rehab, nursing home, overnight hospice facility, and overnight dialysis facility."}
-        , {"title": "Uniquely Identifying an Encounter", "comment": "A single inpatient stay, non-acute institutional stay (such as SNF, Rehab, Nursing Home, overnight Hospice or Dialysis stay) or emergency visit has 1 record in the encounter file.  For ambulatory visit, telephone, e-mail, lab only, radiology only and 'other' encounters, a unique encounter record is defined as each patient and provider medical contact documented in the source data (exclude scheduling appointments and other administrative tasks). A unique combination of the following variables is an encounter:  MRN, adate, enctype, encounter_subtype, provider, facility_code, and appointment time (if available)."}
+        , {"title": "Uniquely Identifying an Encounter", "comment": "A single inpatient stay, non-acute institutional stay (such as SNF, Rehab, Nursing Home, overnight Hospice or Dialysis stay) or emergency visit has 1 record in the encounter file.  For ambulatory visit, telephone, e-mail, lab only, radiology only and 'other' encounters, a unique encounter record is defined as each patient and provider medical contact documented in the source data (exclude scheduling appointments and other administrative tasks). A unique combination of the following variables is an encounter:  MRN, adate, enctype, encounter_subtype, provider, facility_code, and atime (if available)."}
         , {"title": "What types of encounters should be included?", "comment": "See the definition of the variables EncType and Encounter_Subtype for the full list of the types of encounters that should be included.  Questions about whether a particular type of encounter should be included and how it should be characterized should be directed to the VDW Utilization Workgroup."}
         , {"title": "Members only?", "comment": "Data on all services provided by the health plan, whether or not they were provided to a member (enrollee) of the plan should be included.  (This means that this file will frequently need to be checked against Enrollment in order to identify study populations-users should not assume that people found in the Utilization tables are members of the health plan, or that anything in particular is known about them.)"}
         , {"title": "Internally provided services only?", "comment": "All available encounters should be included, even those taking place at external providers (in other words, claims data should be included if that is the only source you have for a given encounter).  Sites with known data 'blind spots' (e.g., hospice care is subcontracted out on a capitated basis, and no claims are submitted) should document them on their Utilization implementation page on the CRN Portal."}
     ]
-
+  },
+  "Diagnoses":
+  {
+    "name": "Utilization: Diagnoses",
+    "stdvar": "_vdw_dx",
+    "description": "The DIAGNOSIS table contains all recorded diagnoses associated with the encounters indicated in the ENCOUNTERS table with the exception of admitting diagnoses for inpatient stays.",
+    "columns": [
+    {
+      "name": "enc_id"
+      , "definition": "An arbitrary, static, unique encounter identifier."
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Foreign key to <a href = 'utilization.html'>utilization.enc_id</a>"
+    },
+    {
+      "name": "MRN",
+      "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+      "type": "char",
+      "length": "*"
+      , "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>."
+      , "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+    },
+    {
+      "name": "adate"
+      , "definition": "Encounter date."
+      , "type": "num"
+      , "length": 4
+      , "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>."
+      , "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+    },
+    {
+      "name": "provider"
+      , "definition": "Identifies the provider most responsible for the encounter."
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>."
+      , "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+    },
+    {
+      "name": "enctype"
+      , "definition": "Type of encounter at which this diagnosis was made."
+      , "type": "char"
+      , "length": 2
+      , "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>."
+      , "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+    },
+    {
+      "name": "diagprovider"
+      , "definition": "Identifies the provider that made the diagnosis."
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Values link as a foreign key to <a href='provider.html'>Provider.provider</a>."
+      , "implementation_guidelines": "If unknown, set the value equal to the PROVIDER variable."
+    },
+    {
+      "name": "dx"
+      , "definition": "The diagnosis code"
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Any valid value per the scheme named in dx_codetype below. Cannot be null."
+      , "implementation_guidelines": "Any alpha characters should be converted to UPPERCASE."
+    },
+    {
+      "name": "dx_codetype"
+      , "definition": "The coding set used in the DX variable for this record."
+      , "type": "char"
+      , "length": 2
+      , "valid_values": [
+          {"value":"07", "meaning": "ICD-7/7-CM"}
+          , {"value":"08", "meaning": "ICD-8/8-CM"}
+          , {"value":"09", "meaning": "ICD-9/9-CM"}
+          , {"value":"10", "meaning": "ICD-10/10-CM"}
+          , {"value":"11", "meaning": "ICD-11/11-CM"}
+          , {"value":"OT", "meaning": "Other"}
+      ]
+    },
+    {
+      "name": "origdx"
+      , "definition": "The diagnosis code as reported in source data without standardization or cleaning."
+      , "type": "char"
+      , "length": "*"
+      , "valid_values": "Any"
+      , "implementation_guidelines": "May include nonstandard prefixes/suffixes that signify site-specific refinements on the standard code."
+    },
+    {
+      "name": "principal_dx"
+      , "definition": "For hospital admissions, whether this diagnosis is the principal discharge diagnosis of the encounter. The principal diagnosis indicates the main reason why the patient was admitted to the hospital for care and the value on which a DRG is assigned."
+      , "type": "char"
+      , "length": 1
+      , "valid_values": [
+          {"value": "P", "meaning": "Principal diagnosis"}
+          , {"value": "N", "meaning": "Not principal diagnosis"}
+          , {"value": "X", "meaning": "Unknown or not classifiable"}
+      ]
+      , "implementation_guidelines": "<p>Assigned after discharge after review by the medical record department, the principal diagnosis is main reason why the patient was admitted to the hospital for care.  This is the diagnosis on which the DRG is based.  Note that the principal diagnosis is very different from the admitting diagnosis which is assigned at the beginning of the stay.  For example, if a patient was admitted to a hospital with an admitting diagnosis of chest pain which was later diagnosed as a heart attack during the stay, the principal diagnosis would be heart attack. </p><p>Specify principal diagnosis as defined by the site’s institutional source data.   It is expected that there should be one and only one principal diagnosis per hospitalization.  For claims systems, the principal diagnosis may be found in the UB facility bill (field number 67 in UB 92 and UB 04 or '2300 HI01-2' on the electronic form) which should be the first diagnosis code listed.  If there are multiple UB facility bills for a stay, identify the principal diagnosis from the final/last facility bill.  If there are multiple final bills on the last date, use the one with the longest LOS.  While the value 'P' is expected to only be specified for inpatient and institutional stays, it is allowed for other encounter types if it is clearly identified in the source data.  However in most typical cases for other encounters, the principal_dx should be set to 'N'.   If the source data does not identify principal diagnosis (or not principal) for specific inpatient and institutional stays, then set Principal_dx to 'X' for all diagnoses.</p>"
+    },
+    {
+      "name": "primary_dx"
+      , "definition": "Whether this diagnosis is the primary diagnosis of the encounter. The primary diagnosis is the most serious or resource intensive diagnosis and is the primary reason for the procedures being rendered."
+      , "type": "char"
+      , "length": 1
+      , "valid_values": [
+          {"value": "P", "meaning": "Primary diagnosis"}
+          , {"value": "S", "meaning": "Secondary diagnosis"}
+          , {"value": "X", "meaning": "Unknown or not classifiable"}
+      ]
+      , "implementation_guidelines": "<p>Primary diagnosis is the illness or injury that was the most serious/severe/life-threatening and/or resource intensive.  From a claims perspective, it is the main reason for a provider's services being rendered (and billed/paid for).  Multiple primary diagnoses are allowed if the final/last professional claim can't be determined using the criteria above or if the primary diagnosis was a local combination code that has to be put into multiple records to have values within a standard coding system.</p><p>Specify primary diagnosis as defined by the site's institutional source data. For an outpatient encounter, it is expected that there should be one and only one primary diagnosis. For an inpatient stay, there can be multiple primary diagnoses, one for each provider claim during the stay. A provider may have multiple claims during a stay, each with a primary diagnosis. If multiple bills were submitted for a claim, choose the final/last professional bill. For claims systems, the primary diagnosis may be found in the HCFA professional bill (field number 21.1 in the HCFA 1500 or '2400 SV107-1' in the electronic form) which is the first diagnosis code listed. The other diagnoses on this bill should be identified as 'S' (Secondary Dx). The values 'P' (Primary Dx) and 'S' (Secondary Dx) should only be specified for encounters where there's a clearly defined primary diagnosis in the source data. Thus, if the source data does not identify primary or secondary diagnoses for a specific encounter, then set all diagnoses for that encounter to 'X' (Not Classifiable). If all diagnoses for an encounter are reported as secondary in the source data, then set primary_dx='S' (Secondary DX).</p><p>Multiple primary diagnoses are allowed if the final/last professional claim can't be determined using the criteria above or if the primary diagnosis was a local combination code that has to be put into multiple records to have values within a standard coding system.</p>"
+    },
+    {
+      "name": "source_data_dx"
+      , "definition": "Classification of the database that was used to create this record."
+      , "type": "char"
+      , "length": 1
+      , "valid_values": [
+           {"value": "E", "meaning": "Your site's EHR (Electronic Health Record) operated by your health care organization. Excludes claims and billing data. "}
+          , {"value": "B", "meaning": "Billing data--for services performed by your organization and captured in your org's EHR, but formatted for billing an outside insurer. These are sometimes referred to as 'internal' or 'outgoing' claims, or transaction data. "}
+          , {"value": "C", "meaning": "Claims data--for services performed outside of your health care organization, presented to your organization for payment as the patient's insurer."}
+          , {"value": "L", "meaning": "Local data source but unrelated to your site's EHR . Often Includes pre-EHR systems prior to EHR implementation such as appointment management systems."}
+          , {"value": "M", "meaning": "Multiple sources--the encounter is an amalgam of data from different sources (e.g., inpatient encounters with data from claims and EHR rounding)"}
+          , {"value": "O", "meaning": "Other. Not from the sources listed above."}
+          , {"value": "U", "meaning": "Unknown"}
+      ]
+      , "implementation_guidelines": "<p>Need <em>not</em> match the corresponding value in <a href='utilization.html'>utilization.source_data</a>.</p>Category 'E' includes:<ul><li>Direct extract from your site's EHR (or associated reporting database).</li><li>A secondary database that houses your site's EHR data (no code changes for billing)</li><li>Data for services captured in other local systems (such as a separate lab or radiology system) and interfaced into your site's EHR.</li></ul>"
+    }
+  ]
+  , "primary_key": "enc_id + dx + origdx + diagprovider + dx_codetype"
+  , "comments":[
+    {"title": "DO include", "comment":"Diagnoses from professional and inpatient rounding services."}
+    , {"title": "Do NOT include", "comment":"Admitting diagnoses for inpatient stays, or diagnoses from <abbr title='Electronic Health Record'>EHR</abbr> Problem Lists."}
+  ]
   }
 }
