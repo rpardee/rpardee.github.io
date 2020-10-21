@@ -264,7 +264,7 @@
       "definition": "The primary care <strong>physician</strong> to which the patient is paneled in the administrative record.",
       "type": "char",
       "length": "*",
-      "valid_values": "Values link as a foreign key to <a href='provider.html'>Provider.provider</a>."
+      "valid_values": "Values link as a foreign key to <a href='providers.html'>Provider.provider</a>."
     },
     {
       "name": "enrollment_basis",
@@ -1154,7 +1154,7 @@
       "definition": "Identifies the provider most responsible for the encounter.",
       "type": "char",
       "length": "*",
-      "valid_values": "Values link as a foreign key to <a href='provider.html'>Provider.provider</a>.",
+      "valid_values": "Values link as a foreign key to <a href='providers.html'>Provider.provider</a>.",
       "implementation_guidelines": "Usually a physician, nurse practitioner, physician assistant, optometrist, etc."
     },
     {
@@ -1622,7 +1622,7 @@
       "definition": "Identifies the provider that made the diagnosis.",
       "type": "char",
       "length": "*",
-      "valid_values": "Values link as a foreign key to <a href='provider.html'>Provider.provider</a>.",
+      "valid_values": "Values link as a foreign key to <a href='providers.html'>Provider.provider</a>.",
       "implementation_guidelines": "If unknown, set the value equal to the PROVIDER variable."
     },
     {
@@ -1765,181 +1765,300 @@
     "stdvar": "_vdw_px",
     "description": "The PROCEDURE table contains all recorded procedures that were actually performed associated with the encounters indicated in the ENCOUNTERS table.",
     "columns": [
+      {
+        "name": "enc_id",
+        "definition": "An arbitrary, static, unique encounter identifier.",
+        "type": "char",
+        "length": "*",
+        "valid_values": "Foreign key to <a href = 'utilization.html'>utilization.enc_id</a>"
+      },
+      {
+        "name": "MRN",
+        "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+        "type": "char",
+        "length": "*",
+        "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
+        "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+      },
+      {
+        "name": "adate",
+        "definition": "Encounter date.",
+        "type": "num",
+        "length": 4,
+        "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
+        "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+      },
+      {
+        "name": "procdate",
+        "definition": "The actual date when the procedure was performed.",
+        "type": "num",
+        "length": 4,
+        "valid_values": "Any SAS date, or null",
+        "implementation_guidelines": "Unknown values should be coded as missing/null."
+      },
+      {
+        "name": "provider",
+        "definition": "Identifies the provider most responsible for the encounter.",
+        "type": "char",
+        "length": "*",
+        "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
+        "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+      },
+      {
+        "name": "enctype",
+        "definition": "Type of encounter at which this diagnosis was made.",
+        "type": "char",
+        "length": 2,
+        "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
+        "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+      },
+      {
+        "name": "performingprovider",
+        "definition": "Identifies the provider that performed the procedure.",
+        "type": "char",
+        "length": "*",
+        "valid_values": "Values link as a foreign key to <a href='providers.html'>Provider.provider</a>.",
+        "implementation_guidelines": "If unknown, set the value equal to the PROVIDER variable."
+      },
+      {
+        "name": "px",
+        "definition": "Code identifying the procedure that was performed.",
+        "type": "char",
+        "length": "*",
+        "valid_values": "Any valid value per the scheme named in px_codetype below. Cannot be null.",
+        "implementation_guidelines": "<p>Convert local codes to standard codes if possible.</p>Any alpha characters should be converted to UPPERCASE.<p>Revenue codes may appear as both a 3-digit value and an equivalent 4-digit value with a leading zero, for example, both '123' and '0123' may appear in the data. Users should include both variants in filter/query conditions.</p>"
+      },
+      {
+        "name": "px_codetype",
+        "definition": "The coding set used in the PX variable for this record.",
+        "type": "char",
+        "length": 2,
+        "valid_values": [
+        {
+          "value": "09",
+          "meaning": "ICD-9-CM"
+        },
+        {
+          "value": "10",
+          "meaning": "ICD-10-CM"
+        },
+        {
+          "value": "11",
+          "meaning": "ICD-11-CM"
+        },
+        {
+          "value": "C4",
+          "meaning": "CPT-4"
+        },
+        {
+          "value": "H4",
+          "meaning": "HCPCS-4"
+        },
+        {
+          "value": "RV",
+          "meaning": "Revenue code"
+        },
+        {
+          "value": "LO",
+          "meaning": "Local homegrown"
+        },
+        {
+          "value": "OT",
+          "meaning": "Other"
+        }]
+      },
+      {
+        "name": "origpx",
+        "definition": "The procedure code as reported in source data without standardization or cleaning.",
+        "type": "char",
+        "length": "*",
+        "valid_values": "Any",
+        "implementation_guidelines": "EMR Systems typically have unique procedure identifiers that can be linked to either ICD-9-CM or ICD-10-CM codes.  Sites should consider populating the VDW ORIGPX variable with this unique procedure identifier from their EMR source system that could allow projects to convert codes from that source into one coding system (either ICD-9-CM or ICD-10-CM)."
+      },
+      {
+        "name": "pxcnt",
+        "definition": "Number of times this procedure was performed on this procdate, by this provider, on this patient, etc.",
+        "type": "num",
+        "length": 4,
+        "valid_values": "Any integer > 0",
+        "implementation_guidelines": "Should always be 1 unless the procedure was performed multiple times."
+      },
+
+      {
+        "name": "cptmod1",
+        "definition": "First modifier to a CPT or HCPCS procedure code used to communicate special circumstances related to the performance of a procedure.",
+        "type": "char",
+        "length": 2,
+        "valid_values": "Value set is set by the American Medical Association and proprietary"
+      },
+
+      {
+        "name": "cptmod2",
+        "definition": "Second modifier to a CPT or HCPCS procedure code used to communicate special circumstances related to the performance of a procedure.",
+        "type": "char",
+        "length": 2,
+        "valid_values": "Value set is set by the American Medical Association and proprietary"
+      },
+
+      {
+        "name": "cptmod3",
+        "definition": "Third modifier to a CPT or HCPCS procedure code used to communicate special circumstances related to the performance of a procedure.",
+        "type": "char",
+        "length": 2,
+        "valid_values": "Value set is set by the American Medical Association and proprietary"
+      },
+      {
+        "name": "source_data_px",
+        "definition": "Classification of the database that was used to create this record.",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+        {
+          "value": "E",
+          "meaning": "Your site's EHR (Electronic Health Record) operated by your health care organization. Excludes claims and billing data. "
+        },
+        {
+          "value": "B",
+          "meaning": "Billing data--for services performed by your organization and captured in your org's EHR, but formatted for billing an outside insurer. These are sometimes referred to as 'internal' or 'outgoing' claims, or transaction data. "
+        },
+        {
+          "value": "C",
+          "meaning": "Claims data--for services performed outside of your health care organization, presented to your organization for payment as the patient's insurer."
+        },
+        {
+          "value": "L",
+          "meaning": "Local data source but unrelated to your site's EHR . Often Includes pre-EHR systems prior to EHR implementation such as appointment management systems."
+        },
+        {
+          "value": "M",
+          "meaning": "Multiple sources--the encounter is an amalgam of data from different sources (e.g., inpatient encounters with data from claims and EHR rounding)"
+        },
+        {
+          "value": "O",
+          "meaning": "Other. Not from the sources listed above."
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown"
+        }],
+        "implementation_guidelines": "<p>Need <em>not</em> match the corresponding value in <a href='utilization.html'>utilization.source_data</a>.</p>Category 'E' includes:<ul><li>Direct extract from your site's EHR (or associated reporting database).</li><li>A secondary database that houses your site's EHR data (no code changes for billing)</li><li>Data for services captured in other local systems (such as a separate lab or radiology system) and interfaced into your site's EHR.</li></ul>"
+      },
+      {
+
+        "name": "source_category_px",
+        "definition": "Source of the procedure information.",
+        "type": "char",
+        "length": 2,
+        "valid_values": [
+        {
+          "value": "OD",
+          "meaning": "Order (such as from your EHR's order table)"
+        },
+        {
+          "value": "BI",
+          "meaning": "Billing (billing data such as transaction tables and internal claims created from services inside the health care organization)"
+        },
+        {
+          "value": "CL",
+          "meaning": "Claim (external claims for services outside the health care organization)"
+        },
+        {
+          "value": "NI",
+          "meaning": "No information "
+        },
+        {
+          "value": "UN",
+          "meaning": "Unknown "
+        },
+        {
+          "value": "OT",
+          "meaning": "Other (including but not limited to your EHR's encounter table)"
+        }],
+        "implementation_guidelines": "<p>Definition and specs from from PCORnet. Use to populate the PX_SOURCE variable in the PCORnet procedure table.</p> Order and billing pertain to internal healthcare processes and data sources. Claim pertains to data from the bill fulfillment, generally data sources held by insurers and other health plans. "
+
+      }
+    ],
+    "primary_key": "enc_id + procdate + performingprovider + origpx + px + px_codetype + cptmod1-3",
+    "comments": [
     {
-      "name": "enc_id",
-      "definition": "An arbitrary, static, unique encounter identifier.",
-      "type": "char",
-      "length": "*",
-      "valid_values": "Foreign key to <a href = 'utilization.html'>utilization.enc_id</a>"
+      "title": "Include",
+      "comment": "<p>Include all performed procedures from all settings including lab, radiology and immunization procedure codes.</p> <p>Include procedures from professional and inpatient rounding services (outpatient providers who visit their patients in the hospital) in inpatient encounters.  Identify the professional/inpatient rounding provider in the 'performingprovider' variable and the procedure date in the 'procdate' variable.</p> <p>Include denied claims if you consider the utilization to be valid.</p><p>Require that the procedure file contain each type of procedure code when available: CPT, HCPCS, ICD9, Revenue Code.</p>"
     },
+    {
+      "title": "Exclude",
+      "comment": "Exclude procedures that were ordered but not performed."
+    },
+    {
+      "title": "Orphans Are Permitted",
+      "comment": "Lab, radiology, immunization and other procedure codes may exist without a linked record in the encounter file."
+    }]
+  },
+  "OutpatientFills":
+  {
+    "name": "Outpatient Fills",
+    "description": "The PHARMACY file contains data on medications dispensed in the outpatient setting.  Dispensings in the inpatient setting are not included.",
+    "stdvar": "_vdw_rx",
+    "columns": [
     {
       "name": "MRN",
       "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
       "type": "char",
       "length": "*",
-      "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
-      "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+      "valid_values": "Unique to each patient at each site",
+      "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
     },
     {
-      "name": "adate",
-      "definition": "Encounter date.",
+      "name": "rxdate",
+      "definition": "Date that medication was dispensed",
       "type": "num",
       "length": 4,
-      "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
-      "implementation_guidelines": "This variable's redundancy is to improve querying performance."
+      "valid_values": "Any SAS date",
+      "implementation_guidelines": "Dispensed = Received by Member/Patient"
     },
     {
-      "name": "procdate",
-      "definition": "The actual date when the procedure was performed.",
+      "name": "ndc",
+      "definition": "The identifier of a drug (or pharmacy product). ",
+      "type": "char",
+      "length": 11,
+      "valid_values": "Any value, but optimally a <a href='https://www.accessdata.fda.gov/scripts/cder/ndc/'>standard (US) National Drug Code</a>.<p>Foreign key into the <a href='ndcs.html'>EverNDC</a> lookup table.</p>",
+      "implementation_guidelines": "<p>If available, this should be the National Drug Code in the HIPAA/CMS/NCPDP standard 5-4-2 configuration without dashes.</p><p>If a true NDC is not available, a locally defined unique identifier with up to 11 characters can be used.</p>"
+    },
+    {
+      "name": "rxsup",
+      "definition": "Number of days of medication supplied",
       "type": "num",
-      "length": 4,
-      "valid_values": "Any SAS date, or null",
-      "implementation_guidelines": "Unknown values should be coded as missing/null."
+      "length": 8,
+      "valid_values": "Integers > 0",
+      "implementation_guidelines": "Either RXSUP or RXAMT must be a positive value."
     },
     {
-      "name": "provider",
-      "definition": "Identifies the provider most responsible for the encounter.",
-      "type": "char",
-      "length": "*",
-      "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
-      "implementation_guidelines": "This variable's redundancy is to improve querying performance."
-    },
-    {
-      "name": "enctype",
-      "definition": "Type of encounter at which this diagnosis was made.",
-      "type": "char",
-      "length": 2,
-      "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
-      "implementation_guidelines": "This variable's redundancy is to improve querying performance."
-    },
-    {
-      "name": "performingprovider",
-      "definition": "Identifies the provider that performed the procedure.",
-      "type": "char",
-      "length": "*",
-      "valid_values": "Values link as a foreign key to <a href='provider.html'>Provider.provider</a>.",
-      "implementation_guidelines": "If unknown, set the value equal to the PROVIDER variable."
-    },
-    {
-      "name": "px",
-      "definition": "Code identifying the procedure that was performed.",
-      "type": "char",
-      "length": "*",
-      "valid_values": "Any valid value per the scheme named in px_codetype below. Cannot be null.",
-      "implementation_guidelines": "<p>Convert local codes to standard codes if possible.</p>Any alpha characters should be converted to UPPERCASE.<p>Revenue codes may appear as both a 3-digit value and an equivalent 4-digit value with a leading zero, for example, both '123' and '0123' may appear in the data. Users should include both variants in filter/query conditions.</p>"
-    },
-    {
-      "name": "px_codetype",
-      "definition": "The coding set used in the PX variable for this record.",
-      "type": "char",
-      "length": 2,
-      "valid_values": [
-        {"value": "09", "meaning": "ICD-9-CM"}
-        , {"value": "10", "meaning": "ICD-10-CM"}
-        , {"value": "11", "meaning": "ICD-11-CM"}
-        , {"value": "C4", "meaning": "CPT-4"}
-        , {"value": "H4", "meaning": "HCPCS-4"}
-        , {"value": "RV", "meaning": "Revenue code"}
-        , {"value": "LO", "meaning": "Local homegrown"}
-        , {"value": "OT", "meaning": "Other"}
-]
-    },
-    {
-      "name": "origpx",
-      "definition": "The procedure code as reported in source data without standardization or cleaning.",
-      "type": "char",
-      "length": "*",
-      "valid_values": "Any",
-      "implementation_guidelines": "EMR Systems typically have unique procedure identifiers that can be linked to either ICD-9-CM or ICD-10-CM codes.  Sites should consider populating the VDW ORIGPX variable with this unique procedure identifier from their EMR source system that could allow projects to convert codes from that source into one coding system (either ICD-9-CM or ICD-10-CM)."
-    },
-    {
-      "name": "pxcnt",
-      "definition": "Number of times this procedure was performed on this procdate, by this provider, on this patient, etc.",
+      "name": "rxamt",
+      "definition": "Number of units (e.g. pills, tablets) dispensed",
       "type": "num",
-      "length": 4,
-      "valid_values": "Any integer > 0",
-      "implementation_guidelines": "Should always be 1 unless the procedure was performed multiple times."
-    },
-
-    {"name": "cptmod1"
-      , "definition": "First modifier to a CPT or HCPCS procedure code used to communicate special circumstances related to the performance of a procedure."
-      , "type": "char"
-      , "length": 2
-      , "valid_values": "Value set is set by the American Medical Association and proprietary"
-    },
-
-    {"name": "cptmod2"
-      , "definition": "Second modifier to a CPT or HCPCS procedure code used to communicate special circumstances related to the performance of a procedure."
-      , "type": "char"
-      , "length": 2
-      , "valid_values": "Value set is set by the American Medical Association and proprietary"
-    },
-
-    {"name": "cptmod3"
-      , "definition": "Third modifier to a CPT or HCPCS procedure code used to communicate special circumstances related to the performance of a procedure."
-      , "type": "char"
-      , "length": 2
-      , "valid_values": "Value set is set by the American Medical Association and proprietary"
+      "length": 8,
+      "valid_values": "Integers > 0",
+      "implementation_guidelines": "Either RXSUP or RXAMT must be a positive value."
     },
     {
-      "name": "source_data_px",
-      "definition": "Classification of the database that was used to create this record.",
+      "name": "rxmd",
+      "definition": "The provider that prescribed this medication.",
       "type": "char",
-      "length": 1,
-      "valid_values": [
-      {
-        "value": "E",
-        "meaning": "Your site's EHR (Electronic Health Record) operated by your health care organization. Excludes claims and billing data. "
-      },
-      {
-        "value": "B",
-        "meaning": "Billing data--for services performed by your organization and captured in your org's EHR, but formatted for billing an outside insurer. These are sometimes referred to as 'internal' or 'outgoing' claims, or transaction data. "
-      },
-      {
-        "value": "C",
-        "meaning": "Claims data--for services performed outside of your health care organization, presented to your organization for payment as the patient's insurer."
-      },
-      {
-        "value": "L",
-        "meaning": "Local data source but unrelated to your site's EHR . Often Includes pre-EHR systems prior to EHR implementation such as appointment management systems."
-      },
-      {
-        "value": "M",
-        "meaning": "Multiple sources--the encounter is an amalgam of data from different sources (e.g., inpatient encounters with data from claims and EHR rounding)"
-      },
-      {
-        "value": "O",
-        "meaning": "Other. Not from the sources listed above."
-      },
-      {
-        "value": "U",
-        "meaning": "Unknown"
-      }],
-      "implementation_guidelines": "<p>Need <em>not</em> match the corresponding value in <a href='utilization.html'>utilization.source_data</a>.</p>Category 'E' includes:<ul><li>Direct extract from your site's EHR (or associated reporting database).</li><li>A secondary database that houses your site's EHR data (no code changes for billing)</li><li>Data for services captured in other local systems (such as a separate lab or radiology system) and interfaced into your site's EHR.</li></ul>"
-    },
-    {
-
-      "name":"source_category_px"
-      , "definition": "Source of the procedure information."
-      , "type": "char"
-      , "length": 2
-      , "valid_values": [
-        {"value": "OD", "meaning": "Order (such as from your EHR's order table)"}
-        , {"value": "BI", "meaning": "Billing (billing data such as transaction tables and internal claims created from services inside the health care organization)"}
-        , {"value": "CL", "meaning": "Claim (external claims for services outside the health care organization)"}
-        , {"value": "NI", "meaning": "No information "}
-        , {"value": "UN", "meaning": "Unknown "}
-        , {"value": "OT", "meaning": "Other (including but not limited to your EHR's encounter table)" }
-        ]
-      , "implementation_guidelines": "<p>Definition and specs from from PCORnet. Use to populate the PX_SOURCE variable in the PCORnet procedure table.</p> Order and billing pertain to internal healthcare processes and data sources. Claim pertains to data from the bill fulfillment, generally data sources held by insurers and other health plans. "
-
-    }
-  ],
-    "primary_key": "enc_id + procdate + performingprovider + origpx + px + px_codetype + cptmod1-3",
+      "length": "*",
+      "valid_values": "Values link as a foreign key to <a href='providers.html'>Provider.provider</a>."
+    }],
+    "primary_key": "mrn + rxdate + ndc + rxmd (SEE COMMENTS)",
     "comments": [
-        {"title": "Include", "comment": "<p>Include all performed procedures from all settings including lab, radiology and immunization procedure codes.</p> <p>Include procedures from professional and inpatient rounding services (outpatient providers who visit their patients in the hospital) in inpatient encounters.  Identify the professional/inpatient rounding provider in the 'performingprovider' variable and the procedure date in the 'procdate' variable.</p> <p>Include denied claims if you consider the utilization to be valid.</p><p>Require that the procedure file contain each type of procedure code when available: CPT, HCPCS, ICD9, Revenue Code.</p>"}
-        , {"title": "Exclude", "comment": "Exclude procedures that were ordered but not performed."}
-        , {"title": "Orphans Are Permitted", "comment": "Lab, radiology, immunization and other procedure codes may exist without a linked record in the encounter file."}
-      ]
+    {
+      "title": "Dealing with duplicates",
+      "comment": "<p>Primary key is under review. Rolling up data is not required by the work group at this time.</p><del>Rows are unique on the combination of patient, NDC, dispense date, and prescribing provider. When multiple dispensings occur for the same patient for the same drug on the same day from the same provider, the amount dispensed and days supplied of the drug should be summed.</del>"
+    },
+    {
+      "title": "Exclude",
+      "comment": "Exclude incomplete or unfilled medication orders."
+    },
+    {
+      "title": "Compound Drugs",
+      "comment": "Compound drugs may be represented differently across sites. If a drug of interest is a compound drug, users may want to check with individual sites on their handling of these dispensings."
+    }]
   }
 }
