@@ -1,7 +1,7 @@
 const spec_cols = [
   {label: "Column Name", format: d => d.name, class:"norm"},
   {label: "Definition", format: d => d.definition, class:"norm"},
-  {label: "Type(length)", format: d => d.type + "(" + d.length + ")", class:"norm"},
+  {label: "Type(length)", format: d => format_typelens(d.type, d.length), class:"norm"},
   {label: "Valid Values", format: d=> format_vallists(d.valid_values), class:"norm"},
   {label: "Implementation Guidelines", format: d=> format_igs(d.implementation_guidelines), class:"hideable"}
   ]
@@ -24,6 +24,15 @@ function format_igs(inarr) {
     })
   } else {retval = inarr}
   return retval ;
+}
+function format_typelens(intyp, inlen) {
+  if (intyp) {
+    typ = intyp ;
+    if (inlen) {len = inlen} else {len = '*'} ;
+    return typ + "(" + len + ")" ;
+  } else {
+    return '' ;
+  } ;
 }
 function format_vallists(inarr) {
   // receives arrays of objects w/"value" and "meaning keys". Or else plain string descriptions.

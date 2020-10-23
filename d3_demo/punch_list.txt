@@ -10,3 +10,7 @@ time to ditch the old DEPARTMENT var in encounters.
 px comment "Lab, radiology, immunization and other procedure codes may exist without a linked record in the encounter file." WTF?
 
 everndc obsolete_dt & reinstated_dt fields are confusing.
+
+lab results px suggested definition: The code that was/would have been billed for the work that produced this result.
+
+should result_c in lab be uppercased?

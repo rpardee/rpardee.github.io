@@ -1033,7 +1033,6 @@
         "name": "provider",
         "definition": "The unique provider identifier.",
         "type": "char",
-        "length": "*",
         "valid_values": "Any unique non-null value."
       },
       {
@@ -1769,14 +1768,12 @@
         "name": "enc_id",
         "definition": "An arbitrary, static, unique encounter identifier.",
         "type": "char",
-        "length": "*",
         "valid_values": "Foreign key to <a href = 'utilization.html'>utilization.enc_id</a>"
       },
       {
         "name": "MRN",
         "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
         "type": "char",
-        "length": "*",
         "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
         "implementation_guidelines": "This variable's redundancy is to improve querying performance."
       },
@@ -1800,7 +1797,6 @@
         "name": "provider",
         "definition": "Identifies the provider most responsible for the encounter.",
         "type": "char",
-        "length": "*",
         "valid_values": "Must match value on corresponding record in <a href='utilization.html'>utilization</a>.",
         "implementation_guidelines": "This variable's redundancy is to improve querying performance."
       },
@@ -1816,7 +1812,6 @@
         "name": "performingprovider",
         "definition": "Identifies the provider that performed the procedure.",
         "type": "char",
-        "length": "*",
         "valid_values": "Values link as a foreign key to <a href='providers.html'>Provider.provider</a>.",
         "implementation_guidelines": "If unknown, set the value equal to the PROVIDER variable."
       },
@@ -1824,7 +1819,6 @@
         "name": "px",
         "definition": "Code identifying the procedure that was performed.",
         "type": "char",
-        "length": "*",
         "valid_values": "Any valid value per the scheme named in px_codetype below. Cannot be null.",
         "implementation_guidelines": "<p>Convert local codes to standard codes if possible.</p>Any alpha characters should be converted to UPPERCASE.<p>Revenue codes may appear as both a 3-digit value and an equivalent 4-digit value with a leading zero, for example, both '123' and '0123' may appear in the data. Users should include both variants in filter/query conditions.</p>"
       },
@@ -1871,7 +1865,6 @@
         "name": "origpx",
         "definition": "The procedure code as reported in source data without standardization or cleaning.",
         "type": "char",
-        "length": "*",
         "valid_values": "Any",
         "implementation_guidelines": "EMR Systems typically have unique procedure identifiers that can be linked to either ICD-9-CM or ICD-10-CM codes.  Sites should consider populating the VDW ORIGPX variable with this unique procedure identifier from their EMR source system that could allow projects to convert codes from that source into one coding system (either ICD-9-CM or ICD-10-CM)."
       },
@@ -2176,14 +2169,454 @@
     }],
     "primary_key": "ndc + generic",
     "comments": [
+    {
+      "title": "Creating NDC lists for multi-site projects",
+      "comment": "<p>Creating lists of NDCs for multi-site projects is a <em>known hard problem</em>.</p><p>Because this file is explicitly defined as idiosyncratic to each implementing site (only NDCs to be found at that site are included) and because the various commercial sources of NDC catalogues are necessarily ignorant of custom NDCs in use at implementing sites (e.g. for compound drugs and custom repackages) there is no single site that should consider itself capable of developing a valid list for use at multiple sites.</p>For this reason, we recommend a two-step approach for compiling NDC lists.<p><ol><li>The lead analyst of a project can first write a distributed program to query the EverNDC tables across sites. They may use generic names, brand names, AHFS codes (if available), or GPI codes (if available) to identify the NDCs in use at other sites.</li><li>They can then collate the NDCs identified from all participating sites to compile a final list of NDCs for the study.</li></ol>"
+    },
+    {
+      "title": "Compound Drugs",
+      "comment": "Compound drugs are represented differently in the data across sites. If the drug you are looking for may be a compound drug, please check with individual sites to understand how they are handling these data."
+    }]
+  },
+  "LabResults":
+  {
+    "name": "Lab Results",
+    "stdvar": "_vdw_lab",
+    "description": "The LAB RESULTS table contains the results of laboratory tests performed on patients.",
+    "columns": [
+
       {
-        "title": "Creating NDC lists for multi-site projects",
-        "comment": "<p>Creating lists of NDCs for multi-site projects is a <em>known hard problem</em>.</p><p>Because this file is explicitly defined as idiosyncratic to each implementing site (only NDCs to be found at that site are included) and because the various commercial sources of NDC catalogues are necessarily ignorant of custom NDCs in use at implementing sites (e.g. for compound drugs and custom repackages) there is no single site that should consider itself capable of developing a valid list for use at multiple sites.</p>For this reason, we recommend a two-step approach for compiling NDC lists.<p><ol><li>The lead analyst of a project can first write a distributed program to query the EverNDC tables across sites. They may use generic names, brand names, AHFS codes (if available), or GPI codes (if available) to identify the NDCs in use at other sites.</li><li>They can then collate the NDCs identified from all participating sites to compile a final list of NDCs for the study.</li></ol>"
+        "name": "MRN",
+        "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+        "type": "char",
+        "valid_values": "Unique to each patient at each site",
+        "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
       },
       {
-        "title": "Compound Drugs",
-        "comment": "Compound drugs are represented differently in the data across sites. If the drug you are looking for may be a compound drug, please check with individual sites to understand how they are handling these data."
+        "name": "test_type",
+        "definition": "VDW-specific classification of laboratory results.",
+        "type": "char",
+        "length": 20,
+        "valid_values": "As defined in the <a href='blah'>excel spreadsheet</a> and <a href = 'bling'>matching SAS dataset</a> references, both maintained by the Lab Workgroup"
+      },
+      {
+        "name": "stat",
+        "definition": "Indicates the immediacy of the test.  The intent of this value is to determine whether the test was obtained as part of routine care or as an emergent/urgent diagnostic test.",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+        {
+          "value": "E",
+          "meaning": "Expedite"
+        },
+        {
+          "value": "S",
+          "meaning": "Stat"
+        },
+        {
+          "value": "R",
+          "meaning": "Routine"
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }],
+        "implementation_guidelines": "The default value should be Routine unless the results for that test indicate Expedite or Stat.  If your site does not ever use Stat or Expedite terminology then the value is set to Unknown."
+      },
+      {
+        "name": "loinc",
+        "definition": "Logical Observation Identifiers Names and Codes (LOINC) is a universal coding system for laboratory tests and measurements developed by Regenstrief Institute.  ",
+        "type": "char",
+        "length": 10,
+        "implementation_guidelines": "Visit <a href='https://loinc.org/'>the LOINC website</a> to download the set of LOINC codes defined by Regenstrief.  <p>Not all LOINCs have been mapped to VDW test_types</p>."
+      },
+      {
+        "name": "pt_loc",
+        "definition": "Location of the patient when the lab specimen was obtained.",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+        {
+          "value": "I",
+          "meaning": "Inpatient"
+        },
+        {
+          "value": "O",
+          "meaning": "Outpatient"
+        },
+        {
+          "value": "E",
+          "meaning": "Emergency Department"
+        },
+        {
+          "value": "H",
+          "meaning": "Home"
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
+      },
+      {
+        "name": "result_loc",
+        "definition": "Location where the result was completed. Particularly whether the lab was completed in a certified laboratory.",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+        {
+          "value": "L",
+          "meaning": "Lab"
+        },
+        {
+          "value": "P",
+          "meaning": "Point of care (e.g. home, provider office)"
+        }],
+        "implementation_guidelines": "Code nulls and unknowns as 'L'.  There are no missing values.<p>Result location is used to identify whether the test was completed in a laboratory (e.g., hospital lab, outpatient clinic lab, emergency department lab) or if the test was completed using a point of care device at a location other than a certified laboratory (e.g., anticoagulation clinic, newborn nursery, finger stick in provider office, home.)  The information may not be available at all sites.</p>"
+      },
+      {
+        "name": "specimen_id",
+        "definition": "Used to uniquely identify a collected specimen which may ultimately be used to obtain multiple lab results.  Specimen ID will be used to connect multiple records from the same blood sample.",
+        "type": "char",
+        "valid_values": "Any",
+        "implementation_guidelines": "A possible way to create Specimen_ID is by concatenating lab accession number and date. At most sites lab accession number is reused, thus concatenating the date will make a unique specimen ID for that test_type. Since date is PHI consider applying a hash. <code>md5(compress(AccessionNumber||SampleCollectionDt)) as Specimen_ID format=$hex32.</code>"
+      },
+      {
+        "name": "specimen_source",
+        "definition": "The source or method for collecting the specimen.",
+        "type": "char",
+        "length": 6,
+        "valid_values": [
+        {
+          "value": "BLOOD",
+          "meaning": "serum and/or plasma"
+        },
+        {
+          "value": "SERUM",
+          "meaning": "serum and/or plasma"
+        },
+        {
+          "value": "PLASMA",
+          "meaning": "serum and/or plasma"
+        },
+        {
+          "value": "SR_PLS",
+          "meaning": "serum and/or plasma"
+        },
+        {
+          "value": "PPP",
+          "meaning": "Platelet Poor Plasma"
+        },
+        {
+          "value": "CSF",
+          "meaning": "cerebral spinal fluid"
+        },
+        {
+          "value": "URINE",
+          "meaning": "Urine"
+        },
+        {
+          "value": "STOOL",
+          "meaning": "Stool"
+        },
+        {
+          "value": "NSWAB",
+          "meaning": "nasal swab (including nose) "
+        },
+        {
+          "value": "NWASH",
+          "meaning": "nasal wash"
+        },
+        {
+          "value": "NPH",
+          "meaning": "nasopharyngeal swab"
+        },
+        {
+          "value": "NPWASH",
+          "meaning": "nasopharyngeal wash"
+        },
+        {
+          "value": "THRT",
+          "meaning": "throat, oropharyngeal swab"
+        },
+        {
+          "value": "TR_ASP",
+          "meaning": "tracheal aspirate"
+        },
+        {
+          "value": "SLFSWB",
+          "meaning": "self-swab (similar to NSWAB but with ‘self’ designation)"
+        },
+        {
+          "value": "BAL",
+          "meaning": "bronchoalveolar lavage (BAL)"
+        },
+        {
+          "value": "BALBX",
+          "meaning": "BAL biopsy"
+        },
+        {
+          "value": "SALIVA",
+          "meaning": "Saliva"
+        },
+        {
+          "value": "SPUTUM",
+          "meaning": "Sputum"
+        },
+        {
+          "value": "OTHER",
+          "meaning": "Other"
+        },
+        {
+          "value": "NS",
+          "meaning": "not specified"
+        },
+        {
+          "value": "[Null]",
+          "meaning": "missing value"
+        }]
+      },
+      {
+        "name": "local_cd",
+        "definition": "The lab test type code as reported in source data without standardization or cleaning. This code indicates in the data source system which test was performed.",
+        "type": "char",
+        "valid_values": "Any",
+        "implementation_guidelines": "Unique to each site."
+      },
+      {
+        "name": "battery_cd",
+        "definition": "The battery code as reported in source data without standarization or cleaning. A battery consists of a grouping or series of tests performed and is sometimes referred to as a panel of tests.",
+        "type": "char",
+        "valid_values": "Any",
+        "implementation_guidelines": "Unique to each site."
+      },
+      {
+        "name": "px",
+        "definition": "?",
+        "valid_values": "As defined in procedures, or null.",
+        "implementation_guidelines": "Refer to the PX variable on the <a href='procedures.html'>Procedure table</a> for type and length."
+      },
+      {
+        "name": "px_codetype",
+        "definition": "Names the scheme of the code found in the px column.",
+        "valid_values": "As defined in procedures, or null.",
+        "implementation_guidelines": "Refer to the px_codetype variable on the <a href='procedures.html'>Procedure table</a> for type and length."
+      },
+      {
+        "name": "order_id",
+        "definition": "Uniquely identifies the order for this lab test.",
+        "type": "char",
+        "valid_values": "Any, or null",
+        "implementation_guidelines": "In the future, may link to a table of orders."
+      },
+      {
+        "name": "order_dt",
+        "definition": "Date that the lab test was ordered.",
+        "type": "num",
+        "length": 4,
+        "valid_values": "Any SAS date <= lab_dt",
+        "implementation_guidelines": "It is possible for the order date to be any date from months before the sample was taken (in the case of a recurring test to monitor a chronic condition or drug interaction) to the same day the sample was taken."
+      },
+      {
+        "name": "lab_dt",
+        "definition": "Date that the specimen was collected.",
+        "type": "num",
+        "valid_values": "Any SAS date",
+        "length": 4
+      },
+      {
+        "name": "lab_tm",
+        "definition": "Time that the specimen was collected.",
+        "type": "num",
+        "valid_values": "Any SAS time",
+        "length": 4
+      },
+      {
+        "name": "result_dt",
+        "definition": "Date that the test was resulted.",
+        "type": "num",
+        "length": 4,
+        "valid_values": "Any SAS date",
+        "implementation_guidelines": "This date could be the same day the specimen was collected or any date up to weeks later."
+      },
+      {
+        "name": "result_tm",
+        "definition": "Time that the specimen was resulted.",
+        "type": "num",
+        "length": 4,
+        "valid_values": "Any SAS time"
+      },
+      {
+        "name": "result_c",
+        "definition": "The result of the test stored in a character field.  This variable works in conjunction with the Modifier variable.",
+        "type": "char",
+        "length": 20,
+        "valid_values": "Any non-null",
+        "implementation_guidelines": "<ul><li>Symbols like >, <, >=, <= should be removed. </li><li>Numeric values stored in this variable should be stored with commas removed allowing the SAS default conversion to numeric to occur.  </li><li>Full ranges are to be placed in this field. Examples of full ranges: 3.4-7.5, 13000-18000. Note that commas and blanks should be removed from ranges and the numbers should be separated with a dash.</li>  <li>Comments or notes that are seen in addition to a result value should be recorded in the LAB NOTES table, not in this field.</li><li>The lab workgroup suggests placing 'SEE LAB NOTES TABLE' in the Result_C field when Result_C does not hold the test result but additional information can be found in the Lab Notes table.  Examples follow describing when this situation can arise.</li><li>Include information where the result has not been parsed out of a long string.  (This happened at one site when influenza test results were received from outside labs.  The time intensive work of writing code to parse the strings was not performed until the results were needed.)</li><li>Include long or vague results such as “Low risk for cardiovascular disease”.</li></ul>"
+      },
+      {
+        "name": "modifier",
+        "definition": "Modifies the value stored in the Result_C field.",
+        "type": "char",
+        "length": 2,
+        "valid_values": [
+        {
+          "value": "TX",
+          "meaning": "Text"
+        },
+        {
+          "value": "EQ",
+          "meaning": "Equal"
+        },
+        {
+          "value": "LT",
+          "meaning": "Less than"
+        },
+        {
+          "value": "LE",
+          "meaning": "Less than or equal to"
+        },
+        {
+          "value": "GT",
+          "meaning": "Greater than"
+        },
+        {
+          "value": "GE",
+          "meaning": "Greater than or equal to"
+        },
+        {
+          "value": "RA",
+          "meaning": "Range"
+        }],
+        "implementation_guidelines": "Any relational operators in the original source data value (e.g., <, >, or =) are reflected in the Modifier variable.  If the source data value is '<5' then the Result_C value is 5 and the Modifier is LT.  If the source data value is 'NEGATIVE' then the Result_C value is NEGATIVE and the Modifier is TX.  If the source data value is numeric (digits with or without decimal) and does not contain an operator, then the Modifier is EQ.  If the Result_C value is a range, as described in the cell above, then the Modifier is RA."
+      },
+      {
+        "name": "result_unit",
+        "definition": "The units in which the result is reported <strong>after basic standardizations have been applied</strong>.",
+        "type": "char",
+        "length": 11,
+        "valid_values": "Any",
+        "implementation_guidelines": "<p>Result unit after applying 1) the standardizations from the table supplied by the Laboratory workgroup and 2) any site specific corrections / standardizations not applicable to all sites.</p><p>At the least, the value should be uppercase and left justified.</p><p>Only recode equivalent units (e.g., ::example::). Do <strong>not</strong> convert/recode result_c, normal_low_c or normal_high_c in order to use a more favored unit.</p>"
+      },
+      {
+        "name": "result_unit_raw",
+        "definition": "The units in which the result is reported before basic standardizations are applied.",
+        "type": "char",
+        "length": 11,
+        "valid_values": "Any"
+      },
+      {
+        "name": "normal_low_c",
+        "definition": "The lowest value still considered normal for this test.   This variable works in conjunction with the Modifier_Low variable.",
+        "type": "char",
+        "length": 8,
+        "valid_values": "Any",
+        "implementation_guidelines": "Symbols like >, <, >=, <= should be removed. Numeric values stored in this variable should be stored to convert with the SAS 8. informat."
+      },
+      {
+        "name": "modifier_low",
+        "definition": "Modifies the value stored in the Normal_Low_C field.",
+        "type": "char",
+        "length": 2,
+        "valid_values": "As defined above for the <code>modifier</code> column, or null.",
+        "implementation_guidelines": "<p>Any relational operators in the original source data value (e.g., <, >, or =) are reflected in the Modifier_Low variable.</p>For numeric results one of the following needs to be true:<ol><li>Both modifier_low and modifier_high contain EQ  e.g. (normal values fall in the range 3-10)</li><li>modifier_low contains GT or GE and modifier_high contains blank  e.g. (normal values are >3 with no upper boundary)</li><li>modifier_high contains LT or LE and modifier_low contains blank  e.g. (normal values are <=10 with no lower boundary)</li></ol><p>Do not place 0 in the lower boundary unless it comes from the source data.</p>"
+      },
+      {
+        "name": "normal_high_c",
+        "definition": "The highest value still considered normal for this test.   This variable works in conjunction with the Modifer_High variable.",
+        "type": "char",
+        "length": 8,
+        "valid_values": "Any",
+        "implementation_guidelines": "Symbols like >, <, >=, <= should be removed. Numeric values stored in this variable should be stored to convert with the SAS 8. informat."
+      },
+      {
+        "name": "modifier_high",
+        "definition": "Modifies the value stored in the Normal_High_C field.",
+        "type": "char",
+        "length": 2,
+        "valid_values": "As defined above for the <code>modifier</code> column, or null.",
+        "implementation_guidelines": "See guidelines for <code>modifier_low</code> above."
+      },
+      {
+        "name": "abn_ind",
+        "definition": "Indicates whether the test result is abnormal.",
+        "type": "char",
+        "length": 2,
+        "valid_values": [
+        {
+          "value": "AB",
+          "meaning": "Abnormal"
+        },
+        {
+          "value": "C",
+          "meaning": "Critical"
+        },
+        {
+          "value": "AH",
+          "meaning": "Abnormal high"
+        },
+        {
+          "value": "CH",
+          "meaning": "Critical high"
+        },
+        {
+          "value": "AL",
+          "meaning": "Abnormal low"
+        },
+        {
+          "value": "CL",
+          "meaning": "Critical low"
+        },
+        {
+          "value": "IN",
+          "meaning": "Inconclusive"
+        },
+        {
+          "value": "NL",
+          "meaning": "Normal"
+        },
+        {
+          "value": "UK",
+          "meaning": "Unknown or missing"
+        }],
+        "implementation_guidelines": "If the abnormal indicator is missing do not impute a value. Missing abnormal indicator values should be set to UK."
+      },
+      {
+        "name": "order_prov",
+        "definition": "Identifies the provider that ordered the lab test.",
+        "valid_values": "Foreign key into <a href='providers.html'>providers.provider</a>"
+      },
+      {
+        "name": "ord_dept",
+        "definition": "The department or specialty in which the order took place.",
+        "type": "char",
+        "length": 6,
+        "valid_values": "As given in <a href='appendix_a2_depts.html'>Appendix A2: Dept Values</a>"
+      },
+      {
+        "name": "facility_code",
+        "definition": "A code indiciating the facility, hospital, or clinic in which the lab order originated.",
+        "valid_values": "Foreign key into <a href='facilities.html'>facilities</a>"
+
+      },
+      {
+        "name": "row_id",
+        "definition": "A site specific identifer that enables linkage between the LAB NOTES and LAB RESULTtables.",
+        "type": "unspecified",
+        "valid_values": "Any, including null.",
+        "implementation_guidelines": "A non-null value is the signal that more information will be found in free-text form in the <code>lab_notes</code> table."
       }
-    ]
+
+
+    ],
+    "comments": [
+    {
+      "title": "Resulted labs only",
+      "comment": "If a test is not resulted for whatever reason (e.g. specimen not sufficient, patient did not show), then that test should not appear in the table."
+    },
+    {
+      "title": "Date Columns",
+      "comment": "Sites may not have all three date variables filled. In most situations order date will be the last choice of dates used when results are being studied. Multi-site programs could apply logic to pull the date first from lab_dt. If missing then pull from result_dt. If missing then the study may want to pull from order_dt."
+    }]
+
   }
 }
