@@ -2618,5 +2618,184 @@
       "comment": "Sites may not have all three date variables filled. In most situations order date will be the last choice of dates used when results are being studied. Multi-site programs could apply logic to pull the date first from lab_dt. If missing then pull from result_dt. If missing then the study may want to pull from order_dt."
     }]
 
+  },
+  "VitalSigns":
+  {
+    "name": "Vital Signs",
+    "description": "blah",
+    "columns": [
+    {
+      "name": "MRN",
+      "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+      "type": "char",
+      "valid_values": "Unique to each patient at each site",
+      "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+    },
+    {
+      "name": "measure_date",
+      "definition": "The date on which these vital signs were measured",
+      "type": "num",
+      "length": 4,
+      "valid_values": "Any SAS Date"
+    },
+    {
+      "name": "measure_time",
+      "definition": "The time at which these vital signs were measured",
+      "type": "num",
+      "length": 4,
+      "valid_values": "Any SAS Time",
+      "implementation_guidelines": "Preferred to be the actual time of measurement but may also be a check-in time"
+    },
+    {
+      "name": "enc_id",
+      "definition": "Foreign key to the ENCOUNTER table uniquely identifying the encounter; unlinkable records should contain null/missing values",
+      "type": "char",
+      "valid_values": "Unique to each encounter at each site",
+      "implementation_guidelines": "Only populate if there is an encounter in the utilization file that can be definitively matched to the vital record"
+    },
+    {
+      "name": "enctype",
+      "definition": "The type of the encounter at which this measure was taken",
+      "valid_values": "As defined for the enctype column in the <a href='utilization.html'>utilization encounter</a> table.",
+      "implementation_guidelines": "If the encounter type is known, please populate even if you are unable to populate ENC_ID"
+    },
+    {
+      "name": "ht",
+      "definition": "The patient's height in inches at this measure",
+      "type": "num",
+      "length": 8,
+      "valid_values": "Positive real number",
+      "implementation_guidelines": "Set to missing if: <ul><li>age = 0 and (ht < 3 or ht > 41)</li><li>age between 1 and 5 and (ht < 12 or ht > 60)</li><li>age between 6 and 12 and (ht < 20 or ht > 84)</li><li>age between 13 and 17 and (ht < 30 or ht > 108)</li><li>age > = 18 and (ht < 36 or ht > 108)</li></ul> Only populate if measured at the visit. Do not impute/carry values from other dates."
+    },
+    {
+      "name": "wt",
+      "definition": "The patient's weight measured in pounds at this measure",
+      "type": "num",
+      "length": 8,
+      "valid_values": "Positive real number",
+      "implementation_guidelines": "Set to missing if: <ul><li>age = 0 and (wt < 0 or wt > 80)</li><li>age between 1 and 5 and (wt < 9 or wt > 200)</li><li>age between 6 and 12 and (wt < 20 or wt > 350)</li><li>age between 13 and 17 and (wt < 25 or wt > 650)</li><li>age > = 18 and (wt < 50 or wt > 1000)</li></ul>  Only populate if measured at the visit. Do not impute/carry values from other dates."
+    },
+    {
+      "name": "systolic",
+      "definition": "The systolic blood pressure measured in mmHg of the patient at this time",
+      "type": "num",
+      "length": 4,
+      "valid_values": "Integer",
+      "implementation_guidelines": "Set to missing if < 50 or > 300  Only populate if measured at the visit. Do not impute/carry values from other dates."
+    },
+    {
+      "name": "diastolic",
+      "definition": "The diastolic blood pressure measured in mmHg of the patient at this time",
+      "type": "num",
+      "length": 4,
+      "valid_values": "Integer",
+      "implementation_guidelines": "missing if < 20 or > 160 Only populate if measured at the visit. Do not impute/carry values from other dates. Variable name Definition  Type(Len) Values  Implementation Guidelines"
+    },
+    {
+      "name": "bp_type",
+      "definition": "The type of blood pressure taken",
+      "type": "char",
+      "length": 1,
+      "valid_values": [
+      {
+        "value": "R",
+        "meaning": "Rooming "
+      },
+      {
+        "value": "O",
+        "meaning": "Orthostatic "
+      },
+      {
+        "value": "M",
+        "meaning": "Multiple "
+      },
+      {
+        "value": "E",
+        "meaning": "Extended"
+      }]
+    },
+    {
+      "name": "position",
+      "definition": "The patient's position for orthostatic blood pressure measurements",
+      "type": "char",
+      "length": 1,
+      "valid_values": [
+      {
+        "value": "1",
+        "meaning": "Sitting "
+      },
+      {
+        "value": "2",
+        "meaning": "Standing "
+      },
+      {
+        "value": "3",
+        "meaning": "Supine "
+      },
+      {
+        "value": "Null",
+        "meaning": "Unknown"
+      }]
+
+    },
+    {
+      "name": "ht_raw",
+      "definition": "The height measurement as reported in source data without standardization or cleaning",
+      "type": "char",
+      "implementation_guidelines": "Examples may include specific values, ranges, or categories"
+    },
+    {
+      "name": "wt_raw",
+      "definition": "The weight measurement as reported in source data without standardization or cleaning",
+      "type": "char",
+      "implementation_guidelines": "Examples may include specific values, ranges, or categories"
+    },
+    {
+      "name": "bmi_raw",
+      "definition": "The patient's body mass index measurement as reported in source data without standardization, calculation, or cleaning ",
+      "type": "char"
+    },
+    {
+      "name": "head_cir_raw",
+      "definition": "The patient's head circumference measurement as reported in source data without standardization or cleaning",
+      "type": "char"
+    },
+    {
+      "name": "systolic_raw",
+      "definition": "The systolic blood pressure measurement as reported in source data without standardization or cleaning ",
+      "type": "char",
+      "implementation_guidelines": "Examples may include specific values, ranges, or categories"
+    },
+    {
+      "name": "diastolic_raw",
+      "definition": "The diastolic blood pressure measurement as reported in source data without standardization or cleaning",
+      "type": "char",
+      "implementation_guidelines": "Examples may include specific values, ranges, or categories"
+    },
+    {
+      "name": "respir_raw",
+      "definition": "The respirations in breaths per minute measurement as reported in source data without standardization or cleaning",
+      "type": "char"
+    },
+    {
+      "name": "temp_raw",
+      "definition": "The patient's body temperature measurement as reported in source data without standardization or cleaning",
+      "type": "char"
+    },
+    {
+      "name": "pulse_raw",
+      "definition": "The heartbeats per minute measurement as reported in source data without standardization or cleaning ",
+      "type": "char"
+    }],
+    "primary_key": "None",
+    "comments": [
+    {
+      "title": "Body Mass Index",
+      "comment": "Body Mass Index (BMI) is not a cleaned variable on the VITAL SIGNS table. Users are recommended to calculate BMI at the time of actual need making use of the VDW Standard Macros."
+    },
+    {
+      "title": "Raw Columns",
+      "comment": "The RAW variables' primary purpose is for capturing categories or ranges that may be recorded in the system (e.g. for BMI_RAW values like 'overweight', or '25.0-25.9' or for DIASTOLIC_RAW values like 'HYPERTENSION' or '100-109')."
+    }]
   }
 }
