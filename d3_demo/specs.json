@@ -2622,7 +2622,7 @@
   "VitalSigns":
   {
     "name": "Vital Signs",
-    "description": "blah",
+    "description": "The VITAL SIGNS table includes physiological measures taken by health professionals during encounters. Additional measures on anthropometry are also included.",
     "columns": [
     {
       "name": "MRN",
@@ -2797,5 +2797,505 @@
       "title": "Raw Columns",
       "comment": "The RAW variables' primary purpose is for capturing categories or ranges that may be recorded in the system (e.g. for BMI_RAW values like 'overweight', or '25.0-25.9' or for DIASTOLIC_RAW values like 'HYPERTENSION' or '100-109')."
     }]
+  },
+  "SocialHx":
+  {
+    "name": "Vital Signs",
+    "description": "<p>The SOCIAL HISTORY table contains behavioral measures taken by health professionals during clinic visits, over the telephone, or via questionnaires. These measures include the use of tobacco, alcohol, and illegal drugs as well as sexual behavior and contraceptive use.</p>",
+    "columns": [
+      {
+        "name": "MRN",
+        "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+        "type": "char",
+        "valid_values": "Unique to each patient at each site",
+        "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+      }
+      ,
+      {
+        "name": "contact_date",
+        "definition": "Date of encounter or date of social history data collection",
+        "type": "num",
+        "length": 4,
+        "valid_values": "SAS date, missing is not allowed"
+      },
+      {
+        "name": "enc_id",
+        "definition": "Foreign key to the ENCOUNTER table uniquely identifying the encounter; unlinkable records should contain null/missing values",
+        "type": "char",
+        "valid_values": "SAS date or null"
+      },
+      {
+        "name": "education_years",
+        "definition": "Number of years of education completed recorded as free text",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      },
+      {
+        "name": "sex_active",
+        "definition": "Whether the person is sexually active",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"W", "meaning":"Not currently (Was) "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+      },
+      {
+        "name": "sex_female_partner",
+        "definition": "Whether the person has female sex partners",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+      },
+      {
+        "name": "sex_male_partner",
+        "definition": "Whether the person has male sex partners",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+      },
+      {
+        "name": "sex_comment",
+        "definition": "Comment about the person's sexual activity",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      },
+      {
+        "name": "bc_abstinence",
+        "definition": "Whether the person uses abstinence as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_condom",
+        "definition": "Whether the person uses condoms as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_diaphragm",
+        "definition": "Whether the person uses a diaphragm as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_implant",
+        "definition": "Whether the person uses an implant as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_injection",
+        "definition": "Whether the person uses injections as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_inserts",
+        "definition": "Whether the person uses inserts as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_iud",
+        "definition": "Whether the person uses an intrauterine device (IUD) as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_pill",
+        "definition": "Whether the person uses birth control pills",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_rhythm",
+        "definition": "Whether the person uses the rhythm method as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_spermicide",
+        "definition": "Whether the preson uses spermicide as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_sponge",
+        "definition": "Whether the person uses a sponge as birth control",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_surgical",
+        "definition": "Whether a surgery (e.g. vasectomy, hysterectomy) significantly reduces the chance of contraception",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_other",
+        "definition": "Whether a surgery (e.g. vasectomy, hysterectomy) significantly reduces the chance of contraception",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "bc_comment",
+        "definition": "Comment about the person's sexual activity",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      },
+      {
+        "name": "alcohol_use",
+        "definition": "Whether the person is an alcohol drinker",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"Q", "meaning":"Quit/Former"}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+      },
+      {
+        "name": "alcohol_beer_nwk",
+        "definition": "The number of drinks per week, beer",
+        "type": "char",
+        "valid_values": "Drinks/wk, beer; could be a range; 0 is valid "
+      },
+      {
+        "name": "alcohol_wine_nwk",
+        "definition": "The number of drinks per week, wine",
+        "type": "char",
+        "valid_values": "Drinks/wk, wine; could be a range; 0 is valid "
+      },
+      {
+        "name": "alcohol_liq_nwk",
+        "definition": "The number of drinks per week, hard liquor",
+        "type": "char",
+        "valid_values": "Drinks/wk, liquor; could be a range; 0 is valid "
+      },
+      {
+        "name": "alcohol_unspec_nwk",
+        "definition": "The number of drinks per week, unspecified type",
+        "type": "char",
+        "valid_values": "Drinks/wk, unspecified; could be a range; 0 is valid  "
+      },
+      {
+        "name": "alcohol_comment",
+        "definition": "Comment about the person's alcohol use",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      },
+      {
+        "name": "illicit_drug_use",
+        "definition": "Whether the person uses illicit drugs",
+        "type": "char",
+        "length": 1,
+        "valid_values": "Y = Yes N = No Q = Quit/Former X = Not asked U = Unknown or missing Includes marijuana use"
+      },
+      {
+        "name": "illicit_drug_use_freq",
+        "definition": "Frequency of illicit drug use as free text",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      },
+      {
+        "name": "illicit_drug_use_comment",
+        "definition": "Comment about the person's illicit drug use",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      },
+      {
+        "name": "iv_drug_use",
+        "definition": "Whether the person uses IV drugs",
+        "type": "char",
+        "length": 1,
+        "valid_values": "Y = Yes N = No Q = Quit/Former X = Not asked U = Unknown or missing Does not include infusion/cancer treatment drugs."
+      },
+      {
+        "name": "tobacco_use",
+        "definition": "Whether the person is a user of tobacco",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+         {"value": "Y", "meaning":"Yes / Current "}
+        , {"value": "I", "meaning":"Infrequent "}
+        , {"value": "N", "meaning":"Never "}
+        , {"value": "Q", "meaning":"Quit / Former "}
+        , {"value": "P", "meaning":"Passive/Environmental/Second hand "}
+        , {"value": "X", "meaning":"Not Asked "}
+        , {"value": "U", "meaning":"Unknown or missing"}
+      ]
+        , "implementation_guidelines": "Include tobacco status as of the visit date. Unknown values should be left blank.  The not asked value should be used only when it is a valid response from your system."
+      },
+      {
+        "name": "tobacco_use_years",
+        "definition": "The number of years the person used tobacco",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      },
+      {
+        "name": "tobacco_packs_day",
+        "definition": "Number of packs smoked per day as free text",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      },
+      {
+        "name": "tobacco_smokeless_use",
+        "definition": "Whether the person uses smokeless tobacco",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value": "Y", "meaning": "Yes / Current "}
+          , {"value": "I", "meaning": "Infrequent "}
+          , {"value": "N", "meaning": "No / Never used "}
+          , {"value": "Q", "meaning": "Quit / Former "}
+          , {"value": "X", "meaning": "Not asked "}
+          , {"value": "U", "meaning": "Unknown or missing"}]
+      },
+      {
+        "name": "tobacco_smokeless_start_date",
+        "definition": "Date the person started using smokeless tobacco",
+        "type": "num",
+        "length": 4,
+        "valid_values": "SAS Date, missing allowed "
+      },
+      {
+        "name": "tobacco_smokeless_quit_date",
+        "definition": "Date the person quit using smokeless tobacco",
+        "type": "num",
+        "length": 4,
+        "valid_values": "SAS Date, missing allowed "
+      },
+      {
+        "name": "tobacco_smoking_use",
+        "definition": "Whether the person uses smoking tobacco",
+        "type": "char",
+        "length": 1,
+        "valid_values": "E = Current every day S = Current some days H = Heavy smoker L = Light smoker N = Never P = Passive Q = Former U = Unknown X = Never assessed Y = Smoker - current status unknown  "
+      },
+      {
+        "name": "tobacco_smoking_start_date",
+        "definition": "Date the person started using smoked tobacco",
+        "type": "num",
+        "length": 4,
+        "valid_values": "SAS Date, missing allowed "
+      },
+      {
+        "name": "tobacco_smoking_quit_date",
+        "definition": "Date the person quit using smoked tobacco",
+        "type": "num",
+        "length": 4,
+        "valid_values": "SAS Date, missing allowed "
+      },
+      {
+        "name": "tobacco_chew",
+        "definition": "Whether the person uses chew tobacco",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "tobacco_cigarettes",
+        "definition": "Whether the person uses tobacco cigarettes",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "tobacco_cigars",
+        "definition": "Whether the person uses tobacco cigars",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "tobacco_pipes",
+        "definition": "Whether the person uses tobacco pipes",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "tobacco_snuff",
+        "definition": "Whether the person uses snuff tobacco",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "tobacco_unspecified",
+        "definition": "Whether the person uses an unspecified form of tobacco",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+           {"value":"Y", "meaning":"Yes "}
+          , {"value":"N", "meaning":"No "}
+          , {"value":"X", "meaning":"Not asked "}
+          , {"value":"U", "meaning":"Unknown or missing"}
+          ]
+
+      },
+      {
+        "name": "tobacco_comment",
+        "definition": "Comment about the person's tobacco use",
+        "type": "char",
+        "valid_values": "Free text, or null "
+      }
+
+
+
+    ],
+    "primary_key": "None",
+    "comments": [
+      {
+        "title": "Consider Patient Privacy",
+        "comment": "Social history measures may carry special privacy concerns. Beyond the nature of these variables, the use of free text fields in any content area warrants additional care as they may contain personal health information. Users are encouraged to consult with privacy experts and/or experienced users before extracting data if they are unfamiliar with these additional data sensitivities."
+      },
+      {
+        "title": "Tobacco Is Hard",
+        "comment": "Because of the range of tobacco products available and the variability in the level of detail recorded, precision and capture of tobacco related variables may vary both across and within sites."
+      },
+      {
+        "title": "People Are Unreliable",
+        "comment": "Consistency of response is also not guaranteed over time."
+      }
+
+    ]
   }
 }
