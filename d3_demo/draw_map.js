@@ -20,10 +20,36 @@ function getStateClass(inState) {
   }
 }
 
-// function setStateFill(statshap_feature, hcsrnStates) {
-//   // console.log(statshap_feature.properties.postal, hcsrnStates.includes(statshap_feature.properties.postal)) ;
-//   if (hcsrnStates.includes(statshap_feature.properties.postal)) {return "lightblue"} else {return "pink"}
-// }
+async function draw_legend(legGroup) {
+
+  legEntries = {
+    hcsrn: {"text": "State in which HCSRN Research Centers Are Based"},
+    affiliated: {"text": "Research Communities Affilated with HCRSN members"}
+  }
+
+  var y = 3 ;
+  var sqSide = 20 ;
+
+  for(var entry in legEntries) {
+    thisEntry = legEntries[entry] ;
+    legGroup.append("rect")
+      .attr("x", 5)
+      .attr("y", y)
+      .attr("height", sqSide)
+      .attr("width" , sqSide)
+      .attr("class", entry)
+    ;
+    legGroup.append("text")
+      .attr("x", 5 + sqSide + 5)
+      .attr("y", y + sqSide - 8)
+      // .attr('text-anchor', 'end')
+      .text(thisEntry.text)
+    ;
+
+    y *= 12 ;
+    console.log(thisEntry) ;
+  }
+}
 
 async function drawMap() {
   const stateShapes = await d3.json("./ne_110m_admin_1_states_provinces.json") ;
@@ -73,8 +99,16 @@ async function drawMap() {
     .attr("d", path) // equiv to: (d) => path(d)
   ;
 
-  // console.log(stateShapes) ;
-
+  const legendGroup = wrapper.append("g")
+    .attr("transform", `translate(${
+      380
+    }, ${
+      dimensions.width < 800
+      ? dimensions.boundedHeight - 3
+      : dimensions.boundedHeight * 0.05
+    })`)
+  ;
+  draw_legend(legendGroup) ;
 }
 
 drawMap() ;

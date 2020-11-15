@@ -100,6 +100,14 @@ td {
     width: 70% ;
 }
 
+.affiliated {
+    fill: #96CAF8 ;
+}
+
+.hcsrn {
+    fill: #0056A1 ;
+}
+
 rect {
     fill: #34495e ;
     opacity: 0.4 ;
@@ -142,10 +150,3 @@ path {
     fill: #609DD5;
 }
 
-path.affiliated {
-    fill: #96CAF8 ;
-}
-
-path.hcsrn {
-    fill: #0056A1 ;
-}
