@@ -3,7 +3,7 @@
     {"name": "Baylor / Scott & White", "abbr": "BSWH", "manager": "Anne Hathaway", "location": "Austin TX", "states": ["TX"] },
     {"name": "Essentia"              , "abbr": "EIRH", "manager": "Idris Elba", "location": "Duluth MN", "states": ["MN", "WI"]},
     {"name": "Fallon / Meyers"       , "abbr": "MCPI", "manager": "Christian Bale", "location": "Worcester MA", "states": ["MA"]},
-    {"name": "Geisinger"             , "abbr": "GHS", "manager": "Sam Muthaflippin' Rockwell", "location": "Geisinger WI", "states": ["WI"]},
+    {"name": "Geisinger"             , "abbr": "GHS", "manager": "Sam Muthaflippin' Rockwell", "location": "Danville PA", "states": ["PA"]},
     {"name": "Harvard Pilgrim"       , "abbr": "HPHC", "manager": "Karl Urban", "location": "Boston MA", "states": ["MA"]},
     {"name": "Health-Partners"       , "abbr": "HPI", "manager": "Claire Danes", "location": "Minneapolis MN", "states": ["MN"]},
     {"name": "Henry Ford"            , "abbr": "HFHS", "manager": "Dwayne 'The Rock' Johnson", "location": "Detroit MI", "states": ["MI"]},

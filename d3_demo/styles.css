@@ -135,3 +135,17 @@ dd {
     margin-left: 2em;
     margin-bottom: 5px;
 }
+
+path {
+    stroke: white;
+    stroke-width: 2px;
+    fill: #609DD5;
+}
+
+path.affiliated {
+    fill: #96CAF8 ;
+}
+
+path.hcsrn {
+    fill: #0056A1 ;
+}

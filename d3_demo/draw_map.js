@@ -1,3 +1,6 @@
+affiliatedStates = ['ND', 'KS', 'NE', 'AR', 'TN', 'KY', 'OH'] ;
+hcsrnStates = []
+
 function getStates(hcsrnSites) {
   ret = new Set() ;
   for (var i = hcsrnSites.length - 1; i >= 0; i--) {
@@ -5,13 +8,22 @@ function getStates(hcsrnSites) {
       ret.add(hcsrnSites[i].states[j]) ;
     }
   }
+  hcsrnStates = Array.from(ret) ;
   return Array.from(ret) ;
 }
 
-function setStateFill(statshap_feature, hcsrnStates) {
-  console.log(statshap_feature.properties.postal, hcsrnStates.includes(statshap_feature.properties.postal)) ;
-  if (hcsrnStates.includes(statshap_feature.properties.postal)) {return "lightblue"} else {return "pink"}
+function getStateClass(inState) {
+  if (hcsrnStates.includes(inState)) {return 'hcsrn'} else {
+    if (affiliatedStates.includes(inState)) {return 'affiliated'} else {
+      return '' ;
+    }
+  }
 }
+
+// function setStateFill(statshap_feature, hcsrnStates) {
+//   // console.log(statshap_feature.properties.postal, hcsrnStates.includes(statshap_feature.properties.postal)) ;
+//   if (hcsrnStates.includes(statshap_feature.properties.postal)) {return "lightblue"} else {return "pink"}
+// }
 
 async function drawMap() {
   const stateShapes = await d3.json("./ne_110m_admin_1_states_provinces.json") ;
@@ -19,8 +31,8 @@ async function drawMap() {
   const hcsrnSites = overviewData["sites"] ;
   var hcsrnStates = getStates(hcsrnSites) ;
 
-  const stateNameAccessor = (d) => {d.properties["gn_name"]} ;
-  const stateAbbrAccessor = (d) => {d.properties["postal"]} ;
+  const stateNameAccessor = (d) => d.properties["gn_name"] ;
+  const stateAbbrAccessor = (d) => d.properties.postal ;
 
   let dimensions = {
     width: window.innerWidth * 0.7,
@@ -32,7 +44,6 @@ async function drawMap() {
     }
   } ;
   dimensions.boundedWidth = dimensions.width - dimensions.margin.right - dimensions.margin.left ;
-
   dimensions.boundedHeight = window.innerHeight * 0.9 ;
   dimensions.height = dimensions.boundedHeight + dimensions.margin.top + dimensions.margin.bottom ;
 
@@ -53,17 +64,16 @@ async function drawMap() {
     .style("transform", `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`)
   ;
 
-  const states = bounds.selectAll('.us-state')
+  const states = bounds.selectAll('path')
     .data(stateShapes.features)
     .enter().append("path")
-    .attr("class", "us-state")
-    .attr("d", path(stateShapes))
-    .attr("fill", (d) => setStateFill(d, hcsrnStates))
-    .style("stroke", "#000")
+    .attr("class", (d) => getStateClass(stateAbbrAccessor(d)))
+    .attr("id", stateAbbrAccessor)
+    // .attr("d", path(stateShapes)) WRONG!
+    .attr("d", path) // equiv to: (d) => path(d)
   ;
 
-
-  console.log(stateShapes) ;
+  // console.log(stateShapes) ;
 
 }
 
