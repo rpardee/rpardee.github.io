@@ -15,7 +15,7 @@ function getStates(hcsrnSites) {
 function getStateClass(inState) {
   if (hcsrnStates.includes(inState)) {return 'hcsrn'} else {
     if (affiliatedStates.includes(inState)) {return 'affiliated'} else {
-      return '' ;
+      return 'unaffiliated' ;
     }
   }
 }

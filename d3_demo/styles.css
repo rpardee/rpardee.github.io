@@ -102,10 +102,16 @@ td {
 
 .affiliated {
     fill: #96CAF8 ;
+    opacity: 1.0;
 }
 
 .hcsrn {
     fill: #0056A1 ;
+    opacity: 1.0;
+}
+.unaffiliated {
+    fill: #609DD5;
+
 }
 
 rect {
@@ -147,6 +153,5 @@ dd {
 path {
     stroke: white;
     stroke-width: 2px;
-    fill: #609DD5;
 }
 
