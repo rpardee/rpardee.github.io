@@ -155,3 +155,15 @@ path {
     stroke-width: 2px;
 }
 
+.research-center {
+    opacity: .5 ;
+}
+
+.site-name {
+    font-size: x-large;
+}
+
+circle:hover {
+    fill: darkred ;
+    opacity: 1 ;
+}

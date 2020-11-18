@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <title>Pardee Family Secret Santa Assignments</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet">
     <style type="text/css">
         body {
           font-family: 'Nunito', sans-serif;
@@ -55,26 +55,19 @@
               "R&A": "Mom Pardee",
               "M&M": "Mike & Mary"
             } ;
-            var year_mod = for_year % 3 ;
+            var year_mod = for_year % 2 ;
             var assignment_key =  { 0: [
                                             {fam_1: "T&J", fam_2: "M&M"},
                                             {fam_1: "T&L", fam_2: "T&J"},
-                                            {fam_1: "R&A", fam_2: "T&L"},
-                                            {fam_1: "M&M", fam_2: "R&A"}
-                                        ],
-                                    1: [
-                                            {fam_1: "T&J", fam_2: "R&A"},
-                                            {fam_1: "T&L", fam_2: "M&M"},
-                                            {fam_1: "R&A", fam_2: "T&J"},
                                             {fam_1: "M&M", fam_2: "T&L"}
                                         ],
-                                    2: [
-                                          {fam_1: "T&J", fam_2: "T&L"},
-                                          {fam_1: "T&L", fam_2: "R&A"},
-                                          {fam_1: "R&A", fam_2: "M&M"},
-                                          {fam_1: "M&M", fam_2: "T&J"}
+                                    1: [
+                                            {fam_1: "T&J", fam_2: "T&L"},
+                                            {fam_1: "T&L", fam_2: "M&M"},
+                                            {fam_1: "M&M", fam_2: "T&J"}
                                         ]
                                   } ;
+
             var assignments = assignment_key[year_mod] ;
             var tbl = $('<table>') ;
             var thead = $('<thead>') ;

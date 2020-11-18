@@ -1,11 +1,11 @@
 affiliatedStates = ['ND', 'KS', 'NE', 'AR', 'TN', 'KY', 'OH'] ;
 hcsrnStates = []
 
-function getStates(hcsrnSites) {
+function getStates(hcsrnSiteArray) {
   ret = new Set() ;
-  for (var i = hcsrnSites.length - 1; i >= 0; i--) {
-    for (var j = hcsrnSites[i].states.length - 1; j >= 0; j--) {
-      ret.add(hcsrnSites[i].states[j]) ;
+  for (var i = hcsrnSiteArray.length - 1; i >= 0; i--) {
+    for (var j = hcsrnSiteArray[i].states.length - 1; j >= 0; j--) {
+      ret.add(hcsrnSiteArray[i].states[j]) ;
     }
   }
   hcsrnStates = Array.from(ret) ;
@@ -47,18 +47,28 @@ async function draw_legend(legGroup) {
     ;
 
     y *= 12 ;
-    console.log(thisEntry) ;
+    // console.log(thisEntry) ;
   }
+}
+
+function does_this_ever_get_called(d) {
+  console.log('dtegc:', d) ;
 }
 
 async function drawMap() {
   const stateShapes = await d3.json("./ne_110m_admin_1_states_provinces.json") ;
   const overviewData = await d3.json("./overview_data.json") ;
-  const hcsrnSites = overviewData["sites"] ;
-  var hcsrnStates = getStates(hcsrnSites) ;
+  const hcsrnSiteArray = overviewData["sites"] ;
+  hcsrnStates = getStates(hcsrnSiteArray) ;
+
+  hcsrnSites = {} ;
+  hcsrnSiteArray.map((d) => hcsrnSites[d.abbr] = d) ;
+
+  console.log(hcsrnSiteArray) ;
 
   const stateNameAccessor = (d) => d.properties["gn_name"] ;
   const stateAbbrAccessor = (d) => d.properties.postal ;
+  const latLongAccessor = (d) => [d.longitude, d.latitude] ;
 
   let dimensions = {
     width: window.innerWidth * 0.7,
@@ -75,7 +85,7 @@ async function drawMap() {
 
   const projection = d3.geoAlbersUsa()
      .translate([dimensions.width/2, dimensions.height/2])    // translate to center of screen
-     .scale([dimensions.width]);          // scale things down so see entire US
+     .scale([1000]);          // scale things down so see entire US
   ;
 
   const path = d3.geoPath(projection) ;
@@ -90,6 +100,7 @@ async function drawMap() {
     .style("transform", `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`)
   ;
 
+  // draw the state shapes (svg paths)
   const states = bounds.selectAll('path')
     .data(stateShapes.features)
     .enter().append("path")
@@ -99,6 +110,35 @@ async function drawMap() {
     .attr("d", path) // equiv to: (d) => path(d)
   ;
 
+  // draw the research centers
+  const researchCenters = bounds.selectAll("circle")
+    .data(hcsrnSiteArray)
+    .enter().append("circle")
+      .attr("class", "research-center")
+      .attr("id", (d) => d.abbr)
+      .attr("cx", (d) => projection(latLongAccessor(d))[0])
+      .attr("cy", (d) => projection(latLongAccessor(d))[1])
+      .attr("r", 8)
+      .attr("fill", "gold")
+  ;
+
+  researchCenters.on("mouseenter", onMouseEnter).on("mouseleave", onMouseLeave) ;
+  const tooltip = d3.select("#tooltip") ;
+  function onMouseEnter(datum) {
+    tooltip.style("opacity", 1) ;
+    tooltip.select("#name").text(datum.name) ;
+    tooltip.select("#location").text("Location: " + datum.location) ;
+    tooltip.select("#sdm").text("Site Data Manager: " + datum.manager) ;
+    tooltip.style("left", (d3.event.pageX) + "px")
+      .style("top", (d3.event.pageY - 28) + "px");
+
+  }
+
+  function onMouseLeave(datum) {
+    tooltip.style("opacity", 0) ;
+  }
+
+  // TODO: Work out how to place this reasonably.
   const legendGroup = wrapper.append("g")
     .attr("transform", `translate(${
       380
