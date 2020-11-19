@@ -264,7 +264,7 @@ async function drawMap() {
   const tooltip = d3.select("#tooltip") ;
   const it_timeline = d3.select("#timeline") ;
   function onMouseEnter(datum) {
-    tooltip.select("#name").text(datum.name) ;
+    tooltip.select("#name").text(datum.long_name) ;
     tooltip.select("#location").text("Location: " + datum.location) ;
     tooltip.select("#sdm").text("Site Data Manager: " + datum.manager) ;
     tooltip.style("left", (d3.event.pageX) + "px")
