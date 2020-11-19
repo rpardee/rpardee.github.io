@@ -212,16 +212,14 @@ async function drawMap() {
 
   let dimensions = {
     width: window.innerWidth * 0.7,
+    height: 600,
     margin: {
-      top: 10,
+      top: -40,
       right: 10,
-      bottom: 10,
-      left: 10
+      bottom: 40,
+      left: -10
     }
   } ;
-  dimensions.boundedWidth = dimensions.width - dimensions.margin.right - dimensions.margin.left ;
-  dimensions.boundedHeight = window.innerHeight * 0.9 ;
-  dimensions.height = dimensions.boundedHeight + dimensions.margin.top + dimensions.margin.bottom ;
 
   const wrapper = d3.select("#wrapper")
     .append("svg")
@@ -230,15 +228,15 @@ async function drawMap() {
   ;
 
   const bounds = wrapper.append("g")
-    .attr("transform", `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`)
+    .attr("transform", `translate(${dimensions.margin.left}, ${dimensions.margin.top})`)
   ;
+
   const projection = d3.geoAlbersUsa()
      .translate([dimensions.width/2, dimensions.height/2])    // translate to center of screen
      .scale([1000]);          // scale things down so see entire US
   ;
 
   const path = d3.geoPath(projection) ;
-
 
   // draw the state shapes (svg paths)
   const states = bounds.selectAll('path')
@@ -281,11 +279,7 @@ async function drawMap() {
 
   // TODO: Work out how to place this reasonably.
   const legendGroup = wrapper.append("g")
-    .attr("transform", `translate(${
-      350
-    }, ${
-      700
-    })`)
+    .attr("transform", "translate(420, 500)")
   ;
   draw_legend(legendGroup) ;
 }
