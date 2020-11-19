@@ -1,23 +1,27 @@
 async function drawTimeline(data_area, draw_div) {
 
   implementations = data["implementations"].filter((d) => d["data area"] == data_area).map((d) => {
-    if (d.end_year == 'Present') {d.end_year = new Date().getFullYear()} ;
-    if (Number.isInteger(d.end_year)) {
-      ey = d.end_year
+    if (d.end_year === undefined) {
+      // do nothing
     } else {
-      ey = Number(d.end_year.match('\\d{4}')) ;
+      if (d.end_year == 'Present') {d.end_year = new Date().getFullYear()} ;
+      if (Number.isInteger(d.end_year)) {
+        ey = d.end_year
+      } else {
+        ey = Number(d.end_year.match('\\d{4}')) ;
+      }
+      ;
+      if (Number.isInteger(d.start_year)) {
+        sy = d.start_year
+      } else {
+        sy = Number(d.start_year.match('\\d{4}')) ;
+      }
+      ;
+      if (sy == 0) {sy = undefined} ;
+      if (ey == 0) {ey = undefined} ;
+      d.end_year = ey ;
+      d.start_year = sy ;
     }
-    ;
-    if (Number.isInteger(d.start_year)) {
-      sy = d.start_year
-    } else {
-      sy = Number(d.start_year.match('\\d{4}')) ;
-    }
-    ;
-    if (sy == 0) {sy = undefined} ;
-    if (ey == 0) {ey = undefined} ;
-    d.end_year = ey ;
-    d.start_year = sy ;
     return d ;
   })
   ;
