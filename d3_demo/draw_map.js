@@ -204,21 +204,13 @@ async function drawMap() {
   hcsrnSites = {} ;
   hcsrnSiteArray.map((d) => hcsrnSites[d.abbr] = d) ;
 
-  // console.log(hcsrnSiteArray) ;
-
   const stateNameAccessor = (d) => d.properties["gn_name"] ;
   const stateAbbrAccessor = (d) => d.properties.postal ;
   const latLongAccessor = (d) => [d.longitude, d.latitude] ;
 
   let dimensions = {
     width: window.innerWidth * 0.7,
-    height: 600,
-    margin: {
-      top: -40,
-      right: 10,
-      bottom: 40,
-      left: -10
-    }
+    height: window.innerHeight * 0.8,
   } ;
 
   const wrapper = d3.select("#wrapper")
@@ -227,13 +219,17 @@ async function drawMap() {
     .attr("height", dimensions.height)
   ;
 
+  // default is for map to be drawn in dead center--that's too low, so we skooch it up a bit.
+  // laptop screen has 578 for window.innerHeight. big monitor is 978
+  skooch_factor = window.innerHeight > 800 ? 0.12 : 0.09 ;
+  console.log(window.innerHeight) ;
   const bounds = wrapper.append("g")
-    .attr("transform", `translate(${dimensions.margin.left}, ${dimensions.margin.top})`)
+    .attr("transform", `translate(-20, -${window.innerHeight * skooch_factor})`)
   ;
 
   const projection = d3.geoAlbersUsa()
      .translate([dimensions.width/2, dimensions.height/2])    // translate to center of screen
-     .scale([1000]);          // scale things down so see entire US
+     .scale([window.innerWidth * 0.6]);          // scale things down so see entire US
   ;
 
   const path = d3.geoPath(projection) ;
@@ -270,7 +266,7 @@ async function drawMap() {
     tooltip.style("left", (d3.event.pageX) + "px")
       .style("top", (d3.event.pageY - 28) + "px");
     drawImplementations(overviewData, datum.abbr, it_timeline) ;
-    tooltip.style("opacity", 1) ;
+    tooltip.style("opacity", .8) ;
   }
 
   function onMouseLeave(datum) {
@@ -278,8 +274,11 @@ async function drawMap() {
   }
 
   // TODO: Work out how to place this reasonably.
+  leg_skooch =  window.innerHeight > 800 ? [420, 580] : [220, 390] ;
   const legendGroup = wrapper.append("g")
-    .attr("transform", "translate(420, 500)")
+    // .attr("transform", "translate(420, 530)") // good for big monitor
+    // .attr("transform", `translate(220, 390)`) // good for laptop screen
+    .attr("transform", `translate(${leg_skooch})`)
   ;
   draw_legend(legendGroup) ;
 }
