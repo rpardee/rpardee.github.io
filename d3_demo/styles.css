@@ -156,8 +156,15 @@ path {
 }
 
 .research-center {
+    fill: gold ;
     stroke: #609DD5 ;
     stroke-width: 2px;
+}
+
+.highlighted-research-center {
+    fill: darkred ;
+    stroke-width: 2px;
+    stroke: #609DD5 ;
 }
 
 .site-name {
@@ -165,6 +172,12 @@ path {
 }
 
 circle:hover {
-    fill: darkred ;
-    opacity: 1 ;
+    fill: lightgreen ;
 }
+
+.voronoi {
+    fill: transparent;
+    stroke:green;
+}
+
+

@@ -225,6 +225,7 @@ async function drawMap() {
   console.log(window.innerHeight) ;
   const bounds = wrapper.append("g")
     .attr("transform", `translate(-20, -${window.innerHeight * skooch_factor})`)
+    .attr("id", "states-and-centers")
   ;
 
   const projection = d3.geoAlbersUsa()
@@ -256,10 +257,38 @@ async function drawMap() {
       .attr("fill", "gold")
   ;
 
-  researchCenters.on("mouseenter", onMouseEnter).on("mouseleave", onMouseLeave) ;
+  // Voronoi overlay to pop the research-center-specific tooltip info
+  const delaunay = d3.Delaunay.from(
+    hcsrnSiteArray,
+    d => projection(latLongAccessor(d))[0],
+    d => projection(latLongAccessor(d))[1],
+  ) ;
+
+  const voronoi = delaunay.voronoi() ;
+  voronoi.xmax = dimensions.Width ;
+  voronoi.ymax = dimensions.Height ;
+
+  const voronoiContainer = wrapper.append("g")
+    .attr("transform", `translate(-20, -${window.innerHeight * skooch_factor})`)
+    .attr("id", "voronoi-container")
+  ;
+
+  voronoiContainer.selectAll(".voronoi")
+    .data(hcsrnSiteArray)
+    .enter().append("path")
+      .attr("class", "voronoi")
+      .attr("id", (d) => d.abbr)
+      .attr("d", (d,i) => voronoi.renderCell(i))
+      .on("mouseenter", onMouseEnter)
+      .on("mouseleave", onMouseLeave)
+
   const tooltip = d3.select("#tooltip") ;
   const it_timeline = d3.select("#timeline") ;
+
   function onMouseEnter(datum) {
+    const this_center = bounds.select(`circle#${datum.abbr}`) ;
+    this_center.attr("class", "highlighted-research-center")
+      .attr("r", 14);
     tooltip.select("#name").text(datum.long_name) ;
     tooltip.select("#location").text("Location: " + datum.location) ;
     tooltip.select("#sdm").text("Site Data Manager: " + datum.manager) ;
@@ -270,15 +299,19 @@ async function drawMap() {
   }
 
   function onMouseLeave(datum) {
+    const this_center = bounds.select(`circle#${datum.abbr}`) ;
+    this_center.attr("class", "research-center")
+      .attr("r", 8);
     tooltip.style("opacity", 0) ;
   }
 
-  // TODO: Work out how to place this reasonably.
+
   leg_skooch =  window.innerHeight > 800 ? [420, 580] : [220, 390] ;
   const legendGroup = wrapper.append("g")
     // .attr("transform", "translate(420, 530)") // good for big monitor
     // .attr("transform", `translate(220, 390)`) // good for laptop screen
     .attr("transform", `translate(${leg_skooch})`)
+    .attr("id", "legend")
   ;
   draw_legend(legendGroup) ;
 }
