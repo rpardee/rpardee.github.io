@@ -159,12 +159,14 @@ path {
     fill: gold ;
     stroke: #609DD5 ;
     stroke-width: 2px;
+    transition: 1s ;
 }
 
 .highlighted-research-center {
-    fill: darkred ;
+    fill: red ;
     stroke-width: 2px;
     stroke: #609DD5 ;
+    transition: 1s ;
 }
 
 .site-name {
