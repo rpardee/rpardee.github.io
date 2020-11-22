@@ -3,66 +3,49 @@ hcsrnStates = []
 
 async function drawImplementations(overviewData, site_abbr, draw_div) {
 
-  // key_specs = ["demog", "enrl", "ute-enc", "rx", "tumor", "vitals", "soc", "death", "lab"] ;
+  // What specs do we want to display?
   key_specs = {
-    "demog": "Demographics",
-    "enrl": "Enrollments",
-    "ute-enc": "Utilization",
-    "rx": "Rx Fills",
-    "lab": "Lab Results",
-    "vitals": "Vital Signs",
-    "soc": "Social History",
-    "death": "Death",
-    "tumor": "Tumor"
+    "enrl":     {"name": "Enrollments"   , "sort_order": 1},
+    "ute-enc":  {"name": "Utilization"   , "sort_order": 2},
+    "rx":       {"name": "Rx Fills"      , "sort_order": 3},
+    "lab":      {"name": "Lab Results"   , "sort_order": 4},
+    "vitals":   {"name": "Vital Signs"   , "sort_order": 5},
+    // "soc":      {"name": "Social History", "sort_order": 6},
+    "death":    {"name": "Death"         , "sort_order": 7},
+    "tumor":    {"name": "Tumor"         , "sort_order": 8}
   }
 
-  spec_order = {
-    "demog": 1,
-    "enrl": 2,
-    "ute-enc": 3,
-    "rx": 4,
-    "lab": 5,
-    "vitals": 6,
-    "soc": 7,
-    "death": 8,
-    "tumor": 9
-  }
-
-  // console.table(key_specs) ;
-
-  implementations = overviewData["implementations"].filter((d) => d["site"] == site_abbr && d["data area"] in key_specs).map((d) => {
-    if (d.end_year === undefined) {
-      // do nothing
+  function clean_messy_years(inYear) {
+    if (inYear === undefined) {
+      return inYear ;
     } else {
-      if (d.end_year == 'Present') {d.end_year = new Date().getFullYear()} ;
-      if (Number.isInteger(d.end_year)) {
-        ey = d.end_year
+      if (inYear == 'Present') {inYear = new Date().getFullYear()} ;
+      if (Number.isInteger(inYear)) {
+        clean_year = inYear
       } else {
-        ey = Number(d.end_year.match('\\d{4}')) ;
+        clean_year = Number(inYear.match('\\d{4}')) ;
       }
-      ;
-      if (Number.isInteger(d.start_year)) {
-        sy = d.start_year
-      } else {
-        sy = Number(d.start_year.match('\\d{4}')) ;
-      }
-      ;
-      if (sy == 0) {sy = undefined} ;
-      if (ey == 0) {ey = undefined} ;
-      d.end_year = ey ;
-      d.start_year = sy ;
+      if (clean_year == 0) {clean_year = undefined} ;
+      return clean_year ;
     }
+  }
+
+  // Filter down the implementation info to the site we're looking at, and just the key specifications.
+  implementations = overviewData["implementations"].filter((d) => d["site"] == site_abbr && d["data area"] in key_specs).map((d) => {
+    sy = clean_messy_years(d.start_year) ;
+    ey = clean_messy_years(d.end_year) ;
+    d.end_year = ey ;
+    d.start_year = sy ;
     return d ;
-  })
-  ;
+  }) ;
 
-  // console.log(implementations) ;
+  console.table(implementations) ;
 
-  yAccessor = (d) => key_specs[d["data area"]] ;
+  yAccessor = (d) => key_specs[d["data area"]]['name'] ;
 
   function sortImp(a, b) {
-    if (spec_order[a["data area"]] < spec_order[b["data area"]]) return -1 ;
-    if (spec_order[a["data area"]] > spec_order[b["data area"]]) return  1 ;
+    if (key_specs[a["data area"]]['sort_order'] < key_specs[b["data area"]]['sort_order']) return -1 ;
+    if (key_specs[a["data area"]]['sort_order'] > key_specs[b["data area"]]['sort_order']) return  1 ;
     return 0 ;
   }
 
@@ -99,7 +82,8 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
       }px)`)
   ;
   const xScale = d3.scaleLinear()
-    .domain(d3.extent(implementations.map((d) => [d.start_year, d.end_year]).flat()))
+    // .domain(d3.extent(implementations.map((d) => [d.start_year, d.end_year]).flat()))
+    .domain([1970, new Date().getFullYear()])
     .range([0, dimensions.boundedWidth])
     .nice()
   ;
@@ -116,10 +100,8 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
     .enter().append("rect")
       .attr("x", (d) => xScale(d.start_year))
       .attr("y", (d) => yScale(yAccessor(d)))
-      // .attr("y", (d) => yScale(d.site))
       .attr("width", (d) => xScale(d.end_year) - xScale(d.start_year))
       .attr("height", yScale.bandwidth())
-      // .attr("fill", "cornflowerblue")
   ;
 
   // draw peripherals
@@ -254,7 +236,8 @@ async function drawMap() {
       .attr("cx", (d) => projection(latLongAccessor(d))[0])
       .attr("cy", (d) => projection(latLongAccessor(d))[1])
       .attr("r", 8)
-      .attr("fill", "gold")
+      .on("mouseenter", onMouseEnter)
+      .on("mouseleave", onMouseLeave)
   ;
 
   // Voronoi overlay to pop the research-center-specific tooltip info
