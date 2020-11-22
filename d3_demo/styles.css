@@ -177,7 +177,9 @@ circle:hover {
 
 .voronoi {
     fill: transparent;
-    stroke:green;
+    stroke:transparent;
 }
 
-
+rect.not-implemented {
+    opacity: 0 ;
+}

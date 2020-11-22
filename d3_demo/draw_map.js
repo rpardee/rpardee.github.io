@@ -15,11 +15,14 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
     "tumor":    {"name": "Tumor"         , "sort_order": 8}
   }
 
+  const firstYear = 1970 ;
+  const thisYear = new Date().getFullYear() ;
+
   function clean_messy_years(inYear) {
     if (inYear === undefined) {
       return inYear ;
     } else {
-      if (inYear == 'Present') {inYear = new Date().getFullYear()} ;
+      if (inYear == 'Present') {inYear = thisYear} ;
       if (Number.isInteger(inYear)) {
         clean_year = inYear
       } else {
@@ -36,8 +39,23 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
     ey = clean_messy_years(d.end_year) ;
     d.end_year = ey ;
     d.start_year = sy ;
+    d.apply_class = "implemented"
     return d ;
   }) ;
+
+  // supplement implementations w/any not-implemented key specs
+  for(var key_spec in key_specs) {
+    console.log(site_abbr, "Checking for ", key_spec) ;
+    this_spec = implementations.filter((imp) => imp["data area"] == key_spec) ;
+    if (this_spec.length == 0) {
+      console.log(site_abbr, "Not found", key_spec) ;
+      implementations.push({"data area": key_spec, "start_year": firstYear, "end_year": thisYear, "apply_class": "not-implemented"}) ;
+    }
+    else {
+      console.log(site_abbr, "found", key_spec) ;
+      console.log(this_spec) ;
+    }
+  }
 
   console.table(implementations) ;
 
@@ -83,7 +101,7 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
   ;
   const xScale = d3.scaleLinear()
     // .domain(d3.extent(implementations.map((d) => [d.start_year, d.end_year]).flat()))
-    .domain([1970, new Date().getFullYear()])
+    .domain([firstYear, thisYear])
     .range([0, dimensions.boundedWidth])
     .nice()
   ;
@@ -102,6 +120,7 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
       .attr("y", (d) => yScale(yAccessor(d)))
       .attr("width", (d) => xScale(d.end_year) - xScale(d.start_year))
       .attr("height", yScale.bandwidth())
+      .attr("class", (d) => d.apply_class)
   ;
 
   // draw peripherals
@@ -248,8 +267,8 @@ async function drawMap() {
   ) ;
 
   const voronoi = delaunay.voronoi() ;
-  voronoi.xmax = dimensions.Width ;
-  voronoi.ymax = dimensions.Height ;
+  voronoi.xmax = window.innerWidth;
+  voronoi.ymax = window.innerHeight;
 
   const voronoiContainer = wrapper.append("g")
     .attr("transform", `translate(-20, -${window.innerHeight * skooch_factor})`)
