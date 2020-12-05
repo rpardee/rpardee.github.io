@@ -2,7 +2,7 @@ const spec_cols = [
   {label: "Column Name"               , id: d => `${d.name}-cn`, format: d => d.name                                    , class:"norm"},
   {label: "Definition"                , id: d => `${d.name}-df`, format: d => d.definition                              , class:"norm"},
   {label: "Type(length)"              , id: d => `${d.name}-tl`, format: d => format_typelens(d.type, d.length)         , class:"norm"},
-  {label: "Valid Values"              , id: d => `${d.name}-vv`, format: d => format_vallists_vf(d.valid_values, d.name), class:"norm-vv"},
+  {label: "Valid Values"              , id: d => `${d.name}-vv`, format: d => format_vallists_vf(d), class:"norm-vv"},
   {label: "Implementation Guidelines" , id: d => `${d.name}-ig`, format: d => format_igs(d.implementation_guidelines)   , class:"hideable"}
   ]
 
@@ -42,25 +42,30 @@ function format_typelens(intyp, inlen) {
     return '' ;
   } ;
 }
-function format_vallists_vf(inarr, vname) {
+function format_vallists_vf(colspec) {
   // Writes a SAS format value statement for an input array of valid values
   // console.log(Array.isArray(inarr)) ;
-  if (Array.isArray(inarr)) {
-    retval = `<pre class = 'fmt'>value $${vname}` ;
-    inarr.forEach(d => {
+  if (Array.isArray(colspec.valid_values)) {
+    retval = `<pre class = 'fmt'>value ${makeFormatName(colspec)}` ;
+    colspec.valid_values.forEach(d => {
       retval += "\n  '" + d.value + "' = '" + d.meaning + "'"
     })
     retval += "\n;</pre>" ;
     retval += "<dl class = 'dl'>" ;
-    inarr.forEach(d => {
+    colspec.valid_values.forEach(d => {
       retval += "<dt>" + d.value + "</dt>"
       retval += "<dd>" + d.meaning + "</dd>"
     })
     retval += "</dl>" ;
-  } else {retval = inarr}
+  } else {retval = colspec.valid_values}
   return retval ;
 }
-
+function makeFormatName(d) {
+  // console.log(d) ;
+  retval = d.type == "char" ? "$" : "" ;
+  retval += d.name.split('-')[0].replace(/[0-9]/g, '').toLowerCase() ;
+  return retval.substr(0, 31) ;
+}
 async function draw_spec(spec_name, with_igs = true) {
   all_specs = await d3.json('./specs.json') ;
   spec = all_specs[spec_name] ;
