@@ -202,9 +202,6 @@ async function drawMap() {
   const hcsrnSiteArray = overviewData["sites"] ;
   hcsrnStates = getStates(hcsrnSiteArray) ;
 
-  hcsrnSites = {} ;
-  hcsrnSiteArray.map((d) => hcsrnSites[d.abbr] = d) ;
-
   const stateNameAccessor = (d) => d.properties["gn_name"] ;
   const stateAbbrAccessor = (d) => d.properties.postal ;
   const latLongAccessor = (d) => [d.longitude, d.latitude] ;

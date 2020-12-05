@@ -1,10 +1,18 @@
 const spec_cols = [
-  {label: "Column Name", format: d => d.name, class:"norm"},
-  {label: "Definition", format: d => d.definition, class:"norm"},
-  {label: "Type(length)", format: d => format_typelens(d.type, d.length), class:"norm"},
-  {label: "Valid Values", format: d=> format_vallists(d.valid_values), class:"norm"},
-  {label: "Implementation Guidelines", format: d=> format_igs(d.implementation_guidelines), class:"hideable"}
+  {label: "Column Name"               , id: d => `${d.name}-cn`, format: d => d.name                                    , class:"norm"},
+  {label: "Definition"                , id: d => `${d.name}-df`, format: d => d.definition                              , class:"norm"},
+  {label: "Type(length)"              , id: d => `${d.name}-tl`, format: d => format_typelens(d.type, d.length)         , class:"norm"},
+  {label: "Valid Values"              , id: d => `${d.name}-vv`, format: d => format_vallists_vf(d.valid_values, d.name), class:"norm-vv"},
+  {label: "Implementation Guidelines" , id: d => `${d.name}-ig`, format: d => format_igs(d.implementation_guidelines)   , class:"hideable"}
   ]
+
+function vv_click(datum) {
+  clickedCell = `td#${datum.name}-vv` ;
+  td = d3.select(clickedCell) ;
+  currentClass = td._groups[0][0].className ;
+  console.log(currentClass) ;
+  td.attr("class", currentClass == "format-vv" ? "norm-vv" : "format-vv") ;
+}
 function headerClick(event) {
   // alert('boobies') ;
   if (d3.selectAll(".hidden").empty()) {
@@ -34,11 +42,16 @@ function format_typelens(intyp, inlen) {
     return '' ;
   } ;
 }
-function format_vallists(inarr) {
-  // receives arrays of objects w/"value" and "meaning keys". Or else plain string descriptions.
+function format_vallists_vf(inarr, vname) {
+  // Writes a SAS format value statement for an input array of valid values
   // console.log(Array.isArray(inarr)) ;
   if (Array.isArray(inarr)) {
-    retval = "<dl>" ;
+    retval = `<pre class = 'fmt'>value $${vname}` ;
+    inarr.forEach(d => {
+      retval += "\n  '" + d.value + "' = '" + d.meaning + "'"
+    })
+    retval += "\n;</pre>" ;
+    retval += "<dl class = 'dl'>" ;
     inarr.forEach(d => {
       retval += "<dt>" + d.value + "</dt>"
       retval += "<dd>" + d.meaning + "</dd>"
@@ -47,6 +60,7 @@ function format_vallists(inarr) {
   } else {retval = inarr}
   return retval ;
 }
+
 async function draw_spec(spec_name, with_igs = true) {
   all_specs = await d3.json('./specs.json') ;
   spec = all_specs[spec_name] ;
@@ -80,9 +94,12 @@ async function draw_spec(spec_name, with_igs = true) {
       .data(spec_cols)
       .enter().append("td")
       .attr("class", d => d.class)
-        .html(column => column.format(d))
+      .attr("id", column => column.id(d))
+      .html(column => column.format(d))
+      .on("click", () => vv_click(d))
     ;
   }) ;
+
   wrapper.append("h2").text("Primary Key: " + spec.primary_key) ;
   wrapper.append("h2").text("Comments") ;
   spec.comments.forEach((cmt, ind) => {

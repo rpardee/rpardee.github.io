@@ -185,3 +185,23 @@ circle:hover {
 rect.not-implemented {
     opacity: 0 ;
 }
+
+/* normal display of valid values in specs*/
+td.norm-vv pre {
+    display:none ;
+}
+
+td.norm-vv dl {
+    display:display ;
+}
+
+/* format display of valid values in specs*/
+td.format-vv pre {
+    display:display ;
+    font-size: 1.2em ;
+}
+
+td.format-vv dl {
+    display:none ;
+}
+
