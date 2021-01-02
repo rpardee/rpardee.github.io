@@ -119,6 +119,7 @@ async function drawTimeline(data_area, draw_div) {
 
 async function draw_overview() {
 
+  d3.select('#shitty-browsers-f-off').remove() ;
   data = await d3.json('./overview_data.json') ;
 
   // one column per site, plus we add an extra for the row labels (data area names)

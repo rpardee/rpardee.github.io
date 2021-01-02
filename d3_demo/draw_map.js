@@ -197,6 +197,7 @@ async function draw_legend(legGroup) {
 }
 
 async function drawMap() {
+  d3.select('#shitty-browsers-f-off').remove() ;
   const stateShapes = await d3.json("./ne_110m_admin_1_states_provinces.json") ;
   const overviewData = await d3.json("./overview_data.json") ;
   const hcsrnSiteArray = overviewData["sites"] ;

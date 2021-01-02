@@ -1,7 +1,7 @@
 const spec_cols = [
   {label: "Column Name"               , id: d => `${d.name}-cn`, format: d => d.name                                    , class:"norm"},
   {label: "Definition"                , id: d => `${d.name}-df`, format: d => d.definition                              , class:"norm"},
-  {label: "Type(length)"              , id: d => `${d.name}-tl`, format: d => format_typelens(d.type, d.length)         , class:"norm"},
+  {label: "Type (length)"              , id: d => `${d.name}-tl`, format: d => format_typelens(d.type, d.length)         , class:"norm"},
   {label: "Valid Values"              , id: d => `${d.name}-vv`, format: d => format_vallists_vf(d)                     , class:"norm-vv", title: "Click to turn this into a SAS format statement"},
   {label: "Implementation Guidelines" , id: d => `${d.name}-ig`, format: d => format_igs(d.implementation_guidelines)   , class:"hideable"}
   ]
@@ -10,8 +10,8 @@ function vv_click(datum) {
   clickedCell = `td#${datum.name}-vv` ;
   td = d3.select(clickedCell) ;
   currentClass = td._groups[0][0].className ;
-  console.log(currentClass) ;
   td
+    .transition().duration(2000)
     .attr("class", currentClass == "format-vv" ? "norm-vv" : "format-vv")
     .attr("title", currentClass == "format-vv" ? "Click to turn this into a SAS format" : "Click to revert to pretty display")
   ;
@@ -51,7 +51,7 @@ function format_vallists_vf(colspec) {
   if (Array.isArray(colspec.valid_values)) {
     retval = `<pre class = 'fmt'>value ${makeFormatName(colspec)}` ;
     colspec.valid_values.forEach(d => {
-      retval += "\n  '" + d.value + "' = '" + d.meaning + "'"
+      retval += "\n  '" + d.value + "' = '" + d.meaning.slice(0, 40) + "'"
     })
     retval += "\n;</pre>" ;
     retval += "<dl class = 'dl'>" ;
