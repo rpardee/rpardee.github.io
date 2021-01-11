@@ -4,7 +4,7 @@ hcsrnStates = []
 async function drawImplementations(overviewData, site_abbr, draw_div) {
 
   // What specs do we want to display?
-  key_specs = {
+  const key_specs = {
     "enrl":     {"name": "Enrollments"   , "sort_order": 1},
     "ute-enc":  {"name": "Utilization"   , "sort_order": 2},
     "rx":       {"name": "Rx Fills"      , "sort_order": 3},
@@ -19,6 +19,7 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
   const thisYear = new Date().getFullYear() ;
 
   function clean_messy_years(inYear) {
+    let clean_year ;
     if (inYear === undefined) {
       return inYear ;
     } else {
@@ -34,9 +35,9 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
   }
 
   // Filter down the implementation info to the site we're looking at, and just the key specifications.
-  implementations = overviewData["implementations"].filter((d) => d["site"] == site_abbr && d["data area"] in key_specs).map((d) => {
-    sy = clean_messy_years(d.start_year) ;
-    ey = clean_messy_years(d.end_year) ;
+  let implementations = overviewData["implementations"].filter((d) => d["site"] == site_abbr && d["data area"] in key_specs).map((d) => {
+    const sy = clean_messy_years(d.start_year) ;
+    const ey = clean_messy_years(d.end_year) ;
     d.end_year = ey ;
     d.start_year = sy ;
     d.apply_class = "implemented"
@@ -46,7 +47,7 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
   // supplement implementations w/any not-implemented key specs
   for(var key_spec in key_specs) {
     console.log(site_abbr, "Checking for ", key_spec) ;
-    this_spec = implementations.filter((imp) => imp["data area"] == key_spec) ;
+    const this_spec = implementations.filter((imp) => imp["data area"] == key_spec) ;
     if (this_spec.length == 0) {
       console.log(site_abbr, "Not found", key_spec) ;
       implementations.push({"data area": key_spec, "start_year": firstYear, "end_year": thisYear, "apply_class": "not-implemented"}) ;
@@ -59,7 +60,7 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
 
   console.table(implementations) ;
 
-  yAccessor = (d) => key_specs[d["data area"]]['name'] ;
+  const yAccessor = (d) => key_specs[d["data area"]]['name'] ;
 
   function sortImp(a, b) {
     if (key_specs[a["data area"]]['sort_order'] < key_specs[b["data area"]]['sort_order']) return -1 ;
@@ -147,7 +148,7 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
 }
 
 function getStates(hcsrnSiteArray) {
-  ret = new Set() ;
+  let ret = new Set() ;
   for (var i = hcsrnSiteArray.length - 1; i >= 0; i--) {
     for (var j = hcsrnSiteArray[i].states.length - 1; j >= 0; j--) {
       ret.add(hcsrnSiteArray[i].states[j]) ;
@@ -167,16 +168,16 @@ function getStateClass(inState) {
 
 async function draw_legend(legGroup) {
 
-  legEntries = {
+  const legEntries = {
     hcsrn: {"text": "State in which HCSRN Research Centers Are Based"},
     affiliated: {"text": "Research Communities Affilated with HCRSN members"}
   }
 
-  var y = 3 ;
-  var sqSide = 20 ;
+  let y = 3 ;
+  const sqSide = 20 ;
 
   for(var entry in legEntries) {
-    thisEntry = legEntries[entry] ;
+    const thisEntry = legEntries[entry] ;
     legGroup.append("rect")
       .attr("x", 5)
       .attr("y", y)
@@ -208,9 +209,18 @@ async function drawMap() {
   const latLongAccessor = (d) => [d.longitude, d.latitude] ;
 
   let dimensions = {
-    width: window.innerWidth * 0.7,
-    height: window.innerHeight * 0.8,
+    width:  window.innerWidth  * 0.9,
+    height: window.innerHeight * 0.85,
+    margins: {
+      top: 5,
+      bottom: 30,
+      left: 5,
+      right: 5
+    }
   } ;
+
+  dimensions.boundedWidth = dimensions.width - dimensions.margins.left - dimensions.margins.right ;
+  dimensions.boundedHeight = dimensions.height - dimensions.margins.top - dimensions.margins.bottom ;
 
   const wrapper = d3.select("#wrapper")
     .append("svg")
@@ -220,22 +230,23 @@ async function drawMap() {
 
   // default is for map to be drawn in dead center--that's too low, so we skooch it up a bit.
   // laptop screen has 578 for window.innerHeight. big monitor is 978
-  skooch_factor = window.innerHeight > 800 ? 0.12 : 0.09 ;
-  console.log(window.innerHeight) ;
   const bounds = wrapper.append("g")
-    .attr("transform", `translate(-20, -${window.innerHeight * skooch_factor})`)
-    .attr("id", "states-and-centers")
+    .style("transform", `translate(${dimensions.margins.left}px, ${dimensions.margins.top}px)`)
+    .attr("id", "bounds")
   ;
 
   const projection = d3.geoAlbersUsa()
-     .translate([dimensions.width/2, dimensions.height/2])    // translate to center of screen
-     .scale([window.innerWidth * 0.6]);          // scale things down so see entire US
+     .translate([dimensions.width/3, dimensions.height/2.5])    // translate to center of screen
+     .scale([window.innerWidth * 0.7]);          // scale things down so see entire US
   ;
 
   const path = d3.geoPath(projection) ;
 
   // draw the state shapes (svg paths)
-  const states = bounds.selectAll('path')
+  const stateHolder = bounds.append('g')
+    .attr("id", "state-shapes")
+  ;
+  const states = stateHolder.selectAll('path')
     .data(stateShapes.features)
     .enter().append("path")
     .attr("class", (d) => getStateClass(stateAbbrAccessor(d)))
@@ -245,7 +256,10 @@ async function drawMap() {
   ;
 
   // draw the research centers
-  const researchCenters = bounds.selectAll("circle")
+  const researchCenterHolder = bounds.append("g")
+    .attr("id", "research-centers")
+  ;
+  const researchCenters = researchCenterHolder.selectAll("circle")
     .data(hcsrnSiteArray)
     .enter().append("circle")
       .attr("class", "research-center")
@@ -265,15 +279,10 @@ async function drawMap() {
   ) ;
 
   const voronoi = delaunay.voronoi() ;
-  voronoi.xmax = window.innerWidth;
-  voronoi.ymax = window.innerHeight;
+  voronoi.xmax = dimensions.width ;
+  voronoi.ymax = dimensions.height ;
 
-  const voronoiContainer = wrapper.append("g")
-    .attr("transform", `translate(-20, -${window.innerHeight * skooch_factor})`)
-    .attr("id", "voronoi-container")
-  ;
-
-  voronoiContainer.selectAll(".voronoi")
+  bounds.selectAll(".voronoi")
     .data(hcsrnSiteArray)
     .enter().append("path")
       .attr("class", "voronoi")
@@ -310,7 +319,8 @@ async function drawMap() {
   const legendGroup = wrapper.append("g")
     // .attr("transform", "translate(420, 530)") // good for big monitor
     // .attr("transform", `translate(220, 390)`) // good for laptop screen
-    .attr("transform", `translate(${leg_skooch})`)
+    // .attr("transform", `translate(${leg_skooch})`)
+    .style("transform", `translate(${dimensions.boundedWidth / 4}px, ${dimensions.boundedHeight * 0.9}px)`)
     .attr("id", "legend")
   ;
   draw_legend(legendGroup) ;
