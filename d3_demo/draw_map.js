@@ -1,5 +1,5 @@
-affiliatedStates = ['ND', 'KS', 'NE', 'AR', 'TN', 'KY', 'OH'] ;
-hcsrnStates = []
+let affiliatedStates = ['ND', 'KS', 'NE', 'AR', 'TN', 'KY', 'OH'] ;
+let hcsrnStates = []
 
 async function drawImplementations(overviewData, site_abbr, draw_div) {
 
@@ -58,7 +58,7 @@ async function drawImplementations(overviewData, site_abbr, draw_div) {
     }
   }
 
-  console.table(implementations) ;
+  // console.table(implementations) ;
 
   const yAccessor = (d) => key_specs[d["data area"]]['name'] ;
 
@@ -208,9 +208,11 @@ async function drawMap() {
   const stateAbbrAccessor = (d) => d.properties.postal ;
   const latLongAccessor = (d) => [d.longitude, d.latitude] ;
 
+  const height = d3.min([window.innerHeight, window.innerWidth]) ;
+  console.log(height) ;
   let dimensions = {
-    width:  window.innerWidth  * 0.9,
-    height: window.innerHeight * 0.85,
+    width: 800,
+    height: 600,
     margins: {
       top: 5,
       bottom: 30,
@@ -219,6 +221,8 @@ async function drawMap() {
     }
   } ;
 
+  console.log(dimensions) ;
+
   dimensions.boundedWidth = dimensions.width - dimensions.margins.left - dimensions.margins.right ;
   dimensions.boundedHeight = dimensions.height - dimensions.margins.top - dimensions.margins.bottom ;
 
@@ -226,18 +230,20 @@ async function drawMap() {
     .append("svg")
     .attr("width", dimensions.width)
     .attr("height", dimensions.height)
+    .attr("id", "main-svg")
   ;
 
   // default is for map to be drawn in dead center--that's too low, so we skooch it up a bit.
   // laptop screen has 578 for window.innerHeight. big monitor is 978
+  // const skooch_factor = window.innerHeight > 800 ? 0.12 : 0.09 ;
   const bounds = wrapper.append("g")
     .style("transform", `translate(${dimensions.margins.left}px, ${dimensions.margins.top}px)`)
     .attr("id", "bounds")
   ;
 
   const projection = d3.geoAlbersUsa()
-     .translate([dimensions.width/3, dimensions.height/2.5])    // translate to center of screen
-     .scale([window.innerWidth * 0.7]);          // scale things down so see entire US
+     .translate([dimensions.boundedWidth/2.2, dimensions.boundedHeight/2.5])    // translate to center of screen
+     .scale([dimensions.width * 1.2])          // scale things down so see entire US
   ;
 
   const path = d3.geoPath(projection) ;
@@ -300,7 +306,7 @@ async function drawMap() {
       .attr("r", 14);
     tooltip.select("#name").text(datum.long_name) ;
     tooltip.select("#location").text("Location: " + datum.location) ;
-    tooltip.select("#sdm").text("Site Data Manager: " + datum.manager) ;
+    // tooltip.select("#sdm").text("Site Data Manager: " + datum.manager) ;
     tooltip.style("left", (d3.event.pageX) + "px")
       .style("top", (d3.event.pageY - 28) + "px");
     drawImplementations(overviewData, datum.abbr, it_timeline) ;
@@ -315,15 +321,16 @@ async function drawMap() {
   }
 
 
-  leg_skooch =  window.innerHeight > 800 ? [420, 580] : [220, 390] ;
+  // leg_skooch =  window.innerHeight > 800 ? [420, 580] : [220, 390] ;
   const legendGroup = wrapper.append("g")
     // .attr("transform", "translate(420, 530)") // good for big monitor
     // .attr("transform", `translate(220, 390)`) // good for laptop screen
-    // .attr("transform", `translate(${leg_skooch})`)
-    .style("transform", `translate(${dimensions.boundedWidth / 4}px, ${dimensions.boundedHeight * 0.9}px)`)
+    .style("transform", `translate(${dimensions.boundedWidth / 4.5}px, ${dimensions.boundedHeight * 0.85}px)`)
     .attr("id", "legend")
   ;
+    // .attr("transform", `translate(${leg_skooch})`)
   draw_legend(legendGroup) ;
 }
 
 drawMap() ;
+
