@@ -92,7 +92,7 @@ function makeFormatName(d) {
   return retval.substr(0, 31) ;
 }
 async function draw_spec(spec_name, with_igs = true) {
-  all_specs = await d3.json('../data/specs.json') ;
+  all_specs = await d3.json('./specs.json') ;
   spec = all_specs[spec_name] ;
   our_cols = spec_cols ;
   if (!with_igs) {our_cols.pop()} ;
