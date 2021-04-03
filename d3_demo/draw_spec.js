@@ -8,24 +8,28 @@ const spec_cols = [
 
 function vv_click(datum) {
   // console.log(datum) ;
-  clickedCell = `td#${datum.name}-vv` ;
-  td = d3.select(clickedCell) ;
-  currentClass = td._groups[0][0].className ;
-  td
-    .transition().duration(2000)
-    .attr("class", currentClass == "format-vv" ? "norm-vv" : "format-vv")
-    .attr("title", currentClass == "format-vv" ? "Click to turn this into a SAS format" : "Click to revert to pretty display")
-  ;
-
-  const clipText = createFormat(datum) ;
-
-  navigator.clipboard.writeText(clipText).then(function() {
-      console.log("success!") ;
-    }, function() {
-      console.log("boo!") ;
-    })    
-
+  if (Array.isArray(datum.valid_values)) {
+    clickedCell = `td#${datum.name}-vv` ;
+    td = d3.select(clickedCell) ;
+    currentClass = td._groups[0][0].className ;
+    td
+      .transition().duration(2000)
+      .attr("class", currentClass == "format-vv" ? "norm-vv" : "format-vv")
+      .attr("title", currentClass == "format-vv" ? "Click to turn this into a SAS format" : "Click to revert to pretty display")
+    ;
+    const clipText = createFormat(datum) ;
+    navigator.clipboard.writeText(clipText).then(function() {
+      const notification = d3.select("#notification") 
+        .text(`${datum.name} format copied to clipboard`)
+        .attr("class", "show")
+      ;
+      setTimeout(function(){notification.attr("class", "")}, 3000);
+      }, function() {
+        console.log("boo!") ;
+      })    
+  }
 }
+
 function headerClick(event) {
   // alert('boobies') ;
   if (d3.selectAll(".hidden").empty()) {
@@ -99,6 +103,7 @@ async function draw_spec(spec_name, with_igs = true) {
 
   wrapper = d3.select("#wrapper") ;
   wrapper.attr("class", "vdw-spec") ;
+  wrapper.append("div").attr("id", "notification") ;
   wrapper.append("h1").text(spec.name) ;
   wrapper.append("p").html(spec.description) ;
   wrapper.append("h2").text("Standard Variable: " + spec.stdvar) ;
