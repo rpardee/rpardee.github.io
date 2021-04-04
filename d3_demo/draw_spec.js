@@ -1,26 +1,32 @@
 const spec_cols = [
-  {label: "Column Name"               , id: d => `${d.name}-cn`, format: d => d.name                                    , class:"norm"},
-  {label: "Definition"                , id: d => `${d.name}-df`, format: d => d.definition                              , class:"norm"},
-  {label: "Type (length)"             , id: d => `${d.name}-tl`, format: d => format_typelens(d.type, d.length)         , class:"norm"},
-  {label: "Valid Values"              , id: d => `${d.name}-vv`, format: d => format_vallists_vf(d)                     , class:"norm-vv", title: "Click to turn this into a SAS format statement", onclick: vv_click},
-  {label: "Implementation Guidelines" , id: d => `${d.name}-ig`, format: d => format_igs(d.implementation_guidelines)   , class:"hideable"}
+  {label: "Column Name"               , id: d => `${d.name}-cn`, format: d => d.name                                 , tfunc: (d) => tdTitle(d) , cfunc: (d) => tdClass(d)},
+  {label: "Definition"                , id: d => `${d.name}-df`, format: d => d.definition                           , tfunc: (d) => tdTitle(d) , cfunc: (d) => tdClass(d)},
+  {label: "Type (length)"             , id: d => `${d.name}-tl`, format: d => format_typelens(d.type, d.length)      , tfunc: (d) => tdTitle(d) , cfunc: (d) => tdClass(d)},
+  {label: "Valid Values"              , id: d => `${d.name}-vv`, format: d => format_vallists_vf(d)                  , tfunc: (d) => tdTitle(d, true) , cfunc: (d) => tdClass(d, true), onclick: vv_click},
+  {label: "Implementation Guidelines" , id: d => `${d.name}-ig`, format: d => format_igs(d.implementation_guidelines), tfunc: (d) => tdTitle(d) , cfunc: (d) => tdClass(d)}
   ]
+
+function tdClass(d, isValidValues = false) {
+  if (isValidValues && Array.isArray(d.valid_values)) {
+    return "clickable" ;
+  }
+  return "norm" ;
+}
+
+function tdTitle(d, isValidValues = false) {
+  if (isValidValues && Array.isArray(d.valid_values)) {
+    return "Click to copy a SAS format statement to your clipboard" ;
+  }
+  return "" ;
+}
 
 function vv_click(datum) {
   // console.log(datum) ;
   if (Array.isArray(datum.valid_values)) {
-    clickedCell = `td#${datum.name}-vv` ;
-    td = d3.select(clickedCell) ;
-    currentClass = td._groups[0][0].className ;
-    td
-      .transition().duration(2000)
-      .attr("class", currentClass == "format-vv" ? "norm-vv" : "format-vv")
-      .attr("title", currentClass == "format-vv" ? "Click to turn this into a SAS format" : "Click to revert to pretty display")
-    ;
     const clipText = createFormat(datum) ;
     navigator.clipboard.writeText(clipText).then(function() {
       const notification = d3.select("#notification") 
-        .text(`${datum.name} format copied to clipboard`)
+        .text(`SAS format statement ${datum.name} copied to clipboard`)
         .attr("class", "show")
       ;
       setTimeout(function(){notification.attr("class", "")}, 3000);
@@ -72,15 +78,8 @@ function createFormat(colspec) {
 }
 
 function format_vallists_vf(colspec) {
-  // Writes a SAS format value statement for an input array of valid values
-  // console.log(Array.isArray(inarr)) ;
   if (Array.isArray(colspec.valid_values)) {
-    retval = `<pre class = 'fmt'>value ${makeFormatName(colspec)}` ;
-    colspec.valid_values.forEach(d => {
-      retval += "\n  '" + d.value + "' = '" + d.meaning.slice(0, 40) + "'"
-    })
-    retval += "\n;</pre>" ;
-    retval += "<dl class = 'dl'>" ;
+    retval = "<dl class = 'dl'>" ;
     colspec.valid_values.forEach(d => {
       retval += "<dt>" + d.value + "</dt>"
       retval += "<dd>" + d.meaning + "</dd>"
@@ -128,8 +127,8 @@ async function draw_spec(spec_name, with_igs = true) {
       .selectAll("td")
       .data(spec_cols)
       .enter().append("td")
-        .attr("class", column => column.class)
-        .attr("title", column => column.title === undefined ? "" : column.title)
+        .attr("class", column => column.cfunc(d))
+        .attr("title", column => column.tfunc(d))
         .attr("id", column => column.id(d))
         .html(column => column.format(d))
         .on("click", column => column.onclick === undefined ? null : column.onclick(d))
