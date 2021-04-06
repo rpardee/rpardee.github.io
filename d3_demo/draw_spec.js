@@ -3,14 +3,15 @@ const spec_cols = [
   {label: "Definition"                , id: d => `${d.name}-df`, format: d => d.definition                           , tfunc: (d) => tdTitle(d) , cfunc: (d) => tdClass(d)},
   {label: "Type (length)"             , id: d => `${d.name}-tl`, format: d => format_typelens(d.type, d.length)      , tfunc: (d) => tdTitle(d) , cfunc: (d) => tdClass(d)},
   {label: "Valid Values"              , id: d => `${d.name}-vv`, format: d => format_vallists_vf(d)                  , tfunc: (d) => tdTitle(d, true) , cfunc: (d) => tdClass(d, true), onclick: vv_click},
-  {label: "Implementation Guidelines" , id: d => `${d.name}-ig`, format: d => format_igs(d.implementation_guidelines), tfunc: (d) => tdTitle(d) , cfunc: (d) => tdClass(d)}
+  {label: "Implementation Guidelines" , id: d => `${d.name}-ig`, format: d => format_igs(d.implementation_guidelines), tfunc: (d) => tdTitle(d) , cfunc: (d) => tdClass(d, false, "hideable")}
   ]
 
-function tdClass(d, isValidValues = false) {
+function tdClass(d, isValidValues = false, defaultClass = "norm") {
+  // console.log(d) ;
   if (isValidValues && Array.isArray(d.valid_values)) {
     return "clickable" ;
   }
-  return "norm" ;
+  return defaultClass ;
 }
 
 function tdTitle(d, isValidValues = false) {
@@ -110,15 +111,14 @@ async function draw_spec(spec_name, with_igs = true) {
   wrapper.append("table")
     .attr("id", "col-tab")
     .append("thead")
-      .attr("title", "(click to toggle display of IGs)")
+      .attr("title", "(Click to toggle display of the Implementation Guidelines)")
     .append("tr")
     .selectAll("thead")
     .data(spec_cols)
     .enter().append("th")
       .text(d => d.label)
       .on("click", headerClick)
-      .attr("class", d => d.class)
-  ;
+      .attr("class", d => d.cfunc(d))
   ;
   const coltab = d3.select("#col-tab") ;
   const tbody = coltab.append("tbody") ;

@@ -186,6 +186,10 @@ rect.not-implemented {
     opacity: 0 ;
 }
 
+#col-tab th:hover {
+    cursor: pointer;
+}
+
 td.clickable:hover {
     cursor: pointer ;
 }
