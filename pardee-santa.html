@@ -47,7 +47,7 @@
         function make_table(year_offset = 0) {
             var d = new Date() ;
             var for_year = d.getFullYear() ;
-            for_year += year_offset + 1 ; // adding 1 here to see if that keeps us from repeating year to year.
+            for_year += year_offset ;
             $("#for_year").text(for_year) ;
             var family_lookup = {
               "T&J": "Tim & Jen",
@@ -56,12 +56,12 @@
               "M&M": "Mike & Mary"
             } ;
             var year_mod = for_year % 2 ;
-            var assignment_key =  { 0: [
+            var assignment_key =  { 1: [
                                             {fam_1: "T&J", fam_2: "M&M"},
                                             {fam_1: "T&L", fam_2: "T&J"},
                                             {fam_1: "M&M", fam_2: "T&L"}
                                         ],
-                                    1: [
+                                    0: [
                                             {fam_1: "T&J", fam_2: "T&L"},
                                             {fam_1: "T&L", fam_2: "M&M"},
                                             {fam_1: "M&M", fam_2: "T&J"}
