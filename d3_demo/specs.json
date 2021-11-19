@@ -1182,14 +1182,6 @@
         "meaning": "Ambulatory visit including outpatient clinics, same-day surgeries, observation beds, urgent care visits, and same-day ambulatory hospital encounters. Excludes emergency department. [SUB = OC, OB, SD, HA, UC, RH, DI, OT]"
       },
       {
-        "value": "TE",
-        "meaning": "Telephone encounter [SUB = OT, HH]"
-      },
-      {
-        "value": "EM",
-        "meaning": "E-mail including secure messaging [SUB = OT, HH]"
-      },
-      {
         "value": "IS",
         "meaning": "Non-acute institutional stays including hospice, SNF, rehab, nursing home, residential, overnight non-hospital dialysis and other non-hospital stays [SUB = HS, SN, NH, RH, DI, OT]"
       },
@@ -1204,7 +1196,12 @@
       {
         "value": "RO",
         "meaning": "A radiology only encounter that cannot be matched to another encounter [SUB = OC, OT]"
-      }],
+      },
+      {
+        "value": "VC",
+        "meaning": "Virtual Care - an encounter that takes place by phone, video, chat, online portal or another type of non-face to face mechanism.  Can include synchronous or asychronous contact. [SUB= CH, EM, OA, OI, OT, PP, TC, TN, TS, VV]"
+      }
+    ],
       "implementation_guidelines": "Only certain combinations of enctype and encounter_subtype values are permitted--see the bracketed lists of subtypes permitted with each enctype (and vice-versa).<p>Implementers should include as many of these types of encounters as are available in indigenous data. Users should not assume that all encounter types are available at all implementing sites.</p>"
     },
     {
@@ -1213,58 +1210,29 @@
       "type": "char",
       "length": 2,
       "valid_values": [
-      {
-        "value": "AI",
-        "meaning": "Acute inpatient stay excluding observation bed [TYPE=IP, OE]"
-      },
-      {
-        "value": "OB",
-        "meaning": "Observation bed [TYPE = AV]"
-      },
-      {
-        "value": "OC",
-        "meaning": "Outpatient clinic visit [TYPE = AV, LO, RO, ED]"
-      },
-      {
-        "value": "SD",
-        "meaning": "Same-day surgery [TYPE = AV]"
-      },
-      {
-        "value": "UC",
-        "meaning": "Urgent care [TYPE = AV]"
-      },
-      {
-        "value": "HA",
-        "meaning": "Hospital ambulatory; outpatient care at hospital excluding same-day surgery and observation beds [TYPE = AV, ED]"
-      },
-      {
-        "value": "HS",
-        "meaning": "Hospice [TYPE = IS, OE]"
-      },
-      {
-        "value": "HH",
-        "meaning": "Home health [TYPE = OE, TE, EM]"
-      },
-      {
-        "value": "SN",
-        "meaning": "Skilled nursing facility [TYPE = IS, OE]"
-      },
-      {
-        "value": "NH",
-        "meaning": "Nursing home including intermediate care facilities [TYPE = IS, OE]"
-      },
-      {
-        "value": "RH",
-        "meaning": "Rehab [TYPE = IS, AV, OE]"
-      },
-      {
-        "value": "DI",
-        "meaning": "Dialysis [TYPE = IS, AV, OE]"
-      },
-      {
-        "value": "OT",
-        "meaning": "Other non-hospital [TYPE = IS, OE, TE, EM AV, LO, RO]"
-      }],
+        {"value": "AI", "meaning": "Acute inpatient stay excluding observation bed [TYPE=IP, OE]"},
+        {"value": "CH", "meaning": "Online Text Chat [TYPE = VC]"},
+        {"value": "DI", "meaning": "Dialysis [TYPE = IS, AV, OE]"},
+        {"value": "EM", "meaning": "Email/Patient Message [TYPE=VC]"},
+        {"value": "HA", "meaning": "Hospital ambulatory; outpatient care at hospital excluding same-day surgery and observation beds [TYPE = AV, ED]"},
+        {"value": "HH", "meaning": "Home health [TYPE = OE]"},
+        {"value": "HS", "meaning": "Hospice [TYPE = IS, OE]"},
+        {"value": "NH", "meaning": "Nursing home including intermediate care facilities [TYPE = IS, OE]"},
+        {"value": "OA", "meaning": "Other Asynchronous Virtual Care [TYPE=VC]"},
+        {"value": "OI", "meaning": "Online Intake/Triage Form [TYPE=VC]"},
+        {"value": "OB", "meaning": "Observation bed [TYPE = AV]"},
+        {"value": "OC", "meaning": "Outpatient clinic visit [TYPE = AV, LO, RO, ED]"},
+        {"value": "PP", "meaning": "Provider to Provider/Facility to Facility Virtual Care [TYPE=VC]"},
+        {"value": "RH", "meaning": "Rehab [TYPE = IS, AV, OE]"},
+        {"value": "SD", "meaning": "Same-day surgery [TYPE = AV]"},
+        {"value": "SN", "meaning": "Skilled nursing facility [TYPE = IS, OE]"},
+        {"value": "TC", "meaning": "Telephone - Call Center/Advice/Triage [TYPE=VC]"},
+        {"value": "TN", "meaning": "Telephone  - Not Specified  [TYPE=VC]"},
+        {"value": "TS", "meaning": "Telephone  - Scheduled Visit  [TYPE=VC]"},
+        {"value": "VV", "meaning": "Video Visit [TYPE=VC]"},
+        {"value": "UC", "meaning": "Urgent care [TYPE = AV]"},
+        {"value": "OT", "meaning": "Other non-hospital [TYPE = IS, OE, AV, LO, RO, VC]"},
+      ],
       "implementation_guidelines": "Only certain combinations of enctype and encounter_subtype values are permitted--see the bracketed lists of types permitted with each subtype (and vice-versa)."
     },
     {
