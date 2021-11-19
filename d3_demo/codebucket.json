@@ -1,0 +1,21 @@
+[
+{"code_type": "sex_admin", "code": "F", "code_desc": "Female"}
+, {"code_type": "sex_admin", "code": "M", "code_desc": "Male"}
+, {"code_type": "sex_admin", "code": "X", "code_desc": "Neither Male nor Female"}
+, {"code_type": "sex_admin", "code": "O", "code_desc": "Other"}
+, {"code_type": "sex_admin", "code": "U", "code_desc": "Unknown, Uncertain, or Missing"}
+, {"code_type": "sex_at_birth", "code":"F", "code_desc": "Female"}
+, {"code_type": "sex_at_birth", "code":"M", "code_desc": "Male"}
+, {"code_type": "sex_at_birth", "code":"I", "code_desc": "Intersex"}
+, {"code_type": "sex_at_birth", "code":"O", "code_desc": "Other"}
+, {"code_type": "sex_at_birth", "code":"U", "code_desc": "Uncertain, Unknown or Not recorded on birth certificate"}
+, {"code_type": "sex_at_birth", "code":"C", "code_desc": "Choose not to disclose" }
+, {"code_type": "gender_identity", "code": "FF", "code_desc":"Female"}
+, {"code_type": "gender_identity", "code": "MM", "code_desc": "Male"}
+, {"code_type": "gender_identity", "code": "FM", "code_desc": "Female to Male transgender"}
+, {"code_type": "gender_identity", "code": "MF", "code_desc": "Male to Female transgender"}
+, {"code_type": "gender_identity", "code": "GQ", "code_desc": "Genderqueer or non-conforming or non-binary or genderfluid"}
+, {"code_type": "gender_identity", "code": "OT", "code_desc": "Other"}
+, {"code_type": "gender_identity", "code": "ND", "code_desc": "Choose not to disclose"}
+, {"code_type": "gender_identity", "code": "UN", "code_desc": "Unknown"}
+]

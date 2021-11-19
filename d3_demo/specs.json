@@ -1231,7 +1231,7 @@
         {"value": "TS", "meaning": "Telephone  - Scheduled Visit  [TYPE=VC]"},
         {"value": "VV", "meaning": "Video Visit [TYPE=VC]"},
         {"value": "UC", "meaning": "Urgent care [TYPE = AV]"},
-        {"value": "OT", "meaning": "Other non-hospital [TYPE = IS, OE, AV, LO, RO, VC]"},
+        {"value": "OT", "meaning": "Other non-hospital [TYPE = IS, OE, AV, LO, RO, VC]"}
       ],
       "implementation_guidelines": "Only certain combinations of enctype and encounter_subtype values are permitted--see the bracketed lists of types permitted with each subtype (and vice-versa)."
     },
