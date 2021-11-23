@@ -220,7 +220,7 @@
     },
     {
       "title": "Multiple Race Values",
-      "comment": "When more than one race is known for a given person, assign values to the race variables in the order listed above RACE values and fill in any unused race variables with the value UN for unknown / not reported. Examples of coding RACE1 through RACE5 are illustrated here:"
+      "comment": "When more than one race is known for a given person, assign values to the race variables in the order listed above (HP, IN, AS, BA, WH, MU, OT, UN). Fill in any unused race variables with the value UN for unknown / not reported. Examples of coding RACE1 through RACE5 are illustrated here:"
     }]
   },
   "Enrollments":
