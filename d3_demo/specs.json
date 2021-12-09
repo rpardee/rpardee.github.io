@@ -1702,10 +1702,6 @@
         "meaning": "Local data source but unrelated to your site's EHR . Often Includes pre-EHR systems prior to EHR implementation such as appointment management systems."
       },
       {
-        "value": "M",
-        "meaning": "Multiple sources--the encounter is an amalgam of data from different sources (e.g., inpatient encounters with data from claims and EHR rounding)"
-      },
-      {
         "value": "O",
         "meaning": "Other. Not from the sources listed above."
       },
@@ -1889,10 +1885,6 @@
         {
           "value": "L",
           "meaning": "Local data source but unrelated to your site's EHR . Often Includes pre-EHR systems prior to EHR implementation such as appointment management systems."
-        },
-        {
-          "value": "M",
-          "meaning": "Multiple sources--the encounter is an amalgam of data from different sources (e.g., inpatient encounters with data from claims and EHR rounding)"
         },
         {
           "value": "O",
