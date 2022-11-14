@@ -1200,8 +1200,7 @@
       {
         "value": "VC",
         "meaning": "Virtual Care - an encounter that takes place by phone, video, chat, online portal or another type of non-face to face mechanism.  Can include synchronous or asychronous contact. [SUB= CH, EM, OA, OI, OT, PP, TC, TN, TS, VV]"
-      }
-    ],
+      }],
       "implementation_guidelines": "Only certain combinations of enctype and encounter_subtype values are permitted--see the bracketed lists of subtypes permitted with each enctype (and vice-versa).<p>Implementers should include as many of these types of encounters as are available in indigenous data. Users should not assume that all encounter types are available at all implementing sites.</p>"
     },
     {
@@ -1210,29 +1209,94 @@
       "type": "char",
       "length": 2,
       "valid_values": [
-        {"value": "AI", "meaning": "Acute inpatient stay excluding observation bed [TYPE=IP, OE]"},
-        {"value": "CH", "meaning": "Online Text Chat [TYPE = VC]"},
-        {"value": "DI", "meaning": "Dialysis [TYPE = IS, AV, OE]"},
-        {"value": "EM", "meaning": "Email/Patient Message [TYPE=VC]"},
-        {"value": "HA", "meaning": "Hospital ambulatory; outpatient care at hospital excluding same-day surgery and observation beds [TYPE = AV, ED]"},
-        {"value": "HH", "meaning": "Home health [TYPE = OE]"},
-        {"value": "HS", "meaning": "Hospice [TYPE = IS, OE]"},
-        {"value": "NH", "meaning": "Nursing home including intermediate care facilities [TYPE = IS, OE]"},
-        {"value": "OA", "meaning": "Other Asynchronous Virtual Care [TYPE=VC]"},
-        {"value": "OI", "meaning": "Online Intake/Triage Form [TYPE=VC]"},
-        {"value": "OB", "meaning": "Observation bed [TYPE = AV]"},
-        {"value": "OC", "meaning": "Outpatient clinic visit [TYPE = AV, LO, RO, ED]"},
-        {"value": "PP", "meaning": "Provider to Provider/Facility to Facility Virtual Care [TYPE=VC]"},
-        {"value": "RH", "meaning": "Rehab [TYPE = IS, AV, OE]"},
-        {"value": "SD", "meaning": "Same-day surgery [TYPE = AV]"},
-        {"value": "SN", "meaning": "Skilled nursing facility [TYPE = IS, OE]"},
-        {"value": "TC", "meaning": "Telephone - Call Center/Advice/Triage [TYPE=VC]"},
-        {"value": "TN", "meaning": "Telephone  - Not Specified  [TYPE=VC]"},
-        {"value": "TS", "meaning": "Telephone  - Scheduled Visit  [TYPE=VC]"},
-        {"value": "VV", "meaning": "Video Visit [TYPE=VC]"},
-        {"value": "UC", "meaning": "Urgent care [TYPE = AV]"},
-        {"value": "OT", "meaning": "Other non-hospital [TYPE = IS, OE, AV, LO, RO, VC]"}
-      ],
+      {
+        "value": "AI",
+        "meaning": "Acute inpatient stay excluding observation bed [TYPE=IP, OE]"
+      },
+      {
+        "value": "CH",
+        "meaning": "Online Text Chat [TYPE = VC]"
+      },
+      {
+        "value": "DI",
+        "meaning": "Dialysis [TYPE = IS, AV, OE]"
+      },
+      {
+        "value": "EM",
+        "meaning": "Email/Patient Message [TYPE=VC]"
+      },
+      {
+        "value": "HA",
+        "meaning": "Hospital ambulatory; outpatient care at hospital excluding same-day surgery and observation beds [TYPE = AV, ED]"
+      },
+      {
+        "value": "HH",
+        "meaning": "Home health [TYPE = OE]"
+      },
+      {
+        "value": "HS",
+        "meaning": "Hospice [TYPE = IS, OE]"
+      },
+      {
+        "value": "NH",
+        "meaning": "Nursing home including intermediate care facilities [TYPE = IS, OE]"
+      },
+      {
+        "value": "OA",
+        "meaning": "Other Asynchronous Virtual Care [TYPE=VC]"
+      },
+      {
+        "value": "OI",
+        "meaning": "Online Intake/Triage Form [TYPE=VC]"
+      },
+      {
+        "value": "OB",
+        "meaning": "Observation bed [TYPE = AV]"
+      },
+      {
+        "value": "OC",
+        "meaning": "Outpatient clinic visit [TYPE = AV, LO, RO, ED]"
+      },
+      {
+        "value": "PP",
+        "meaning": "Provider to Provider/Facility to Facility Virtual Care [TYPE=VC]"
+      },
+      {
+        "value": "RH",
+        "meaning": "Rehab [TYPE = IS, AV, OE]"
+      },
+      {
+        "value": "SD",
+        "meaning": "Same-day surgery [TYPE = AV]"
+      },
+      {
+        "value": "SN",
+        "meaning": "Skilled nursing facility [TYPE = IS, OE]"
+      },
+      {
+        "value": "TC",
+        "meaning": "Telephone - Call Center/Advice/Triage [TYPE=VC]"
+      },
+      {
+        "value": "TN",
+        "meaning": "Telephone  - Not Specified  [TYPE=VC]"
+      },
+      {
+        "value": "TS",
+        "meaning": "Telephone  - Scheduled Visit  [TYPE=VC]"
+      },
+      {
+        "value": "VV",
+        "meaning": "Video Visit [TYPE=VC]"
+      },
+      {
+        "value": "UC",
+        "meaning": "Urgent care [TYPE = AV]"
+      },
+      {
+        "value": "OT",
+        "meaning": "Other non-hospital [TYPE = IS, OE, AV, LO, RO, VC]"
+      }],
       "implementation_guidelines": "Only certain combinations of enctype and encounter_subtype values are permitted--see the bracketed lists of types permitted with each subtype (and vice-versa)."
     },
     {
@@ -2760,7 +2824,7 @@
   },
   "SocialHx":
   {
-    "name": "Vital Signs",
+    "name": "Social History",
     "description": "<p>The SOCIAL HISTORY table contains behavioral measures taken by health professionals during clinic visits, over the telephone, or via questionnaires. These measures include the use of tobacco, alcohol, and illegal drugs as well as sexual behavior and contraceptive use.</p>",
     "columns": [
       {
@@ -2769,8 +2833,7 @@
         "type": "char",
         "valid_values": "Unique to each patient at each site",
         "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
-      }
-      ,
+      },
       {
         "name": "contact_date",
         "definition": "Date of encounter or date of social history data collection",
@@ -2796,12 +2859,26 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"W", "meaning":"Not currently (Was) "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "W",
+          "meaning": "Not currently (Was) "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
       },
       {
         "name": "sex_female_partner",
@@ -2809,11 +2886,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
       },
       {
         "name": "sex_male_partner",
@@ -2821,11 +2909,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
       },
       {
         "name": "sex_comment",
@@ -2839,11 +2938,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2852,11 +2962,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2865,11 +2986,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2878,11 +3010,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2891,11 +3034,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2904,11 +3058,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2917,11 +3082,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2930,11 +3106,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2943,11 +3130,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2956,11 +3154,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2969,11 +3178,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2982,11 +3202,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -2995,11 +3226,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -3014,12 +3256,26 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"Q", "meaning":"Quit/Former"}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "Q",
+          "meaning": "Quit/Former"
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
       },
       {
         "name": "alcohol_beer_nwk",
@@ -3083,15 +3339,35 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-         {"value": "Y", "meaning":"Yes / Current "}
-        , {"value": "I", "meaning":"Infrequent "}
-        , {"value": "N", "meaning":"Never "}
-        , {"value": "Q", "meaning":"Quit / Former "}
-        , {"value": "P", "meaning":"Passive/Environmental/Second hand "}
-        , {"value": "X", "meaning":"Not Asked "}
-        , {"value": "U", "meaning":"Unknown or missing"}
-      ]
-        , "implementation_guidelines": "Include tobacco status as of the visit date. Unknown values should be left blank.  The not asked value should be used only when it is a valid response from your system."
+        {
+          "value": "Y",
+          "meaning": "Yes / Current "
+        },
+        {
+          "value": "I",
+          "meaning": "Infrequent "
+        },
+        {
+          "value": "N",
+          "meaning": "Never "
+        },
+        {
+          "value": "Q",
+          "meaning": "Quit / Former "
+        },
+        {
+          "value": "P",
+          "meaning": "Passive/Environmental/Second hand "
+        },
+        {
+          "value": "X",
+          "meaning": "Not Asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }],
+        "implementation_guidelines": "Include tobacco status as of the visit date. Unknown values should be left blank.  The not asked value should be used only when it is a valid response from your system."
       },
       {
         "name": "tobacco_use_years",
@@ -3111,12 +3387,30 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value": "Y", "meaning": "Yes / Current "}
-          , {"value": "I", "meaning": "Infrequent "}
-          , {"value": "N", "meaning": "No / Never used "}
-          , {"value": "Q", "meaning": "Quit / Former "}
-          , {"value": "X", "meaning": "Not asked "}
-          , {"value": "U", "meaning": "Unknown or missing"}]
+        {
+          "value": "Y",
+          "meaning": "Yes / Current "
+        },
+        {
+          "value": "I",
+          "meaning": "Infrequent "
+        },
+        {
+          "value": "N",
+          "meaning": "No / Never used "
+        },
+        {
+          "value": "Q",
+          "meaning": "Quit / Former "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
       },
       {
         "name": "tobacco_smokeless_start_date",
@@ -3159,11 +3453,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -3172,11 +3477,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -3185,11 +3501,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -3198,11 +3525,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -3211,11 +3549,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -3224,11 +3573,22 @@
         "type": "char",
         "length": 1,
         "valid_values": [
-           {"value":"Y", "meaning":"Yes "}
-          , {"value":"N", "meaning":"No "}
-          , {"value":"X", "meaning":"Not asked "}
-          , {"value":"U", "meaning":"Unknown or missing"}
-          ]
+        {
+          "value": "Y",
+          "meaning": "Yes "
+        },
+        {
+          "value": "N",
+          "meaning": "No "
+        },
+        {
+          "value": "X",
+          "meaning": "Not asked "
+        },
+        {
+          "value": "U",
+          "meaning": "Unknown or missing"
+        }]
 
       },
       {
@@ -3257,5 +3617,116 @@
       }
 
     ]
+  },
+
+  "Deaths":
+  {
+    "name": "Deaths",
+    "description": "The DEATH table contains one record per person in the DEMOGRAPHICS table for whom there is some belief that the person may be dead. When sources of death provide conflicting information, site data managers should make local determinations as to which source to use, collating information when possible, and reflecting their confidence in the observation overall using the CONFIDENCE variable.",
+    "columns": [
+      {
+        "name": "MRN",
+        "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+        "type": "char",
+        "valid_values": "Unique to each patient at each site",
+        "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+      },
+      {
+        "name": "deathdt",
+        "definition": "The date that the person most likely died.",
+        "type": "num",
+        "length": 4,
+        "valid_values": "SAS date, missing values allowed"
+      },
+      {
+        "name": "dtimpute",
+        "definition": "Indicates whether the death date is imputed and if so, how it was imputed.",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+          {
+            "value": "M",
+            "meaning": "Month of date imputed"
+          },
+          {
+            "value": "D",
+            "meaning": "Day of date imputed"
+          },
+          {
+            "value": "B",
+            "meaning": "Both month and day imputed"
+          },
+          {
+            "value": "N",
+            "meaning": "Date not imputed"
+          }
+
+        ]
+      },
+      {
+        "name": "source_list",
+        "definition": "A list of all sources of data that report this death regardless of any discrepencies in other variables (e.g. deathdt).",
+        "type": "char",
+        "length": 8,
+        "valid_values": [
+        {
+          "value": "B",
+          "meaning": "Social Security Admin"
+        },
+        {
+          "value": "N",
+          "meaning": "National Death Index"
+        },
+        {
+          "value": "S",
+          "meaning": "State Death records"
+        },
+        {
+          "value": "T",
+          "meaning": "Tumor registry"
+        },
+        {
+          "value": "E",
+          "meaning": "Encounter data"
+        },
+        {
+          "value": "P",
+          "meaning": "Patient data"
+        },
+        {
+          "value": "M",
+          "meaning": "Membership data"
+        },
+        {
+          "value": "O",
+          "meaning": "Other"
+        }],
+        "implementation_guidelines": "<p>A concatenated string of letters in descending order of reliability indicating all sources that report this person’s death</p><p>Example: If State, tumor and a local source all indicate a person's death and state is considered most reliable and the local source the least reliable, then SOURCE_LIST = 'STO'</p>"
+      },
+      {
+        "name": "confidence",
+        "definition": "Based on all information available, the level of confidence that this person is in fact dead.",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+        {
+          "value": "E",
+          "meaning": "Excellent"
+        },
+        {
+          "value": "F",
+          "meaning": "Fair"
+        },
+        {
+          "value": "P",
+          "meaning": "Poor"
+        }],
+        "implementation_guidelines": "May be based on reliability of data source, number of reporting sources, strength of match in matching process, discrepencies, etc."
+      }
+
+    ],
+    "primary_key": "MRN",
+    "comments": []
+
   }
 }
