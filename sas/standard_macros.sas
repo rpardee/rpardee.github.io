@@ -19,6 +19,13 @@
 *
 *********************************************/
 
+%macro new_macro_for_testing(say_this) ;
+  %do i = 1 %to 12
+    %put INFO: &say_this ;
+  %end ;
+%mend new_macro_for_testing ;
+
+
 ** Utility macro for fairly precisely calculating age. ;
 %macro CalcAge(BDtVar, RefDate) ;
   floor ((intck('month',&BDTVar,&RefDate) - (day(&RefDate) < min (day(&BDTVar),
