@@ -20,7 +20,7 @@
 *********************************************/
 
 %macro new_macro_for_testing(say_this) ;
-  %do i = 1 %to 12
+  %do i = 1 %to 12 ;
     %put INFO: &say_this ;
   %end ;
 %mend new_macro_for_testing ;
