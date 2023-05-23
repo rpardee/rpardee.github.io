@@ -184,7 +184,6 @@
       }]
     },
     {
-
       "name": "needs_interpreter",
       "definition": "Whether the person needs an interpreter to communicate with an English-only speaker",
       "type": "char",
@@ -203,7 +202,27 @@
         "meaning": "Unknown"
       }],
       "implementation_guidelines": "This variable is capable of changing over time. Populate with only the most recently known interpreter status."
-    }],
+    },
+    {
+      "name": "sexual_orientation1 - sexual_orientation3",
+      "definition": "The person's response(s) to inquiry into their sexual orientation",
+      "type": "char",
+      "length": 1,
+      "valid_values": [
+        {"value": "B", "meaning": "Bisexual"},
+        {"value": "T", "meaning": "Heterosexual"},
+        {"value": "M", "meaning": "Homosexual"},
+        {"value": "A", "meaning": "Asexual"},
+        {"value": "P", "meaning": "Pansexual"},
+        {"value": "Q", "meaning": "Queer"},
+        {"value": "O", "meaning": "Other"},
+        {"value": "D", "meaning": "Does not know"},
+        {"value": "N", "meaning": "Choose not to disclose"},
+        {"value": "U", "meaning": "Not asked/no information"}
+      ],
+      "implementation_guidelines": ["Null values not allowed--use the U value to signify a lack of information.", "Position does not signify temporal ordering, preference, or anything else--it is entirely arbitrary.", "A superset of both PHINVADS PHVS_SexualOrientation_CDC value set and LOINC code76690-7.", "Also exceeds HRSA recommendations and UDS reporting standards."]
+    }
+  ],
     "primary_key": "MRN",
     "comments": [
     {
