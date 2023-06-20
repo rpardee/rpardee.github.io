@@ -3762,7 +3762,34 @@
         "type": "char",
         "valid_values": "Unique to each patient at each site",
         "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+      },
+      {
+        "name":"COD",
+        "definition": "The cause of death diagnosis mortality code. For ICD diagnosis coding, include decimal points in the value.",
+        "type": "char",
+        "length": 8,
+        "valid_values": "Any ICD code concordant with dx_codetype",
+        "implementation_guidelines": "Was char(6), but some sites are receiving 8 char length ICD-10 codes."
+      },
+      {
+        "name": "dx_codetype",
+        "definition": "As defined in the diagnoses table."
+      },
+      {
+        "name": "causetype",
+        "definition": "The type of cause of death",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+          {"value": "I", "meaning": "Immediate/Primary"},
+          {"value": "U", "meaning": "Underlying"},
+          {"value": "C", "meaning": "Contributory"},
+          {"value": "O", "meaning": "Other"}
+        ]
       }
-    ]
+    ],
+    "primary_key": "MRN + COD + DX_CODETYPE + CAUSETYPE",
+    "comments": []
+  }
 
 }
