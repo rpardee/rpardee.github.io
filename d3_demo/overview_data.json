@@ -37,7 +37,7 @@
     {"name": "Vital Signs"      , "abbr": "vitals"    , "stdvar": "_vdw_vitalsigns", "descr": "Heights, weights, blood pressures, etc."},
     {"name": "Social Hx"        , "abbr": "soc"       , "stdvar": "_vdw_social_hx", "descr": "Patient behavioral data"},
     {"name": "Deaths"           , "abbr": "death"     , "stdvar": "_vdw_death", "descr": "Fact-of Deaths"},
-    {"name": "cause of death"   , "abbr": "cod"       , "stdvar": "_vdw_cause_of_death", "descr": "Causes of death (where known)"},
+    {"name": "Cause Of Death"   , "abbr": "cod"       , "stdvar": "_vdw_cause_of_death", "descr": "Causes of death (where known)"},
     {"name": "Lab Results"      , "abbr": "lab"       , "stdvar": "_vdw_lab", "descr": "Lab test results"}
   ],
   "implementations":[

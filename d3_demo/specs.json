@@ -3641,7 +3641,6 @@
 
     ]
   },
-
   "Deaths":
   {
     "name": "Deaths",
@@ -3751,5 +3750,19 @@
     "primary_key": "MRN",
     "comments": []
 
-  }
+  },
+  "CauseOfDeath":
+  {
+    "name": "Cause of death",
+    "description": "The CAUSE OF DEATH table contains one record per person per cause of death.",
+    "columns": [
+      {
+        "name": "MRN",
+        "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+        "type": "char",
+        "valid_values": "Unique to each patient at each site",
+        "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+      }
+    ]
+
 }

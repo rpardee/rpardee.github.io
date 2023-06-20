@@ -281,7 +281,7 @@ async function draw_overview() {
     id = 'nil'.concat('-', d.abbr)
     d3.select(`#${id}`)
       .data([d])
-      .html("<a href='" + d.name.replace(/[ :]+/g, "_") + ".html'>" + d.name + "</a>")
+      .html("<a href='" + d.name.replace(/[ :]+/g, "_").toLowerCase() + ".html'>" + d.name + "</a>")
       .attr("class", "row-header")
       .on("mouseenter", showDsetTooltip)
       .on("mouseleave", fadeDsetTooltip)
