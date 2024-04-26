@@ -209,20 +209,48 @@
       "type": "char",
       "length": 1,
       "valid_values": [
-        {"value": "B", "meaning": "Bisexual"},
-        {"value": "T", "meaning": "Heterosexual"},
-        {"value": "M", "meaning": "Homosexual"},
-        {"value": "A", "meaning": "Asexual"},
-        {"value": "P", "meaning": "Pansexual"},
-        {"value": "Q", "meaning": "Queer"},
-        {"value": "O", "meaning": "Other"},
-        {"value": "D", "meaning": "Does not know"},
-        {"value": "N", "meaning": "Choose not to disclose"},
-        {"value": "U", "meaning": "Not asked/no information"}
-      ],
+      {
+        "value": "B",
+        "meaning": "Bisexual"
+      },
+      {
+        "value": "T",
+        "meaning": "Heterosexual"
+      },
+      {
+        "value": "M",
+        "meaning": "Homosexual"
+      },
+      {
+        "value": "A",
+        "meaning": "Asexual"
+      },
+      {
+        "value": "P",
+        "meaning": "Pansexual"
+      },
+      {
+        "value": "Q",
+        "meaning": "Queer"
+      },
+      {
+        "value": "O",
+        "meaning": "Other"
+      },
+      {
+        "value": "D",
+        "meaning": "Does not know"
+      },
+      {
+        "value": "N",
+        "meaning": "Choose not to disclose"
+      },
+      {
+        "value": "U",
+        "meaning": "Not asked/no information"
+      }],
       "implementation_guidelines": ["Null values not allowed--use the U value to signify a lack of information.", "Position does not signify temporal ordering, preference, or anything else--it is entirely arbitrary.", "A superset of both <a href='https://phinvads.cdc.gov/vads/ViewValueSet.action?id=E0004707-45BB-E711-ACE2-0017A477041A'>PHINVADS PHVS_SexualOrientation_CDC</a> value set and <a href='https://loinc.org/76690-7/'>LOINC code76690-7</a>.", "Also exceeds <a href='https://data.hrsa.gov/tools/data-reporting'>HRSA recommendations and UDS reporting standards</a>."]
-    }
-  ],
+    }],
     "primary_key": "MRN",
     "comments": [
     {
@@ -3756,94 +3784,102 @@
     "name": "Cause of death",
     "description": "The CAUSE OF DEATH table contains one record per person per cause of death.",
     "columns": [
+    {
+      "name": "MRN",
+      "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+      "type": "char",
+      "valid_values": "Unique to each patient at each site",
+      "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+    },
+    {
+      "name": "COD",
+      "definition": "The cause of death diagnosis mortality code. For ICD diagnosis coding, include decimal points in the value.",
+      "type": "char",
+      "length": 8,
+      "valid_values": "Any ICD code concordant with dx_codetype",
+      "implementation_guidelines": "Was char(6), but some sites are receiving 8 char length ICD-10 codes."
+    },
+    {
+      "name": "dx_codetype",
+      "definition": "As defined in the diagnoses table."
+    },
+    {
+      "name": "causetype",
+      "definition": "The type of cause of death",
+      "type": "char",
+      "length": 1,
+      "valid_values": [
       {
-        "name": "MRN",
-        "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
-        "type": "char",
-        "valid_values": "Unique to each patient at each site",
-        "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
+        "value": "I",
+        "meaning": "Immediate/Primary"
       },
       {
-        "name":"COD",
-        "definition": "The cause of death diagnosis mortality code. For ICD diagnosis coding, include decimal points in the value.",
-        "type": "char",
-        "length": 8,
-        "valid_values": "Any ICD code concordant with dx_codetype",
-        "implementation_guidelines": "Was char(6), but some sites are receiving 8 char length ICD-10 codes."
+        "value": "U",
+        "meaning": "Underlying"
       },
       {
-        "name": "dx_codetype",
-        "definition": "As defined in the diagnoses table."
+        "value": "C",
+        "meaning": "Contributory"
       },
       {
-        "name": "causetype",
-        "definition": "The type of cause of death",
-        "type": "char",
-        "length": 1,
-        "valid_values": [
-          {"value": "I", "meaning": "Immediate/Primary"},
-          {"value": "U", "meaning": "Underlying"},
-          {"value": "C", "meaning": "Contributory"},
-          {"value": "O", "meaning": "Other"}
-        ]
+        "value": "O",
+        "meaning": "Other"
+      }]
+    },
+    {
+      "name": "source_list",
+      "definition": "A list of all sources of data that report this death regardless of any discrepencies in other variables (e.g. deathdt).",
+      "type": "char",
+      "length": 8,
+      "valid_values": [
+      {
+        "value": "B",
+        "meaning": "Social Security Admin"
       },
       {
-        "name": "source_list",
-        "definition": "A list of all sources of data that report this death regardless of any discrepencies in other variables (e.g. deathdt).",
-        "type": "char",
-        "length": 8,
-        "valid_values": [
-        {
-          "value": "B",
-          "meaning": "Social Security Admin"
-        },
-        {
-          "value": "N",
-          "meaning": "National Death Index"
-        },
-        {
-          "value": "S",
-          "meaning": "State Death records"
-        },
-        {
-          "value": "T",
-          "meaning": "Tumor registry"
-        },
-        {
-          "value": "E",
-          "meaning": "Encounter data"
-        },
-        {
-          "value": "P",
-          "meaning": "Patient data"
-        },
-        {
-          "value": "M",
-          "meaning": "Membership data"
-        }
-      ]
+        "value": "N",
+        "meaning": "National Death Index"
       },
       {
-        "name": "confidence",
-        "definition": "Based on all information available, the level of confidence that this person is in fact dead.",
-        "type": "char",
-        "length": 1,
-        "valid_values": [
-        {
-          "value": "E",
-          "meaning": "Excellent"
-        },
-        {
-          "value": "F",
-          "meaning": "Fair"
-        },
-        {
-          "value": "P",
-          "meaning": "Poor"
-        }
-      ]
+        "value": "S",
+        "meaning": "State Death records"
       },
-    ],
+      {
+        "value": "T",
+        "meaning": "Tumor registry"
+      },
+      {
+        "value": "E",
+        "meaning": "Encounter data"
+      },
+      {
+        "value": "P",
+        "meaning": "Patient data"
+      },
+      {
+        "value": "M",
+        "meaning": "Membership data"
+      }]
+    },
+    {
+      "name": "confidence",
+      "definition": "Based on all information available, the level of confidence that this person is in fact dead.",
+      "type": "char",
+      "length": 1,
+      "valid_values": [
+      {
+        "value": "E",
+        "meaning": "Excellent"
+      },
+      {
+        "value": "F",
+        "meaning": "Fair"
+      },
+      {
+        "value": "P",
+        "meaning": "Poor"
+      }]
+    }],
     "primary_key": "MRN + COD + DX_CODETYPE + CAUSETYPE",
     "comments": []
   }
