@@ -3786,7 +3786,63 @@
           {"value": "C", "meaning": "Contributory"},
           {"value": "O", "meaning": "Other"}
         ]
-      }
+      },
+      {
+        "name": "source_list",
+        "definition": "A list of all sources of data that report this death regardless of any discrepencies in other variables (e.g. deathdt).",
+        "type": "char",
+        "length": 8,
+        "valid_values": [
+        {
+          "value": "B",
+          "meaning": "Social Security Admin"
+        },
+        {
+          "value": "N",
+          "meaning": "National Death Index"
+        },
+        {
+          "value": "S",
+          "meaning": "State Death records"
+        },
+        {
+          "value": "T",
+          "meaning": "Tumor registry"
+        },
+        {
+          "value": "E",
+          "meaning": "Encounter data"
+        },
+        {
+          "value": "P",
+          "meaning": "Patient data"
+        },
+        {
+          "value": "M",
+          "meaning": "Membership data"
+        }
+      ]
+      },
+      {
+        "name": "confidence",
+        "definition": "Based on all information available, the level of confidence that this person is in fact dead.",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+        {
+          "value": "E",
+          "meaning": "Excellent"
+        },
+        {
+          "value": "F",
+          "meaning": "Fair"
+        },
+        {
+          "value": "P",
+          "meaning": "Poor"
+        }
+      ]
+      },
     ],
     "primary_key": "MRN + COD + DX_CODETYPE + CAUSETYPE",
     "comments": []
