@@ -209,48 +209,20 @@
       "type": "char",
       "length": 1,
       "valid_values": [
-      {
-        "value": "B",
-        "meaning": "Bisexual"
-      },
-      {
-        "value": "T",
-        "meaning": "Heterosexual"
-      },
-      {
-        "value": "M",
-        "meaning": "Homosexual"
-      },
-      {
-        "value": "A",
-        "meaning": "Asexual"
-      },
-      {
-        "value": "P",
-        "meaning": "Pansexual"
-      },
-      {
-        "value": "Q",
-        "meaning": "Queer"
-      },
-      {
-        "value": "O",
-        "meaning": "Other"
-      },
-      {
-        "value": "D",
-        "meaning": "Does not know"
-      },
-      {
-        "value": "N",
-        "meaning": "Choose not to disclose"
-      },
-      {
-        "value": "U",
-        "meaning": "Not asked/no information"
-      }],
+        {"value": "B", "meaning": "Bisexual"},
+        {"value": "T", "meaning": "Heterosexual"},
+        {"value": "M", "meaning": "Homosexual"},
+        {"value": "A", "meaning": "Asexual"},
+        {"value": "P", "meaning": "Pansexual"},
+        {"value": "Q", "meaning": "Queer"},
+        {"value": "O", "meaning": "Other"},
+        {"value": "D", "meaning": "Does not know"},
+        {"value": "N", "meaning": "Choose not to disclose"},
+        {"value": "U", "meaning": "Not asked/no information"}
+      ],
       "implementation_guidelines": ["Null values not allowed--use the U value to signify a lack of information.", "Position does not signify temporal ordering, preference, or anything else--it is entirely arbitrary.", "A superset of both <a href='https://phinvads.cdc.gov/vads/ViewValueSet.action?id=E0004707-45BB-E711-ACE2-0017A477041A'>PHINVADS PHVS_SexualOrientation_CDC</a> value set and <a href='https://loinc.org/76690-7/'>LOINC code76690-7</a>.", "Also exceeds <a href='https://data.hrsa.gov/tools/data-reporting'>HRSA recommendations and UDS reporting standards</a>."]
-    }],
+    }
+  ],
     "primary_key": "MRN",
     "comments": [
     {
@@ -3782,106 +3754,913 @@
   "CauseOfDeath":
   {
     "name": "Cause of death",
+    "stdvar": "_vdw_cause_of_death",
     "description": "The CAUSE OF DEATH table contains one record per person per cause of death.",
     "columns": [
-    {
-      "name": "MRN",
-      "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
-      "type": "char",
-      "valid_values": "Unique to each patient at each site",
-      "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
-    },
-    {
-      "name": "COD",
-      "definition": "The cause of death diagnosis mortality code. For ICD diagnosis coding, include decimal points in the value.",
-      "type": "char",
-      "length": 8,
-      "valid_values": "Any ICD code concordant with dx_codetype",
-      "implementation_guidelines": "Was char(6), but some sites are receiving 8 char length ICD-10 codes."
-    },
-    {
-      "name": "dx_codetype",
-      "definition": "As defined in the diagnoses table."
-    },
-    {
-      "name": "causetype",
-      "definition": "The type of cause of death",
-      "type": "char",
-      "length": 1,
-      "valid_values": [
       {
-        "value": "I",
-        "meaning": "Immediate/Primary"
+        "name": "MRN",
+        "definition": "Medical record number is the unique patient identifier within a site and should never leave the site",
+        "type": "char",
+        "valid_values": "Unique to each patient at each site",
+        "implementation_guidelines": "Used to link people across files within a site. May or may not contain the official local indigenous person identifier (e.g., 'medical record number')."
       },
       {
-        "value": "U",
-        "meaning": "Underlying"
+        "name":"COD",
+        "definition": "The cause of death diagnosis mortality code. For ICD diagnosis coding, include decimal points in the value.",
+        "type": "char",
+        "length": 8,
+        "valid_values": "Any ICD code concordant with dx_codetype",
+        "implementation_guidelines": "Was char(6), but some sites are receiving 8 char length ICD-10 codes."
       },
       {
-        "value": "C",
-        "meaning": "Contributory"
+        "name": "dx_codetype",
+        "definition": "As defined in the diagnoses table."
       },
       {
-        "value": "O",
-        "meaning": "Other"
-      }]
-    },
-    {
-      "name": "source_list",
-      "definition": "A list of all sources of data that report this death regardless of any discrepencies in other variables (e.g. deathdt).",
-      "type": "char",
-      "length": 8,
-      "valid_values": [
-      {
-        "value": "B",
-        "meaning": "Social Security Admin"
-      },
-      {
-        "value": "N",
-        "meaning": "National Death Index"
-      },
-      {
-        "value": "S",
-        "meaning": "State Death records"
-      },
-      {
-        "value": "T",
-        "meaning": "Tumor registry"
-      },
-      {
-        "value": "E",
-        "meaning": "Encounter data"
-      },
-      {
-        "value": "P",
-        "meaning": "Patient data"
-      },
-      {
-        "value": "M",
-        "meaning": "Membership data"
-      }]
-    },
-    {
-      "name": "confidence",
-      "definition": "Based on all information available, the level of confidence that this person is in fact dead.",
-      "type": "char",
-      "length": 1,
-      "valid_values": [
-      {
-        "value": "E",
-        "meaning": "Excellent"
-      },
-      {
-        "value": "F",
-        "meaning": "Fair"
-      },
-      {
-        "value": "P",
-        "meaning": "Poor"
-      }]
-    }],
+        "name": "causetype",
+        "definition": "The type of cause of death",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+          {"value": "I", "meaning": "Immediate/Primary"},
+          {"value": "U", "meaning": "Underlying"},
+          {"value": "C", "meaning": "Contributory"},
+          {"value": "O", "meaning": "Other"}
+        ]
+      }
+    ],
     "primary_key": "MRN + COD + DX_CODETYPE + CAUSETYPE",
     "comments": []
+  },
+  "Provider Taxonomy":
+  {
+    "name": "Provider Taxonomy",
+    "stdvar": "&_vdw_prov_taxonomy",
+    "description": "The Provider Taxonomy table contains all unique taxonomies known for a given provider id, with additional information regarding the state in which the provider is licensed for any taxonomy and whether it is the primary taxonomy.",
+    "columns":[
+    {
+        "name": "provider",
+        "definition": "The unique provider identifier.",
+        "type": "char",
+        "valid_values": "Unique to each provider at each site",
+        "implementation_guidelines": "No Nulls allowed.  Part of Primary Key."
+    },
+    {
+        "name": "taxonomy_code",
+        "definition": "The provider's taxonomy code per NUCCHCPT (National Uniform Claims Committee Health Care Provider Taxonomy), with addition of HCSRN custom codes.",
+        "type": "char",
+        "length": 1,
+        "valid_values": "See Appendix E Provider Taxonomy for value list.",
+        "implementation_guidelines": "If TYPE_SPECIALTY_SOURCE='NPI' or 'TAX' then this Taxonomy_Code was not imputed and found directly in a source system.   If source is not 'NPI' or 'TAX' then the taxonomy code should be considered imputed as it was mapped through other means.  Imputed taxonomies should have the correctly matched grouping_code, classification_code and specialization codes as indicated in Appendix E.No Nulls allowed.  Part of Primary Key. "
+    },
+    {
+        "name": "grouping_code",
+        "definition": "The provider's VDW grouping, based on the first 2 characters of the TAXONOMY_CODE variable.",
+        "type": "char ",
+        "length": 3,
+        "valid_values": "See Appendix E Prov Taxonomy Map and Appendix F Prov Classification for valid combinations with Classification and Specialization and value list definitions",
+        "implementation_guidelines": "Based on the first two characters of the taxonomy code (see Appendices F&E for mapping)  selected for this table OR a local mapping derived from EMR or source data information to the standardized value based on the NUCC taxonomies. No Nulls allowed.  Please inform Utilization Workgroup Leads if a taxonomy is not mapped to a VDW value. "
+    },
+    {
+        "name": "classification_code",
+        "definition": "The provider's VDW Classification based on taxonomy code per NUCCHCPT (National Uniform Claims Committee Health Care Provider Taxonomy), with addition of HCSRN custom codes.",
+        "type": "char",
+        "length": 4,
+        "valid_values": "See Appendix E Prov Taxonomy Map and Appendix G Prov Classification for  valid combinations with Grouping and Specialization and value list definitions",
+        "implementation_guidelines": "Based on taxonomy code (see Appendices G&E for mapping)  selected for this table OR a local mapping derived from EMR or source data information to the standardized value based on the NUCC taxonomies. No Nulls allowed. "
+    },
+    {
+        "name": "specialization_code",
+        "definition": "The provider's VDW Specialization based on taxonomy code per NUCCHCPT (National Uniform Claims Committee Health Care Provider Taxonomy), with addition of HCSRN custom codes.",
+        "type": "char",
+        "length": 4,
+        "valid_values": "See Appendix E Prov Taxonomy Map and Appendix H Prov Specialization  for valid combinations with Grouping and Classification and value list definitions  ",
+        "implementation_guidelines": "Based on taxonomy code (see Appendices H&E for mapping)  selected for this table OR a local mapping derived from EMR or source data information to the standardized value based on the NUCC taxonomies. Nulls allowed in order to follow NUCC Taxonomy. "
+    },
+    {
+        "name": "org_classification",
+        "definition": "Indicates whether an individual practitioner or a single specialty or multi specialty organization. Provided detailed information from the NPI registry to supplement PROVIDER.Entity_type",
+        "type": "char",
+        "length": 4,
+        "valid_values": [
+          {"value":"INDV", "meaning": "Individual"},
+          {"value":"SING", "meaning": "Single-Specialty organization"},
+          {"value":"MULT", "meaning": "Multi-specialty organization"},
+          {"value": "Null"}
+
+        ],
+        "implementation_guidelines": "Mapped using the HCP_TAXONOMY_GRP variables from the NPESS file. Note that this may not match the PROVIDER.ENTITY_TYPE FIELD exactly, depending on local sources.Leave Null if if not sourced from the NPI registry files. "
+    },
+    {
+        "name": "ever_licensed_in_site_states",
+        "definition": "Indicates whether the Provider has an NPI registry record for this taxonomy  in any of the states for which the HCSRN site provides services.  ",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+          {"value":"Y", "meaning": "Yes"},
+          {"value":"N", "meaning": "No"},
+          {"value":"U", "meaning":"Unknown"}
+        ],
+        "implementation_guidelines": "This is to allow for de-duplication of records, but keeps the potentially important information regarding the site.  Set to 'U' if not sourced from the NPI registry files. No Nulls allowed."
+    },
+    {
+        "name": "npi_registry_primary_yn",
+        "definition": "Indicates whether this taxonomy is currently noted as primary for the provider.  This is supposed to be only one per provider, however there are a few hundred with more than one.  Leave as it is in the source. ",
+        "type": "char",
+        "length": 1,
+        "valid_values":[
+          {"value":"Y", "meaning": "Yes"},
+          {"value":"N", "meaning": "No"},
+          {"value":"X", "meaning": "Not known"},
+          {"value": "Null"}
+        ],
+        "implementation_guidelines": "'X' is a valid value in the the NPI taxonomy file; Must be left null if not sourced from the NPI registry through an NPI value available in source data (i.e. TYPE_SPECIALTY_SOURCE='NPI').  "
+    },
+    {
+        "name": "type_specialty_source",
+        "definition": "The source for this record.  If source is 'NPI' or 'TAX' then Taxonomy_Code was not imputed and the taxonomy mapped either through the NPI Registry files or found directly in a source system.  If source is not 'NPI' or 'TAX' then the taxonomy code should be considered imputed as it was mapped through other means. ",
+        "type": "char",
+        "length": 3,
+        "valid_values": [{"value":"NPI", "meaning": "Mapped directly from providers National Provider Identifier (NPI) via NPPES NPI Registry file "},
+          {"value":"PHS", "meaning": "Mapped from a provider's specialty found in source data. "},
+          {"value":"PTP", "meaning": "Mapped from a provider type, clinician title, or other field denoting a role, found in source data. "},
+          {"value":"PTS", "meaning": "Mapped from a combination of provider type and specialties found in source data. "},
+          {"value":"TAX", "meaning": "Mapped through a taxonomy_code provided within a source system with no NPI available"},
+          {"value":"OTH", "meaning": "Mapped by another method"}],
+        "implementation_guidelines": "'OTH' may include mapping forward of legacy data from previous VDW values of PROVIDER_TYPE and/or SPECIALTY.No Nulls allowed."
+    },
+    {
+        "name": "site_current_recommended",
+        "definition": "Flag indicating that this particular record or speciality is the most trusted for mulitsite use for the CURRENT load.   This may be based on the primary flag or site knowledge of the accuracy of sources.  ",
+        "type": "char",
+        "length": 1,
+        "valid_values": [
+          {"value": "Y", "meaning": "Yes"},
+          {"value": "Null"}
+        ],
+        "implementation_guidelines": "(See Guidelines_for_PROVIDER_TAXONOMIES.docx for more information)  At some sites, there may be multiple sources for a given provider because of the site data manager's choice (e.g. internal processes that have rigor, evidence that one is better than the other, etc.).  Other reasons for this flag is to help users make a decision between multiple NPI registry records where none is indicated as primary (i.e. NPI_REGISTRY_PRIMARY_YN='X'.    This flag can also be used to flag what a site would consider to be the most current and up to date specialty for a given provider (i.e. - the license for a given state, the primary,etc.)   This is simply intended to simplify the process for multisite programmers and help them make a selection given disparate information.   It is not intended to help with time-varying information.   Please see Guidelines Document  for more specific information on implementing this variable. Each unique provider number should have one and only a one record set to 'Y'.  If there is only one record available, it will always be set to 'Y'. Nulls allowed."
+    },
+    {
+        "name": "registry_txnmy_strtdt",
+        "definition": "Indicates the start date of the file where this taxonomy was first seen.  It does NOT represent when the provider obtained an NPI or was licensed, nor does it indicate when the provider started practicing.  It is simply when this data was entered into the NPI regisry.  ",
+        "type": "Date (num if SAS  or native DB date value)",
+        "valid_values": "Any valid date value between 01-May-2005 and present, or Null.",
+        "implementation_guidelines": "Note that the initial file obtained ranges from 2005 - June 2015.  All records from this file default to 2005.  Use the PROVIDER.YEAR_NPI_ENUMERATION for a better estimation for when the NPI was actually created for a given provider. Leave Null if if not sourced from the NPI registry files. "
+    },
+    {
+        "name": "registry_txnmy_enddt",
+        "definition": "Indicates the end date for the file where a taxonomy first dropped out of the registry due to an NPI update record not having the taxonomy listed.  Will remain null if taxonomy still exists.  If a taxonomy is re-introduced into the registry, then this date will be set to null to indicate that it is active. ",
+        "type": "Date (num if SAS  or native DB date value)",
+        "valid_values": "Any valid date value between 01-Jun-2015 and present, or Null.",
+        "implementation_guidelines": "It is unclear of why taxonomies disappear from the registry.  It could be because it wa entered by mistake, or it could be that the provider was able to find a taxonomy at a later day that better represents their specialty.  If a taxonomy disappears but then returns at a later day, this variable is set back to null.Nulls allowed - only populated if taxonomy disappears in NPI registry for a given NPI/Provider. REGISTRY_TXNMY_ENDDT should always be > REGISTRY_TXNMY_STRTDT if populated."
+    }
+]
+    ,
+    "primary_key": "provider + taxonomy_code + org_classification",
+    "comments": []
+  },
+  "Census: Demogs":
+  {
+    "name": "Census Demographics",
+    "stdvar": "&_vdw_census_demog_acs",
+    "description": "The Census ACS Demographics table contains data from the American Community Survey (ACS) administered by the US Census Bureau.",
+    "columns": [
+    {
+        "name": "census_year",
+        "definition": "Year the ACS data was released by the Census Bureau",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Year values (e.g. 2016, 2017)",
+        "acs": "",
+        "implementation_guidelines": "Note that multiple CENSUS_YEAR values will map to one GEOCODE_BOUNDARY_YEAR. For example, ACS files 2010 - 2019 are compatible with the GEOCODE_BOUNDARY_YEAR 2010."
+    },
+    {
+        "name": "geocode",
+        "definition": "Concatenation of the FIPS codes for State, County, and Census Tract",
+        "type": "Char",
+        "length": 11,
+        "valid_values": "The first two characters signify the state, the next three signify the county, the next six signify the tract.",
+        "acs": "",
+        "implementation_guidelines": ""
+    },
+    {
+        "name": "geocode_boundary_year",
+        "definition": "The decade of the boundary year used to create the census tracts of the ACS data.",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Year values (e.g. 2010, 2020)",
+        "acs": "",
+        "implementation_guidelines": "For example, ACS files 2010-2019 are compatible with GEOCODE_BOUNDARY_YEAR = 2010"
+    },
+    {
+        "name": "state",
+        "definition": "State Code--a two-character numeric code assigned to US states, districts, territories and protectorates.",
+        "type": "char",
+        "length": 2,
+        "valid_values": "Any valid state code, as used by the USCB.",
+        "acs": "",
+        "implementation_guidelines": ""
+    },
+    {
+        "name": "county",
+        "definition": "County Code--a 3-character numeric code assigned to census counties.",
+        "type": "char",
+        "length": 3,
+        "valid_values": "Any valid county code, as used by the USCB.",
+        "acs": "",
+        "implementation_guidelines": ""
+    },
+    {
+        "name": "tract",
+        "definition": "Tract Code--a six-character numeric code assigned to census tracts.",
+        "type": "char",
+        "length": 6,
+        "valid_values": "Any valid tract code, as used by the USCB.",
+        "acs": "",
+        "implementation_guidelines": ""
+    },
+    {
+        "name": "education1",
+        "definition": "Less than 9th grade",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B15002003 B15002004 B15002005 B15002006 B15002020 B15002021 B15002022 B15002023",
+        "implementation_guidelines": "B15002001 is total number as denominator for education variables"
+    },
+    {
+        "name": "education2",
+        "definition": "9th - 12th grade",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B15002007 B15002008 B15002009 B15002010 B15002024 B15002025 B15002026 B15002027",
+        "implementation_guidelines": "B15002001 is total number as denominator for education variables"
+    },
+    {
+        "name": "education3",
+        "definition": "high school graduate",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B15002011 B15002028",
+        "implementation_guidelines": "B15002001 is total number as denominator for education variables"
+    },
+    {
+        "name": "education4",
+        "definition": "some college, no degree",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B15002012 B15002013 B15002029 B15002030",
+        "implementation_guidelines": "B15002001 is total number as denominator for education variables"
+    },
+    {
+        "name": "education5",
+        "definition": "associate degree",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B15002014 B15002031",
+        "implementation_guidelines": "B15002001 is total number as denominator for education variables"
+    },
+    {
+        "name": "education6",
+        "definition": "bachelor degree",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B15002015 B15002032",
+        "implementation_guidelines": "B15002001 is total number as denominator for education variables"
+    },
+    {
+        "name": "education7",
+        "definition": "graduate or professional degree",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B15002016 B15002017 B15002033 B15002034",
+        "implementation_guidelines": "B15002001 is total number as denominator for education variables"
+    },
+    {
+        "name": "education8",
+        "definition": "Doctorate degree",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B15002018 B15002035",
+        "implementation_guidelines": "B15002001 is total number as denominator for education variables"
+    },
+    {
+        "name": "medfamincome",
+        "definition": "Median Family Income",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any integer.",
+        "acs": "B19113001",
+        "implementation_guidelines": ""
+    },
+    {
+        "name": "famincome1",
+        "definition": "less than $10,000",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101002",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome2",
+        "definition": "$10,000 - $14,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101003",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome3",
+        "definition": "$15,000-$19,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101004",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome4",
+        "definition": "$20,000-$24,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101005",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome5",
+        "definition": "$25,000-$29,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101006",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome6",
+        "definition": "$30,000-$34,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101007",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome7",
+        "definition": "$35,000-$39,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101008",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome8",
+        "definition": "$40,000-$44,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101009",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome9",
+        "definition": "$45,000-$49,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101010",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome10",
+        "definition": "$50,000-$59,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101011",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome11",
+        "definition": "$60,000-$74,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101012",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome12",
+        "definition": "$75,000-$99,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101013",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome13",
+        "definition": "$100,000-$124,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101014",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome14",
+        "definition": "$125,000-$149,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101015",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome15",
+        "definition": "$150,000-$199,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101016",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "famincome16",
+        "definition": "$200,000+",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19101017",
+        "implementation_guidelines": "B19101001 is total number as denominator for family income variables"
+    },
+    {
+        "name": "fampoverty",
+        "definition": "Proportion of family households in the geography with below-poverty level income.",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17001002",
+        "implementation_guidelines": "B17001001 is total number as denominator for family poverty variable"
+    },
+    {
+        "name": "medhousincome",
+        "definition": "median household income",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any integer.",
+        "acs": "B19013001",
+        "implementation_guidelines": ""
+    },
+    {
+        "name": "housincome1",
+        "definition": "< $10,000",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001002",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome2",
+        "definition": "$10,000-$14,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001003",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome3",
+        "definition": "$15,000-$19,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001004",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome4",
+        "definition": "$20,000-$24,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001005",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome5",
+        "definition": "$25,000-$29,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001006",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome6",
+        "definition": "$30,000-$34,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001007",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome7",
+        "definition": "$35,000-$39,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001008",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome8",
+        "definition": "$40,000-$44,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001009",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome9",
+        "definition": "$45,000-$49,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001010",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome10",
+        "definition": "$50,000-$59,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001011",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome11",
+        "definition": "$60,000-$74,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001012",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome12",
+        "definition": "$75,000-$99,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001013",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome13",
+        "definition": "$100,000-$124,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001014",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome14",
+        "definition": "$125,000-$149,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001015",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome15",
+        "definition": "$150,000-$199,999",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001016",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "housincome16",
+        "definition": "$200,000+",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19001017",
+        "implementation_guidelines": "B19001001 is total number as denominator for household income variables"
+    },
+    {
+        "name": "houspoverty",
+        "definition": "%Households with below-poverty level income",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026002 B17026003 B17026004",
+        "implementation_guidelines": "B17026001 is denominator"
+    },
+    {
+        "name": "pov_lt_50",
+        "definition": "<50% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026002",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "pov_50_74",
+        "definition": "Between 50 and 74.99% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026003",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "pov_75_99",
+        "definition": "Between 75 and 99.99% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026004",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "pov_100_124",
+        "definition": "Between 100 and 124.99% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026005",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "pov_125_149",
+        "definition": "Between 125 and 149.99% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026006",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "pov_150_174",
+        "definition": "Between 150 and 174.99% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026007",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "pov_175_184",
+        "definition": "Between 175 and 184.99% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026008",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "pov_185_199",
+        "definition": "Between 185 and 199.99% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026009",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "pov_gt_200",
+        "definition": "> 200% of poverty level",
+        "type": "num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B17026010 B17026011 B17026012 B17026013",
+        "implementation_guidelines": "B17026001 is total number as denominator for poverty variables"
+    },
+    {
+        "name": "english_speaker",
+        "definition": "Proportion of people over age 5 that speak only English or speak english “very well”",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B16007003 B16007009 B16007015",
+        "implementation_guidelines": "B16007001 is total number as denominator for speaker variables"
+    },
+    {
+        "name": "spanish_speaker",
+        "definition": "Proportion of people over age 5 who speak only spanish or speak spanish “very well”",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B16007004 B16007010 B16007016",
+        "implementation_guidelines": "B16007001 is total number as denominator for speaker variables"
+    },
+    {
+        "name": "borninus",
+        "definition": "Proportion of people over age 5 that were born in the US",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B05001002",
+        "implementation_guidelines": "B05001001 is total number as denominator for borninUS variable"
+    },
+    {
+        "name": "movedinlast12mon",
+        "definition": "Proportion of households that moved in the last 12 months",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "1-(B07001017/B07001001)",
+        "implementation_guidelines": ""
+    },
+    {
+        "name": "married",
+        "definition": "Proportion of people over age 15 who are married",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B12001004 B12001013",
+        "implementation_guidelines": "B12001001 is total number as denominator for marital variables"
+    },
+    {
+        "name": "divorced",
+        "definition": "Proportion of people over age 15 who are divorced",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B12001010 B12001019",
+        "implementation_guidelines": "B12001001 is total number as denominator for marital variables"
+    },
+    {
+        "name": "disability",
+        "definition": "Proportion of people over age 18 living with any disability",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "C18101007 C18101010 C18101017 C18101020",
+        "implementation_guidelines": "C18101006 C18101009 C18101016 C18101019 sum is the denominator"
+    },
+    {
+        "name": "unemployment",
+        "definition": "Proportion of civilian noninstitutionalized population between 18 and 64 who are unemployed",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B23001008 B23001015 B23001022 B23001029 B23001036 B23001043 B23001050 B23001057 B23001064 B23001071 B23001076 B23001081 B23001086 B23001094 B23001101 B23001108 B23001115 B23001122 B23001129 B23001136 B23001143 B23001150 B23001157 B23001162 B23001167 B23001172",
+        "implementation_guidelines": "B23001001 is total number as denominator for employment variables"
+    },
+    {
+        "name": "unemployment_male",
+        "definition": "Proportion of civilian noninstitutionalized males between 18 and 64 who are unemployed",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B23001008 B23001015 B23001022 B23001029 B23001036 B23001043 B23001050 B23001057 B23001064 B23001071 B23001076 B23001081 B23001086",
+        "implementation_guidelines": "B23001001 is total number as denominator for employment variables"
+    },
+    {
+        "name": "ins_medicare",
+        "definition": "Proportion of people covered by Medicare",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "C27006004 C27006007 C27006010 C27006014 C27006017 C27006020",
+        "implementation_guidelines": "C27006001 is the denominator"
+    },
+    {
+        "name": "ins_medicaid",
+        "definition": "Proportion of people covered by Medicaid",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "C27007004 C27007007 C27007010 C27007014 C27007017 C27007020",
+        "implementation_guidelines": "C27007001 is the denominator"
+    },
+    {
+        "name": "hh_nocar",
+        "definition": "Proportion of households with no car (owner and renter occupied)",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B08201002",
+        "implementation_guidelines": "B08201001 is total number as denominator for households with no car variables"
+    },
+    {
+        "name": "hh_public_assistance",
+        "definition": "Proportion of households on public assistance",
+        "type": "Char",
+        "length": 1,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B19057002",
+        "implementation_guidelines": "B19057001 is total number as denominator for public assistance in household variables"
+    },
+    {
+        "name": "hmowner_costs_mort",
+        "definition": "Proportion of households with monthly owner costs > 50% HH income, in homes with mortgages",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B25091011",
+        "implementation_guidelines": "B25091001 is total number as denominator for households with monthly owner costs variables"
+    },
+    {
+        "name": "hmowner_costs_no_mort",
+        "definition": "Proportion of households with monthly owner costs > 50% HH income, in homes without mortgages",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B25091022",
+        "implementation_guidelines": "B25091001 is total number as denominator for households with monthly owner costs variables"
+    },
+    {
+        "name": "homes_medvalue",
+        "definition": "Median value of homes",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any integer.",
+        "acs": "B25077001",
+        "implementation_guidelines": ""
+    },
+    {
+        "name": "pct_crowding",
+        "definition": "Proportion of households with >= 1 person per room",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B25014005 B25014006 B25014007 B25014011 B25014012 B25014013",
+        "implementation_guidelines": "B25014001 is total number as denominator for Percentage of crosding variable"
+    },
+    {
+        "name": "female_head_of_hh",
+        "definition": "Proportion of households headed by females (no male present)",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B25115011 B25115024",
+        "implementation_guidelines": "B25115001"
+    },
+    {
+        "name": "mgr_female",
+        "definition": "Proportion of female management occupations",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "C24040046 C24040045",
+        "implementation_guidelines": "C24040001 is total number as denominator for Manager variables"
+    },
+    {
+        "name": "mgr_male",
+        "definition": "Proportion of male management occupations",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "C24040019 C24040018",
+        "implementation_guidelines": "C24040001 is total number as denominator for Manager variables"
+    },
+    {
+        "name": "residents_65",
+        "definition": "Proportion of population over 65",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "Any proportion between 0 and 1.",
+        "acs": "B01001020 B01001021 B01001022 B01001023 B01001024 B01001025 B01001044 B01001045 B01001046 B01001047 B01001048 B01001049",
+        "implementation_guidelines": "B01001001 is total number as denominator for population variable"
+    },
+    {
+        "name": "same_residence",
+        "definition": "Proportion of persons in same residence since year 2005",
+        "type": "Num",
+        "length": 8,
+        "valid_values": "What years does ACS provide for this?",
+        "acs": "B25026004 B25026005 B25026006 B25026007 B25026008 B25026011 B25026012 B25026013 B25026014 B25026015",
+        "implementation_guidelines": "B25026001 is total number as denominator for population variable"
+    }
+],
+    "primary_key": "geocode + census_year",
+    "comments": [
+      {"title": "About the ACS", "comment": "The ACS is an ongoing survey with an annual release covering a 5-year lookback period; this table includes data at the census tract level. It is recommended that sites implement the full ACS data file released by the HCSRN. Projects are encouraged to contact sites regarding the version of Census data available."},
+      {"title": "Boundary Year", "comment":"The geocode_boundary_year field represents the decade of the boundary year used to create the census tracts of the ACS data and to link from Census Location. Sites will likely have more than one ACS census_year per geocode_boundary_year. select the desired census_year or use the HCSRN provided macro to join the tables."}
+    ]
   }
+
 
 }
