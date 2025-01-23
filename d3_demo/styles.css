@@ -1,4 +1,5 @@
 /*@import url('https://rsms.me/inter/inter.css');*/
+
 body {
     display: flex;
     flex-direction: column;
@@ -239,4 +240,9 @@ td.clickable:hover {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
 } 
+
+#admonition {
+    background-color: yellow;
+    color: red ;
+}
 

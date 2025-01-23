@@ -103,6 +103,9 @@ async function draw_spec(spec_name, with_igs = true) {
 
   wrapper = d3.select("#wrapper") ;
   wrapper.attr("class", "vdw-spec") ;
+  wrapper.append("div").attr("id", "admonition")
+    .append("p").text("Provided as a convenience--this is NOT an official spec.")
+  ;
   wrapper.append("div").attr("id", "notification") ;
   wrapper.append("h1").text(spec.name) ;
   wrapper.append("p").html(spec.description) ;

@@ -151,6 +151,9 @@ async function draw_overview() {
     sitespan = imp_tooltip.select("#notes")
       .text(datum.notes)
     ;
+    sitespan = imp_tooltip.select("#as-of")
+      .text(datum["as_of"])
+    ;
 
     // Move the tooltip over to where the mouse pointer is
     const xpos = d3.event.pageX ;
