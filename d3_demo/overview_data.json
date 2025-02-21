@@ -337,6 +337,7 @@
     {"site":"KPGA","data area":"ute-ptax","start_year":2005,"end_year":2024,"update frequency":"","lag":"","notes":"","as_of":"2025-01-29","total_recs":3508258},
     {"site":"KPGA","data area":"ute-px","start_year":1995,"end_year":"Present","update frequency":"Monthly","lag":"","notes":"","as_of":"2025-01-29","total_recs":187560231},
     {"site":"KPGA","data area":"vitals","start_year":2004,"end_year":"Present","update frequency":"Weekly","lag":"","notes":"","as_of":"2025-01-29","total_recs":28961891},
+
     {"site":"KPWA","data area":"census-dem","start_year":2012,"end_year":2022,"update frequency":"Monthly","lag":"","notes":"","as_of":"2025-01-24","total_recs":844704},
     {"site":"KPWA","data area":"census-loc","start_year":2003,"end_year":2024,"update frequency":"Monthly","lag":"","notes":"","as_of":"2025-01-24","total_recs":12104629},
     {"site":"KPWA","data area":"cod","start_year":1977,"end_year":2025,"update frequency":"Annually","lag":"2 years","notes":"These come exclusively from State death certificates.","as_of":"","total_recs":null},
@@ -355,7 +356,15 @@
     {"site":"KPWA","data area":"ute-prov","start_year":1993,"end_year":"Present","update frequency":"Monthly","lag":"","notes":"","as_of":"","total_recs":null},
     {"site":"KPWA","data area":"ute-ptax","start_year":2005,"end_year":2024,"update frequency":"Monthly","lag":"","notes":"","as_of":"2025-01-24","total_recs":796278},
     {"site":"KPWA","data area":"ute-px","start_year":1993,"end_year":"Present","update frequency":"Monthly","lag":"Internal services: 2 months; External services: 4 months","notes":"Not updated in February","as_of":"2025-01-24","total_recs":488258532},
-    {"site":"KPWA","data area":"vitals","start_year":2005,"end_year":"Present","update frequency":"Daily","lag":"","notes":"","as_of":"2025-01-24","total_recs":27163093}
+    {"site":"KPWA","data area":"vitals","start_year":2005,"end_year":"Present","update frequency":"Daily","lag":"","notes":"","as_of":"2025-01-24","total_recs":27163093},
+
+    {"site":"SLUA","data area":"enrl","start_year":2010,"end_year":2022,"update frequency":"","lag":"","notes":"","as_of":"2023-10-01","total_recs":null},
+    {"site":"SLUA","data area":"ute-enc","start_year":2010,"end_year":2023,"update frequency":"","lag":"","notes":"","as_of":"2023-10-01","total_recs":null},
+    {"site":"SLUA","data area":"lab","start_year":2010,"end_year":2023,"update frequency":"","lag":"","notes":"","as_of":"2023-10-01","total_recs":null},
+    {"site":"SLUA","data area":"soc","start_year":2010,"end_year":2023,"update frequency":"","lag":"","notes":"","as_of":"2023-10-01","total_recs":null},
+    {"site":"SLUA","data area":"vitals","start_year":2010,"end_year":2023,"update frequency":"","lag":"","notes":"","as_of":"2023-10-01","total_recs":null}
+
+
   ]
 }
 
