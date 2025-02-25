@@ -367,8 +367,7 @@
     {"site":"SLU","data area":"ute-dx","start_year":2008,"end_year":2024,"update frequency":"","lag":"","notes":"","as_of":"2025-02-25","total_recs":568744308},
     {"site":"SLU","data area":"ute-enc","start_year":2008,"end_year":2024,"update frequency":"","lag":"","notes":"","as_of":"2025-02-25","total_recs":243021442},
     {"site":"SLU","data area":"ute-px","start_year":2010,"end_year":2024,"update frequency":"","lag":"","notes":"","as_of":"2025-02-25","total_recs":448702758},
-    {"site":"SLU","data area":"vitals","start_year":2008,"end_year":2025,"update frequency":"","lag":"","notes":"","as_of":"2025-02-25","total_recs":40035186},
-
+    {"site":"SLU","data area":"vitals","start_year":2008,"end_year":2025,"update frequency":"","lag":"","notes":"","as_of":"2025-02-25","total_recs":40035186}
   ]
 }
 
