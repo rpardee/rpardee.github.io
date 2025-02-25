@@ -17,7 +17,7 @@
     {"name": "KP Georgia"            , "long_name": "KP Georgia"            , "abbr": "KPGA", "manager": "Al Pacino", "location": "Atlanta GA", "latitude": 33.851878, "longitude": -84.378193, "states": ["GA"]},
     {"name": "Marshfield"            , "long_name": "Marshfield"            , "abbr": "MCRF", "manager": "George Clooney", "location": "Marshfield WI", "latitude": 44.6784957, "longitude": -90.1801673, "states": ["WI"]},
     {"name": "Sutter Health"         , "long_name": "Sutter Health/PAMF"    , "abbr": "SH"  , "manager": "Taika Watiti", "location": "Palo Alto CA", "latitude": 37.2135018, "longitude": -122.2048978, "states": ["CA"]},
-    {"name": "SLU / AHEAD Institute" , "long_name": "St Louis University/SSM Health", "abbr": "SLUA", "manager": "Glenn Close", "location": "St Louis MO", "latitude": 38.6346955, "longitude": -90.2362474, "states": ["MO", "OK", "WI", "IL"]},
+    {"name": "SLU / AHEAD Institute" , "long_name": "St Louis University/SSM Health", "abbr": "SLU", "manager": "Glenn Close", "location": "St Louis MO", "latitude": 38.6346955, "longitude": -90.2362474, "states": ["MO", "OK", "WI", "IL"]},
     {"name": "Advocate Aurora Health", "long_name": "Advocate/AuroraHealth"         , "abbr": "AAH" , "manager": "Jason Momoa", "location": "Milwaukee WI", "latitude": 43.0426642, "longitude": -87.9297109, "states": ["WI", "IL"]}
   ],
   "data areas": [
