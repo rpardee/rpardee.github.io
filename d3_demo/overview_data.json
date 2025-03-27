@@ -42,6 +42,12 @@
     {"name": "Lab Results"      , "abbr": "lab"       , "stdvar": "_vdw_lab", "descr": "Lab test results"}
   ],
   "implementations":[
+    {"site": "AAH", "data area": "enrl"   , "start_year": 2015, "end_year": 2024, "as_of": "2025-03-12"},
+    {"site": "AAH", "data area": "ute-enc", "start_year": 2000, "end_year": 2024, "as_of": "2025-03-12"},
+    {"site": "AAH", "data area": "ute-dx" , "start_year": 2000, "end_year": 2024, "as_of": "2025-03-12"},
+    {"site": "AAH", "data area": "ute-px" , "start_year": 2000, "end_year": 2024, "as_of": "2025-03-12"},
+    {"site": "AAH", "data area": "lab"    , "start_year": 2012, "end_year": 2024, "as_of": "2025-03-12"},
+    {"site": "AAH", "data area": "vitals" , "start_year": 2012, "end_year": 2024, "as_of": "2025-03-12"},
     {"site":"MCRF","data area":"census-dem","start_year":2012,"end_year":2022,"update frequency":"","lag":"","notes":"","as_of":"2025-01-27","total_recs":837691},
     {"site":"MCRF","data area":"census-loc","start_year":1997,"end_year":2021,"update frequency":"","lag":"","notes":"","as_of":"2025-01-27","total_recs":1836880},
     {"site":"MCRF","data area":"cod","start_year":2005,"end_year":2018,"update frequency":"Annually","lag":"","notes":"","as_of":"","total_recs":null},
