@@ -275,6 +275,7 @@
     {"site":"HFHS","data area":"cod","start_year":1997,"end_year":2023,"update frequency":"Annually","lag":"18 months","notes":"Requires Study IRB with State","as_of":"","total_recs":null},
     {"site":"HFHS","data area":"death","start_year":1997,"end_year":2023,"update frequency":"Annually","lag":"18 months","notes":"","as_of":"2025-03-06","total_recs":728919},
     {"site":"HFHS","data area":"demog","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"","total_recs":null},
+    {"site":"HFHS","data area":"lang","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"","total_recs":null},
     {"site":"HFHS","data area":"enrl","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"2025-03-06","total_recs":4239188},
     {"site":"HFHS","data area":"lab","start_year":1997,"end_year":2023,"update frequency":"Semi-Annually","lag":"18 months","notes":"","as_of":"2025-03-06","total_recs":725160096},
     {"site":"HFHS","data area":"ndc","start_year":1999,"end_year":2023,"update frequency":"Quarterly","lag":"12 months","notes":"","as_of":"","total_recs":null},
@@ -283,10 +284,12 @@
     {"site":"HFHS","data area":"tumor","start_year":1997,"end_year":2023,"update frequency":"Annually","lag":"18 months","notes":"","as_of":"2025-03-06","total_recs":214506},
     {"site":"HFHS","data area":"ute-dx","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"2025-03-06","total_recs":281776839},
     {"site":"HFHS","data area":"ute-enc","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"2025-03-06","total_recs":227324519},
-    {"site":"HFHS","data area":"ute-fac","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"","total_recs":null},
-    {"site":"HFHS","data area":"ute-prov","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"","total_recs":null},
     {"site":"HFHS","data area":"ute-px","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"2025-03-06","total_recs":654133721},
+    {"site":"HFHS","data area":"ute-fac","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"","total_recs":null},
+    {"site":"HFHS","data area":"ute-provtx","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"2025-03-06","total_recs":654133721},
+    {"site":"HFHS","data area":"ute-prov","start_year":1997,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"","total_recs":null},
     {"site":"HFHS","data area":"vitals","start_year":2006,"end_year":2024,"update frequency":"Quarterly","lag":"6 months","notes":"","as_of":"2025-03-06","total_recs":41403701},
+
 
     {"site":"KPNW","data area":"census-dem","start_year":2012,"end_year":2023,"update frequency":"Quarterly","lag":"","notes":"","as_of":"2025-01-28","total_recs":924169},
     {"site":"KPNW","data area":"census-loc","start_year":1920,"end_year":2024,"update frequency":"Quarterly","lag":"5 days","notes":"","as_of":"2025-01-28","total_recs":9537069},
